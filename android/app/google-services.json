@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "368181595286",
+    "project_id": "korazon-dc77a",
+    "storage_bucket": "korazon-dc77a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:368181595286:android:309e644b02dbc8a78046b7",
+        "android_client_info": {
+          "package_name": "com.example.korazon"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_dXh82cbWrSjAXqR_7Dxf03HRArMhols"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:368181595286:android:3b7d7e98605602f08046b7",
+        "android_client_info": {
+          "package_name": "com.korazondev.korazondc77a"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_dXh82cbWrSjAXqR_7Dxf03HRArMhols"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
