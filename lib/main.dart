@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:korazon/screens/homePage.dart';
+import 'package:korazon/screens/bottomNavigationBar.dart';
 import 'firebase_options.dart';
 import 'package:korazon/screens/auth.dart';
 import 'package:korazon/screens/loading.dart';
@@ -22,7 +22,6 @@ class App extends StatelessWidget {
     return MaterialApp(
       title: 'FlutterChat',
       theme: ThemeData().copyWith(
-        useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
             seedColor: const Color.fromARGB(255, 63, 17, 177)),
       ),
