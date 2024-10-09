@@ -3,16 +3,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 final _firebase = FirebaseAuth.instance;
 
-class AuthScreen extends StatefulWidget {
-  const AuthScreen({super.key});
+class Loginscreen extends StatefulWidget {
+  const Loginscreen({super.key});
 
   @override
-  State<AuthScreen> createState() {
-    return _AuthScreen();
+  State<Loginscreen> createState() {
+    return _Loginscreen();
   }
 }
 
-class _AuthScreen extends State<AuthScreen> {
+class _Loginscreen extends State<Loginscreen> {
 
   final _form = GlobalKey<FormState>();
   var _isLogin = true;
@@ -136,8 +136,7 @@ class _AuthScreen extends State<AuthScreen> {
                   ),
                 ),
               ),
-              )
-
+              ),
           ]),
         )
       ),

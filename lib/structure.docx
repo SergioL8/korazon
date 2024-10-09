@@ -1,0 +1,9 @@
+/lib
+|-- structure.docx         # Explanation of the structure of the code
+|-- main.dart              # App declaration
+|-- /src                   # Contains source code of the app
+    |-- /data
+    |-- /logic
+    |-- /UIapp             # Contains the UI of the app
+        |-- /screens       # Contains layout of screens where you put widgets
+        |-- /widgets

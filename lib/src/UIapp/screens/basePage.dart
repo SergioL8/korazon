@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:korazon/screens/users.dart';
-import 'package:korazon/screens/homePage.dart';
-import 'package:korazon/screens/yourEventsPage.dart';
-import 'package:korazon/screens/socialPage.dart';
+import 'package:korazon/src/UIapp/screens/homePage.dart';
+import 'package:korazon/src/UIapp/screens/yourEventsPage.dart';
+import 'package:korazon/src/UIapp/screens/socialPage.dart';
+import 'package:korazon/src/UIapp/screens/user_profile_screen.dart';
 
 
-class HomePageScreen extends StatefulWidget {
-  const HomePageScreen({super.key});
+
+class BasePage extends StatefulWidget {
+  const BasePage({super.key});
 
   @override
-  State<HomePageScreen> createState() {
-    return _HomePageScreen();
+  State<BasePage> createState() {
+    return _BasePage();
   }
 }
 
 
 
-class _HomePageScreen extends State<HomePageScreen> {
+class _BasePage extends State<BasePage> {
 
   int selectedPageIndex = 0;
 

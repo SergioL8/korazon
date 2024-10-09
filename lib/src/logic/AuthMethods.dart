@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:korazon/models/user.dart' as model;
+import '../../../lib1/models/user.dart' as model;
 
 class AuthMethods{
   final FirebaseAuth _auth = FirebaseAuth.instance; //FirebaseAuth is already a class, we are instanciating it now to create multiple functions with it

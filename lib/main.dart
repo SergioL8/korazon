@@ -1,15 +1,12 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:korazon/screens/bottomNavigationBar.dart';
 import 'firebase_options.dart';
-import 'package:korazon/screens/auth.dart';
-import 'package:korazon/screens/loading.dart';
+import 'src/logic/signedInLogic.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-  options: DefaultFirebaseOptions.currentPlatform,
+  options: DefaultFirebaseOptions.currentPlatform
 );
   runApp(const App());
 }
@@ -25,19 +22,7 @@ class App extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(
             seedColor: const Color.fromARGB(255, 63, 17, 177)),
       ),
-      home: StreamBuilder(
-        stream: FirebaseAuth.instance.authStateChanges(),
-        builder: ((context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const LoadingScreen();
-          }
-
-          if (snapshot.hasData) {
-            return const HomePageScreen();
-          } else {
-            return const AuthScreen();
-          }
-      }),),
+      home: const isSignedLogic(),
     );
   }
 }
