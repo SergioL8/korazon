@@ -1,1 +1,47 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"korazon-dc77a","appId":"1:368181595286:android:3b7d7e98605602f08046b7","fileOutput":"android/app/google-services.json"}},"ios":{"default":{"projectId":"korazon-dc77a","appId":"1:368181595286:ios:17663aee32b079818046b7","uploadDebugSymbols":false,"fileOutput":"ios/Runner/GoogleService-Info.plist"}},"dart":{"lib/firebase_options.dart":{"projectId":"korazon-dc77a","configurations":{"android":"1:368181595286:android:3b7d7e98605602f08046b7","ios":"1:368181595286:ios:17663aee32b079818046b7","web":"1:368181595286:web:160fffede7a286998046b7"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "korazon-dc77a",
+          "appId": "1:368181595286:android:3b7d7e98605602f08046b7",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "ios": {
+        "default": {
+          "projectId": "korazon-dc77a",
+          "appId": "1:368181595286:ios:17663aee32b079818046b7",
+          "uploadDebugSymbols": false,
+          "fileOutput": "ios/Runner/GoogleService-Info.plist"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "korazon-dc77a",
+          "configurations": {
+            "android": "1:368181595286:android:3b7d7e98605602f08046b7",
+            "ios": "1:368181595286:ios:17663aee32b079818046b7",
+            "web": "1:368181595286:web:160fffede7a286998046b7"
+          }
+        }
+      }
+    }
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ],
+      "predeploy": [
+        "npm --prefix \"$RESOURCE_DIR\" run lint"
+      ]
+    }
+  ]
+}
