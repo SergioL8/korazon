@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:368181595286:android:309e644b02dbc8a78046b7",
+        "mobilesdk_app_id": "1:368181595286:android:1fd4261d5d45f23f8046b7",
         "android_client_info": {
-          "package_name": "com.example.korazon"
+          "package_name": "com.differentbeatsonerhythm.korazon"
         }
       },
       "oauth_client": [],
@@ -26,9 +26,9 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:368181595286:android:3b7d7e98605602f08046b7",
+        "mobilesdk_app_id": "1:368181595286:android:309e644b02dbc8a78046b7",
         "android_client_info": {
-          "package_name": "com.korazondev.korazondc77a"
+          "package_name": "com.example.korazon"
         }
       },
       "oauth_client": [],
