@@ -1,18 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:korazon/src/screens/signup_screen.dart';
+import 'package:korazon/src/utilities/design_variables.dart';
+import 'package:korazon/src/cloudresources/authentication.dart';
+import 'package:korazon/src/utilities/utils.dart';
+import 'package:korazon/src/data/providers/user_provider.dart';
+//import 'package:provider/provider.dart';
 
 final _firebase = FirebaseAuth.instance;
 
-class Loginscreen extends StatefulWidget {
-  const Loginscreen({super.key});
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  State<Loginscreen> createState() {
+  State<LoginScreen> createState() {
     return _Loginscreen();
   }
 }
 
-class _Loginscreen extends State<Loginscreen> {
+class _Loginscreen extends State<LoginScreen> {
+  bool _isLoading = false;
 
   final _form = GlobalKey<FormState>();
   var _isLogin = true;
@@ -20,49 +27,40 @@ class _Loginscreen extends State<Loginscreen> {
   var _enteredPassword = '';
 
 
-  void _submit () async {
-    final isValid = _form.currentState!.validate();
+  void loginUser() async {                  //function from resources/auth_method.dart
+      setState(() {
+        _isLoading = true;
+      });
 
-    if (!isValid) {
-      return;
+    String res = await AuthMethods().loginUser(
+      email: _enteredEmail,
+      password: _enteredPassword,
+    );
+
+    setState(() {
+      _isLoading = false;
+    });
+
+    if(res == 'Que fakin grande'){  //Make sure to change the string in auth_methods.login as well
+      showSnackBar(context, res);
+      
+     // UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
+     // await userProvider.refreshUser();
+      //User? currentUser = userProvider.getUser;
+
+    } else {
+      showSnackBar(context, res);
     }
+  }
 
-    _form.currentState!.save();
-    
-   
-
-    try {
-       if (_isLogin) {
-
-        final userCredentials = _firebase.signInWithEmailAndPassword(email: _enteredEmail, password: _enteredPassword);
-
-      } else {
-
-        final userCredentials = await _firebase.createUserWithEmailAndPassword(email: _enteredEmail, password: _enteredPassword);
-
-      }
-
-    
-    } on FirebaseAuthException catch (error) {
-
-      if (error.code == 'email-already-in-use') {
-        // .. 
-      }
-      ScaffoldMessenger.of(context).clearSnackBars();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(error.message ?? 'An error occurred'),
-        ),
-      );
-
-    }
-    
+  void navigateToSignUp() {
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) => const SignupScreen()));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.primary,
+      backgroundColor: primaryColor,
       body: Center(
         child: SingleChildScrollView(
           child: Column(
@@ -77,7 +75,7 @@ class _Loginscreen extends State<Loginscreen> {
 
                 ),
                 width: 200,
-                child: Image.asset('assets/images/image.png'),
+                //child: Image.asset('assets/images/image.png'),
               ),
               Card(
                 margin: const EdgeInsets.all(20),
@@ -118,16 +116,16 @@ class _Loginscreen extends State<Loginscreen> {
                       ),
                       const SizedBox(height: 12),
                       ElevatedButton(
-                        onPressed: _submit,
+                        onPressed: loginUser,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Theme.of(context).colorScheme.primaryContainer,
                         ),
-                        child: Text(_isLogin ? 'Login' : 'Sign up'),
+                        child: Text('Login'),
                       ),
                       ElevatedButton(
                         onPressed: () {
                           setState(() {
-                            _isLogin = !_isLogin;
+                            navigateToSignUp();
                           });
                         },
                         child: Text(_isLogin ? 'Create account' : 'I already have an account'),

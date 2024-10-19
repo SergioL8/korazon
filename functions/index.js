@@ -63,7 +63,7 @@ admin.initializeApp();
 exports.QRcodeGeneration = functions.auth.user().onCreate( async (user) => {
     
     // Get data from the user object
-    const userID = user.uid; 
+    const userID = user.uid;
     const userEmail = user.email;
 
     // Get the Firestore database
