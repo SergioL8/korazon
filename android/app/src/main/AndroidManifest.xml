@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.differentbeatsonerhythm.korazon">>
+    package="com.differentbeatsonerhythm.korazon">
     <uses-permission android:name="android.permission.CAMERA" />
     <application
         android:label="korazon"
