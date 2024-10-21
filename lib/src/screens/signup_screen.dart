@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-//import 'package:openuc3m_application/responsive/responsive_layout.dart';
+import 'package:korazon/src/screens/basePage.dart';
 import 'package:korazon/src/screens/login_screen.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/utilities/utils.dart';
-//import 'package:openuc3m_application/widgets/input_text_field.dart';
+import 'package:korazon/src/widgets/textfield.dart';
 import 'package:korazon/src/cloudresources/authentication.dart';
-//import 'package:openuc3m_application/responsive/mobilescreen_layout.dart';
-//import 'package:openuc3m_application/responsive/webscreen_layout.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -36,10 +34,10 @@ class _LoginScreenState extends State<SignupScreen> {
       });
 
     String res = await AuthMethods().signUpUser(
-      isHost: isHost,
       email: _emailController.text,
       password: _passwordController.text,
       username: _usernameController.text,
+      isHost: isHost,
     );
 
     setState(() {
@@ -49,9 +47,8 @@ class _LoginScreenState extends State<SignupScreen> {
     if(res != 'success'){
       showSnackBar(context, res);
     } else {
-   //   Navigator.of(context).push(MaterialPageRoute(
- //       builder: (context) => const ResponsiveLayout(
-  //        webScreenLayout: WebScreenLayout(), mobileScreenLayout: MobileScreenLayout())));
+      Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => BasePage()));
     }
   }
 
@@ -71,7 +68,6 @@ class _LoginScreenState extends State<SignupScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [              
               const SizedBox(height: 64,),
-              //Image.asset('assets/appstore.png'),
               const SizedBox(height: 64,),
               Text(
                 'Welcome to Korazon',
@@ -80,18 +76,31 @@ class _LoginScreenState extends State<SignupScreen> {
                 fontSize: 40, 
                 fontWeight: primaryFontWeight,
                  ),),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'username'),
-                        obscureText: false,
-              ),
-              TextFormField(
-                decoration: const InputDecoration(labelText: 'email'),
-                        obscureText: false,
-              ),
-               TextFormField(
-                decoration: const InputDecoration(labelText: 'Password'),
-                        obscureText: true,
-              ),
+              
+              const SizedBox(height: 20,),
+
+              TextFieldInput(
+                textEditingController: _usernameController, 
+                hintText: 'username',
+                textInputType: TextInputType.emailAddress),
+
+              const SizedBox(height: 20,),
+
+              TextFieldInput(
+                textEditingController: _emailController, 
+                hintText: 'email',
+                textInputType: TextInputType.emailAddress),
+              
+              const SizedBox(height: 20,),
+
+              TextFieldInput(
+                textEditingController: _passwordController, 
+                hintText: 'password ',
+                textInputType: TextInputType.text,
+                isPass: true),
+              
+              const SizedBox(height: 20,),
+
 
               InkWell(
               onTap: signUpUser,          

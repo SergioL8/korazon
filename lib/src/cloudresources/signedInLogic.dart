@@ -27,4 +27,4 @@ class isSignedLogic extends StatelessWidget {
   }
 }
 
-//! THIS PAGE SHOULD BE PART OF THE MAIN.dart file
+//! THIS PAGE SHOULD BE PART OF THE basePage.dart file

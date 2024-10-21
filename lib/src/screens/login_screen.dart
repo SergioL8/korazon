@@ -5,7 +5,7 @@ import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/cloudresources/authentication.dart';
 import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/data/providers/user_provider.dart';
-//import 'package:provider/provider.dart';
+import 'package:provider/provider.dart';
 
 final _firebase = FirebaseAuth.instance;
 
@@ -44,9 +44,8 @@ class _Loginscreen extends State<LoginScreen> {
     if(res == 'Que fakin grande'){  //Make sure to change the string in auth_methods.login as well
       showSnackBar(context, res);
       
-     // UserProvider userProvider = Provider.of<UserProvider>(context, listen: false);
-     // await userProvider.refreshUser();
-      //User? currentUser = userProvider.getUser;
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      await userProvider.refreshUser();
 
     } else {
       showSnackBar(context, res);
