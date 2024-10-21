@@ -45,7 +45,7 @@ class _LoginScreenState extends State<SignupScreen> {
     });
 
     if(res != 'success'){
-      showSnackBar(context, res);
+      showSnackBar(context, 'Glad you joined us');
     } else {
       Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => BasePage()));
@@ -59,9 +59,8 @@ class _LoginScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-       
+      backgroundColor: primaryColor,
       body: Container(
-          color: primaryColor,
           padding: const EdgeInsets.symmetric(horizontal: 32 ),
           width: double.infinity,
           child: Column(

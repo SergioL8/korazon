@@ -6,3 +6,4 @@ const tertiaryColor = Colors.white;
 
 const double primaryFontSize = 16;
 const primaryFontWeight = FontWeight.w800;
+const double navBarElevation = 20;

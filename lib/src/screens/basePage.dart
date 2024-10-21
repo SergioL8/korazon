@@ -3,6 +3,7 @@ import 'package:korazon/src/screens/homePage.dart';
 import 'package:korazon/src/screens/yourEventsPage.dart';
 import 'package:korazon/src/screens/socialPage.dart';
 import 'package:korazon/src/screens/user_profile_screen.dart';
+import 'package:korazon/src/utilities/design_variables.dart';
 
 
 
@@ -70,19 +71,29 @@ class _BasePage extends State<BasePage> {
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
+        elevation: navBarElevation,
+        backgroundColor: primaryColor,
         onTap: (selectedPageIndex) { _selectedPage(selectedPageIndex); },
         currentIndex: selectedPageIndex,
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: Icon(Icons.home,
+            color: secondaryColor,
+              ),
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.airplane_ticket),
+            icon: Icon(
+              Icons.diamond_sharp,
+              color: secondaryColor,
+              ),
             label: 'Your events',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.people),
+            icon: Icon(
+              Icons.people,
+              color: secondaryColor,
+              ),
             label: 'Social',
           ),
         ],

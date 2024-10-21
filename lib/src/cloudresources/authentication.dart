@@ -8,8 +8,8 @@ class AuthMethods{
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance; //Provides access to Firestore DB
 
   static const String defaultError = "An unexpected error occurred";
-  static const String invalidEmail = "La dirección de correo no es válida";
-  static const String weakPassword = "La contraseña debería ser al menos 6 caracteres";
+  static const String invalidEmail = "The email address is invalid";
+  static const String weakPassword = "Password should be at least 6 characters long";
 
   Future<model.User?> getUserDetails() async{
     User? currentUser = _auth.currentUser;
@@ -40,7 +40,6 @@ class AuthMethods{
       if (email.isEmpty || password.isEmpty || username.isEmpty) {
         return "Please fill all the fields";
       }
-      print('Paso al otro lado');
 
       UserCredential? credentials = await _auth.createUserWithEmailAndPassword(email: email, password: password);
       //the line above creates a variable credentials of Class UserCredential which will store the information that the firebase auth gives it such as the userid or 'uid'
@@ -81,21 +80,21 @@ class AuthMethods{
       required String email,
       required String password,
     }) async { 
-      String res = 'Ha habido un error';
+      String res = 'An error occurred';
      try {
       if (email.isNotEmpty && password.isNotEmpty){
         await _auth.signInWithEmailAndPassword(email: email, password: password); // no user credentials needed because they are already in the DB
-        res = "Que fakin grande";
+        res = "success";
       } else {
-        res = "Por favor introduce todos los datos";
+        res = "Please fill all fields";
       } 
 
     } on FirebaseAuthException catch (e) {  // to give custom messages depending on the error
       if (e.code == 'user-not-found'){
-        res = 'No se ha encontrado ese usuario';
+        res = 'User not found';
       }
       if (e.code == 'A network error has occured'){
-        res = 'La conexion a internet no es estable';
+        res = 'A network error has occured';
       }
     }
     

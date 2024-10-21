@@ -6,6 +6,8 @@ import 'package:korazon/src/cloudresources/authentication.dart';
 import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/data/providers/user_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:korazon/src/widgets/textfield.dart';
+import 'package:korazon/src/screens/basePage.dart';
 
 final _firebase = FirebaseAuth.instance;
 
@@ -19,13 +21,9 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _Loginscreen extends State<LoginScreen> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
-
-  final _form = GlobalKey<FormState>();
-  var _isLogin = true;
-  var _enteredEmail = '';
-  var _enteredPassword = '';
-
 
   void loginUser() async {                  //function from resources/auth_method.dart
       setState(() {
@@ -33,19 +31,20 @@ class _Loginscreen extends State<LoginScreen> {
       });
 
     String res = await AuthMethods().loginUser(
-      email: _enteredEmail,
-      password: _enteredPassword,
+      email: _emailController.text,
+      password: _passwordController.text,
     );
 
     setState(() {
       _isLoading = false;
     });
 
-    if(res == 'Que fakin grande'){  //Make sure to change the string in auth_methods.login as well
-      showSnackBar(context, res);
+    if(res == 'success'){  //Make sure to change the string in auth_methods.login as well
+      showSnackBar(context, 'Glad to have you back');
       
       final userProvider = Provider.of<UserProvider>(context, listen: false);
       await userProvider.refreshUser();
+      Navigator.of(context).push(MaterialPageRoute(builder: (context) => const BasePage()));
 
     } else {
       showSnackBar(context, res);
@@ -60,83 +59,77 @@ class _Loginscreen extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: primaryColor,
-      body: Center(
-        child: SingleChildScrollView(
+      body: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 32 ),
+          width: double.infinity,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                margin: const EdgeInsets.only(
-                  top: 30,
-                  bottom: 20,
-                  left: 20,
-                  right: 20,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [              
+              const SizedBox(height: 64,),
+              const SizedBox(height: 64,),
+              Text(
+                'Welcome back',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                fontSize: 40, 
+                fontWeight: primaryFontWeight,
+                 ),),
+              
+              const SizedBox(height: 20,),
 
-                ),
-                width: 200,
-                //child: Image.asset('assets/images/image.png'),
-              ),
-              Card(
-                margin: const EdgeInsets.all(20),
-                child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Form(
-                  key: _form,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      TextFormField(
-                        decoration: const InputDecoration(labelText: 'Email'),
-                        keyboardType: TextInputType.emailAddress,
-                        autocorrect: false,
-                        textCapitalization: TextCapitalization.none,
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty || !value.contains('@')) {
-                            return 'Please enter a valid email address.';
-                          }
-                          return null;
-                        },
-                        onSaved: (value) {
-                          _enteredEmail = value!;
-                        },
-                      ),
-                      TextFormField(
-                        decoration: const InputDecoration(labelText: 'Password'),
-                        obscureText: true,   
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty || value.trim().length < 6) {
-                            return 'Password must be at least 6 characters long.';
-                          }
-                          return null;
-                        },     
-                        onSaved: (value) {
-                          _enteredPassword = value!;
-                        },                  
-                      ),
-                      const SizedBox(height: 12),
-                      ElevatedButton(
-                        onPressed: loginUser,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                        ),
-                        child: Text('Login'),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            navigateToSignUp();
-                          });
-                        },
-                        child: Text(_isLogin ? 'Create account' : 'I already have an account'),
-                      ),
-                    ],
+              TextFieldInput(
+                textEditingController: _emailController, 
+                hintText: 'email',
+                textInputType: TextInputType.emailAddress),
+              
+              const SizedBox(height: 20,),
+
+              TextFieldInput(
+                textEditingController: _passwordController, 
+                hintText: 'password ',
+                textInputType: TextInputType.text,
+                isPass: true),
+              
+              const SizedBox(height: 20,),
+
+
+              InkWell(
+              onTap: loginUser,          
+              child: Container(
+                width: double.infinity,
+                color:  secondaryColor,
+                alignment: Alignment.center,
+                padding: const EdgeInsets.symmetric(vertical: 12),  
+                child: _isLoading ? const Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(tertiaryColor),
+                  ),
+                ) : const Text(
+                  'Log In',
+                  style: TextStyle(
+                    fontWeight: primaryFontWeight,
+                    color: tertiaryColor,
+                  ),
                   ),
                 ),
               ),
+              const SizedBox(height: 30,),
+              Row(
+                children: [
+                  Text('No account? '),
+                  GestureDetector(
+                    onTap: navigateToSignUp,
+                    child: const Text(
+                      'Sign Up',
+                      style: TextStyle(
+                        fontWeight: primaryFontWeight,
+                      ),),
+                  ),
+                ],
               ),
-          ]),
+            ],
+          ),
         )
-      ),
-    );
+      );
   }
 }
