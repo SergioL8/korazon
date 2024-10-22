@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:korazon/src/screens/basePage.dart';
+import 'package:korazon/src/screens/home_page.dart';
 import 'package:korazon/src/screens/login_screen.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/widgets/textfield.dart';
 import 'package:korazon/src/cloudresources/authentication.dart';
+import 'package:korazon/src/widgets/togglebutton.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -48,7 +49,7 @@ class _LoginScreenState extends State<SignupScreen> {
       showSnackBar(context, 'Glad you joined us');
     } else {
       Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => BasePage()));
+        builder: (context) => HomePage()));
     }
   }
 
@@ -76,6 +77,13 @@ class _LoginScreenState extends State<SignupScreen> {
                 fontWeight: primaryFontWeight,
                  ),),
               
+              const SizedBox(height: 20,),
+
+              Togglebutton(selectionNumber: (bool isFirstSelected){
+                print(isFirstSelected);
+                isHost = isFirstSelected;
+              },), // variable isFirstSelected is true if Host is selected
+
               const SizedBox(height: 20,),
 
               TextFieldInput(
