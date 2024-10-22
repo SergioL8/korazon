@@ -42,8 +42,8 @@ class _Loginscreen extends State<LoginScreen> {
     if(res == 'success'){  //Make sure to change the string in auth_methods.login as well
       showSnackBar(context, 'Glad to have you back');
       
-      final userProvider = Provider.of<UserProvider>(context, listen: false);
-      await userProvider.refreshUser();
+      //final userProvider = Provider.of<UserProvider>(context, listen: false);
+      //await userProvider.refreshUser();
       Navigator.of(context).push(MaterialPageRoute(builder: (context) => const BasePage()));
 
     } else {

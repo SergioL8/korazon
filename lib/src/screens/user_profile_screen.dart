@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:korazon/src/screens/login_screen.dart';
 
 class UserSettings extends StatelessWidget{
   const UserSettings({super.key});
@@ -22,6 +23,7 @@ class UserSettings extends StatelessWidget{
             onPressed: () {
               FirebaseAuth.instance.signOut();
               Navigator.of(context).pop();
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) => const LoginScreen()));
             },
           ),
         ],

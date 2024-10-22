@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:korazon/src/screens/home_page.dart';
+import 'package:korazon/src/screens/basePage.dart';
 import 'package:korazon/src/screens/login_screen.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/utilities/utils.dart';
@@ -47,9 +47,9 @@ class _LoginScreenState extends State<SignupScreen> {
 
     if(res != 'success'){
       showSnackBar(context, 'Glad you joined us');
-    } else {
       Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => HomePage()));
+        builder: (context) => BasePage()));
+    } else {
     }
   }
 
