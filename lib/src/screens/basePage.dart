@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:korazon/src/UIapp/screens/homePage.dart';
-import 'package:korazon/src/UIapp/screens/scanner.dart';
-import 'package:korazon/src/UIapp/screens/yourEventsPage.dart';
-import 'package:korazon/src/UIapp/screens/socialPage.dart';
-import 'package:korazon/src/UIapp/screens/user_profile_screen.dart';
 import 'package:korazon/src/screens/home_page.dart';
+import 'package:korazon/src/screens/scanner.dart';
 import 'package:korazon/src/screens/yourEventsPage.dart';
 import 'package:korazon/src/screens/socialPage.dart';
 import 'package:korazon/src/screens/user_profile_screen.dart';
+import 'package:korazon/src/screens/home_page.dart';
+import 'package:korazon/src/screens/yourEventsPage.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 
 
