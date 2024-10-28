@@ -16,6 +16,7 @@ class _UserSettingsState extends State<UserSettings> {
 
   String? qrCodeBase64;
 
+  // DON'T HAVE TO EDIT THIS
   @override
   void initState() {
     super.initState();
@@ -23,6 +24,7 @@ class _UserSettingsState extends State<UserSettings> {
   }
 
 
+  // DON'T HAVE TO EDIT THIS
   Future<void> fetchQrCode() async {
     try {
       
@@ -78,7 +80,6 @@ class _UserSettingsState extends State<UserSettings> {
                   base64Decode(qrCodeBase64!.split(',')[1]), // Decode the base64 string
                   fit: BoxFit.contain,
                 ),
-              
       ),
     );
   }
