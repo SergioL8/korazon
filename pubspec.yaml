@@ -34,6 +34,7 @@ dependencies:
   flutter:
     sdk: flutter
   mobile_scanner: ^6.0.1
+  cloud_firestore: ^5.4.4
   # permission_handler: ^11.3.1
   # qr_code_scanner: ^1.0.1
   
