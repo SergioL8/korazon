@@ -1,0 +1,59 @@
+import 'package:flutter/material.dart';
+import 'package:korazon/src/UIapp/screens/userAccessToEvent.dart';
+// import 'package:qr_code_scanner/qr_code_scanner.dart';
+// import 'package:permission_handler/permission_handler.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
+
+
+class ScannerScreen extends StatefulWidget {
+  const ScannerScreen({super.key});
+
+  @override
+  _ScannerScreenState createState() => _ScannerScreenState();
+}
+
+
+class _ScannerScreenState extends State<ScannerScreen> {
+
+  MobileScannerController controller = MobileScannerController();
+
+  // this function is used to display the bottom modal sheet that shows the info of a user when trying to access an event
+  // this function includes some logic on how to avoid multiple modal bottom sheets from being displayed
+  void _displayUserAccessToEvent(String code) {
+
+    controller.stop(); // stop the scanner so that no multiple modal bottom sheets are displayed
+
+    showModalBottomSheet( // display the user access to event
+      useSafeArea: true,
+      isScrollControlled: true,
+      context: context,
+      builder: (ctx) => SafeArea(child: UserAccessToEvent(code: code,))
+    ).whenComplete(() => controller.start()); // when the modal bottom sheet is closed, start the scanner again
+  }
+
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: MobileScanner(
+        controller: controller,
+        onDetect: (BarcodeCapture barcodeCapture) {
+          final String? code = barcodeCapture.barcodes.first.rawValue; // this method returns the detected barcode
+          if (code != null) { // if the barcode is not null, then display the user access to event
+            _displayUserAccessToEvent(code);
+          }
+        }
+      ),
+    );
+  }
+
+
+  @override
+  void dispose() {
+    // Properly dispose of the controller when the screen is disposed
+    controller.dispose();
+    super.dispose();
+  } 
+}
+

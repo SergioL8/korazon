@@ -1,4 +1,4 @@
-package com.example.korazon
+package com.differentbeatsonerhythm.korazon
 
 import io.flutter.embedding.android.FlutterActivity
 

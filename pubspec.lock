@@ -232,6 +232,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.15.0"
+<<<<<<< HEAD
   nested:
     dependency: transitive
     description:
@@ -240,6 +241,16 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.0"
+=======
+  mobile_scanner:
+    dependency: "direct main"
+    description:
+      name: mobile_scanner
+      sha256: e93461298494a3e5475dd2b41068012823b8fe2caf8d47ba545faca2aa3767d6
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.0.1"
+>>>>>>> c6de89cbc6eec02eaa9ff4fa1ae01540617d590c
   path:
     dependency: transitive
     description:

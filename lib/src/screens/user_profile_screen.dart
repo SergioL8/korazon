@@ -1,9 +1,55 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:convert'; // For base64 decoding
+import 'dart:typed_data'; // For Uint8List
+
+
 import 'package:korazon/src/screens/login_screen.dart';
 
-class UserSettings extends StatelessWidget{
+class UserSettings extends StatefulWidget{
   const UserSettings({super.key});
+
+  @override
+  State<UserSettings> createState() => _UserSettingsState();
+}
+
+
+
+class _UserSettingsState extends State<UserSettings> {
+
+  String? qrCodeBase64;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchQrCode(); // Fetch QR code when widget loads
+  }
+
+
+  Future<void> fetchQrCode() async {
+    try {
+      
+      final user = FirebaseAuth.instance.currentUser; // get instance of the current user
+
+      if (user == null) {  qrCodeBase64 = null; return;  }  // Ensure the user is logged in
+
+      // Fetch data from firestore
+      final DocumentReference<Map<String, dynamic>> documentSnapshot = FirebaseFirestore.instance.collection('users').doc(user.uid);
+      final data = (await documentSnapshot.get());
+
+      if (!data.exists) {  qrCodeBase64 = null; return;  } // Ensure the user data exists
+      if (!data.data()!.containsKey('qrCode')) {  qrCodeBase64 = null; return;  } // Ensure the user data contains a QR code
+
+
+      setState(() {
+        qrCodeBase64 = data['qrCode'];
+      });
+    } catch (e) {
+      throw Exception('Failed to fetch QR code: $e');
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -28,8 +74,15 @@ class UserSettings extends StatelessWidget{
           ),
         ],
       ),
-      body: const Center(
-        child: Text('User Settings'),
+      body: Center(
+        // child: Text('User Settings'),
+        child: qrCodeBase64 == null
+              ?  const CircularProgressIndicator()
+              : Image.memory(
+                  base64Decode(qrCodeBase64!.split(',')[1]), // Decode the base64 string
+                  fit: BoxFit.contain,
+                ),
+              
       ),
     );
   }
