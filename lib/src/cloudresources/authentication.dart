@@ -58,7 +58,7 @@ class AuthMethods{
       //await _firebaseFirestore.collection('users').doc(credentials.user!.uid).set(user.toJson());//this creates a document in the users collection in firestore
         //to Json means that the data in the document is in a map structured format.
         //CONSIDER: using transaction
-      return 'succcess';
+      return 'success';
 
     }on FirebaseAuthException catch (err) {
       switch (err.code) {

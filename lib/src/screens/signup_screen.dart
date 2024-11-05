@@ -44,12 +44,15 @@ class _LoginScreenState extends State<SignupScreen> {
     setState(() {
       _isLoading = false;
     });
-
-    if(res != 'success'){
+    print('ress: ${res}');
+    print('variableType: ${res.runtimeType}');
+    if(res == 'success'){
+      print('inside success');
       showSnackBar(context, 'Glad you joined us');
       Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => BasePage()));
     } else {
+      showSnackBar(context, 'Error: $res');
     }
   }
 
