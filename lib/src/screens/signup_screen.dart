@@ -45,7 +45,7 @@ class _LoginScreenState extends State<SignupScreen> {
       _isLoading = false;
     });
 
-    if(res != 'success'){
+    if(res == 'success'){
       showSnackBar(context, 'Glad you joined us');
       Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => BasePage()));

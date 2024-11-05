@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:korazon/src/screens/login_screen.dart';
 import 'package:korazon/src/screens/basePage.dart';
 import 'package:korazon/src/screens/signup_screen.dart';
 import 'package:korazon/src/screens/splashScreen.dart';
