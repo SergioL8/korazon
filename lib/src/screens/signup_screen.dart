@@ -50,6 +50,7 @@ class _LoginScreenState extends State<SignupScreen> {
       Navigator.of(context).push(MaterialPageRoute(
         builder: (context) => BasePage()));
     } else {
+      showSnackBar(context, 'Error: $res');
     }
   }
 
