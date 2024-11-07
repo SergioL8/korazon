@@ -25,7 +25,8 @@ class _Loginscreen extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
 
-  void loginUser() async {                  //function from resources/auth_method.dart
+  void loginUser() async {                  
+    //function from resources/auth_method.dart
       setState(() {
         _isLoading = true;
       });
@@ -41,6 +42,7 @@ class _Loginscreen extends State<LoginScreen> {
 
     if(res == 'success'){  
       //Make sure to change the string in auth_methods.login as well
+      //TODO: change this method, checking with Strings is not a good practice.
       showSnackBar(context, 'Glad to have you back');
       
       Navigator.of(context).push(MaterialPageRoute(builder: (context) => const BasePage()));
