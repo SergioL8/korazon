@@ -1,4 +1,5 @@
 import 'dart:typed_data';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:korazon/src/cloudresources/firestore_methods.dart';
@@ -22,6 +23,9 @@ class _EventCreationScreenState extends State<EventCreationScreen> {
   final TextEditingController _eventAgeController = TextEditingController();
 
   bool _isLoading = false;
+
+  final user = FirebaseAuth.instance.currentUser; // get instance of the current user
+
 
   @override
   void initState() {
@@ -96,7 +100,8 @@ class _EventCreationScreenState extends State<EventCreationScreen> {
               Uint8List file  = await pickImage(ImageSource.gallery); //pickimage is a function from utils.
 
               setState(() {
-                _photofile = file; //photofile is now the picture we selected
+                _photofile = file; 
+                //photofile is now the picture we selected
               });
             },
           ),
@@ -104,7 +109,8 @@ class _EventCreationScreenState extends State<EventCreationScreen> {
             padding: const EdgeInsets.all(20),
             child: Text('Cancel'),
             onPressed:() {
-              Navigator.of(context).pop(); //closes the dialog when pressed somewhere else
+              Navigator.of(context).pop(); 
+              //closes the dialog when pressed somewhere else
             }
           ),
         ],
@@ -187,7 +193,7 @@ class _EventCreationScreenState extends State<EventCreationScreen> {
             children: [
               CircleAvatar(
                 radius: 80,
-                child: Image.asset('assets/images/test.jpg'), // TODO: make this snap['userImage']
+                child: Image.asset('assets/images/starship.jpg'), // TODO: make this snap['userImage']
               )
             ],
           ),

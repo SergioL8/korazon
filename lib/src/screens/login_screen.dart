@@ -43,6 +43,7 @@ class _Loginscreen extends State<LoginScreen> {
     if(res == 'success'){  
       //Make sure to change the string in auth_methods.login as well
       //TODO: change this method, checking with Strings is not a good practice.
+      
       showSnackBar(context, 'Glad to have you back');
       
       Navigator.of(context).push(MaterialPageRoute(builder: (context) => const BasePage()));
