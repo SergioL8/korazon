@@ -1,4 +1,6 @@
 # korazon
+
+Note: check for release fingerprint of android
  
 Next steps:
 
