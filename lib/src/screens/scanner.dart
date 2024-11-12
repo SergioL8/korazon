@@ -5,6 +5,7 @@ import 'package:korazon/src/screens/userAccessToEvent.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 
+
 class ScannerScreen extends StatefulWidget {
   const ScannerScreen({super.key});
 

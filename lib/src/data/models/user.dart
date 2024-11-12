@@ -9,7 +9,7 @@ class User {
   final String? username; //this is a data map
   final String? name;
   final String? bio;
-  final String? age;
+  final int? age;
   final String? profilePicUrl;
   final String? qrcode;
   final List? yourEvents;  //List with the event eventids

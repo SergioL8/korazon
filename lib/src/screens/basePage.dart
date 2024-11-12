@@ -58,6 +58,7 @@ class _BasePage extends State<BasePage> {
       
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text(activePageTitle),
         actions: [
           IconButton(

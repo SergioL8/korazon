@@ -6,8 +6,9 @@ import 'src/cloudresources/signedInLogic.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-  options: DefaultFirebaseOptions.currentPlatform
-);
+    name: 'db2',
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const App());
 }
 

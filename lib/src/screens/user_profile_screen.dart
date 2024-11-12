@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:convert'; // For base64 decoding
-import 'dart:typed_data'; // For Uint8List
+// import 'dart:typed_data'; // For Uint8List
 import 'package:korazon/src/screens/login_screen.dart';
 
 class UserSettings extends StatefulWidget{

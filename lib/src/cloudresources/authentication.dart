@@ -34,10 +34,12 @@ class AuthMethods{
     required String password,
     required String username,
     required bool isHost,
+    required String name,
+    required int age,
     
   }) async {
     try {
-      if (email.isEmpty || password.isEmpty || username.isEmpty) {
+      if (email.isEmpty || password.isEmpty || username.isEmpty || name.isEmpty) {
         return "Please fill all the fields";
       }
 
@@ -53,7 +55,12 @@ class AuthMethods{
         uid: credentials.user!.uid,
         email:email,
         isHost: isHost,
+        name: name,
+        age: age,
       );
+
+      await _firebaseFirestore.collection('users').doc(credentials.user!.uid).set(user.toJson(), SetOptions(merge: true));
+
 
       //await _firebaseFirestore.collection('users').doc(credentials.user!.uid).set(user.toJson());//this creates a document in the users collection in firestore
         //to Json means that the data in the document is in a map structured format.

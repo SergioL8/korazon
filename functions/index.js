@@ -70,19 +70,15 @@ exports.QRcodeGeneration = functions.auth.user().onCreate( async (user) => {
     const db = admin.firestore();
 
     try {
-        // Create the user document in the Firestore database
-        await db.collection('users').doc(userID).set({
-            email: userEmail,
-            name: '',
-            gender: '',
-            qrCode: '',
-        });
 
         // Generate the QR code
         const QRCodeURL = await QRCode.toDataURL(userID);
 
         // Store the QR code in the Firestore database
-        await db.collection('users').doc(userID).update({qrCode: QRCodeURL});
+        // Store the QR code in the Firestore database
+        await db.collection('users').doc(userID).set({
+            qrCode: QRCodeURL,
+        }, { merge: true });
 
 
     } catch (error) { // Catch any errors that occur

@@ -6,6 +6,7 @@ import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/widgets/textfield.dart';
 import 'package:korazon/src/cloudresources/authentication.dart';
 import 'package:korazon/src/widgets/togglebutton.dart';
+import 'package:wheel_chooser/wheel_chooser.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -18,6 +19,8 @@ class _LoginScreenState extends State<SignupScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  int _ageController = 18;
   bool _isLoading = false;
   bool isHost = false;
 
@@ -27,6 +30,7 @@ class _LoginScreenState extends State<SignupScreen> {
     _emailController.dispose();
     _passwordController.dispose();
     _usernameController.dispose();
+    _nameController.dispose();
   }
 
   void signUpUser() async {                      //function from resources/auth_method.dart
@@ -39,11 +43,10 @@ class _LoginScreenState extends State<SignupScreen> {
       password: _passwordController.text,
       username: _usernameController.text,
       isHost: isHost,
+      name: _nameController.text,
+      age: _ageController,
     );
 
-    setState(() {
-      _isLoading = false;
-    });
 
     if(res == 'success'){
       showSnackBar(context, 'Glad you joined us');
@@ -52,6 +55,12 @@ class _LoginScreenState extends State<SignupScreen> {
     } else {
       showSnackBar(context, 'Error: $res');
     }
+
+    if (!mounted) return; // Check if the widget is still mounted before calling setState
+
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   void navigateToLogin() {
@@ -62,91 +71,118 @@ class _LoginScreenState extends State<SignupScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: primaryColor,
-      body: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 32 ),
-          width: double.infinity,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [              
-              const SizedBox(height: 64,),
-              const SizedBox(height: 64,),
-              Text(
-                'Welcome to Korazon',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                fontSize: 40, 
-                fontWeight: primaryFontWeight,
-                 ),),
-              
-              const SizedBox(height: 20,),
-
-              Togglebutton(selectionNumber: (bool isFirstSelected){
-                print(isFirstSelected);
-                isHost = isFirstSelected;
-              },), // variable isFirstSelected is true if Host is selected
-
-              const SizedBox(height: 20,),
-
-              TextFieldInput(
-                textEditingController: _usernameController, 
-                hintText: 'username',
-                textInputType: TextInputType.emailAddress),
-
-              const SizedBox(height: 20,),
-
-              TextFieldInput(
-                textEditingController: _emailController, 
-                hintText: 'email',
-                textInputType: TextInputType.emailAddress),
-              
-              const SizedBox(height: 20,),
-
-              TextFieldInput(
-                textEditingController: _passwordController, 
-                hintText: 'password ',
-                textInputType: TextInputType.text,
-                isPass: true),
-              
-              const SizedBox(height: 20,),
-
-
-              InkWell(
-              onTap: signUpUser,          
-              child: Container(
-                width: double.infinity,
-                color:  secondaryColor,
-                alignment: Alignment.center,
-                padding: const EdgeInsets.symmetric(vertical: 12),  
-                child: _isLoading ? const Center(
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(tertiaryColor),
-                  ),
-                ) : const Text(
-                  'Sign up',
+      body: 
+          SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 32 ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [              
+                const SizedBox(height: 64,),
+                const SizedBox(height: 64,),
+                Text(
+                  'Welcome to Korazon',
+                  textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontWeight: primaryFontWeight,
-                    color: tertiaryColor,
-                  ),
+                  fontSize: 40, 
+                  fontWeight: primaryFontWeight,
+                   ),),
+                
+                const SizedBox(height: 20,),
+            
+                Togglebutton(selectionNumber: (bool isFirstSelected){
+                  print(isFirstSelected);
+                  isHost = isFirstSelected;
+                },), // variable isFirstSelected is true if Host is selected
+            
+                const SizedBox(height: 20,),
+            
+                TextFieldInput(
+                  textEditingController: _nameController, 
+                  hintText: 'Name',
+                  textInputType: TextInputType.name),
+            
+                const SizedBox(height: 20,),
+
+                SizedBox( // necessary to size the column to a fixed height
+                  height: 100,
+                  child: Column(
+                    children: [
+                      Text('Age'),
+                      Expanded( // necessary to make the wheel chooser take the full height of the column
+                        child: WheelChooser.integer(
+                          onValueChanged: (s) => _ageController = s,
+                          initValue: 18,
+                          minValue: 1,
+                          maxValue: 99,
+                          horizontal: true,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-              const SizedBox(height: 30,),
-              Row(
-                children: [
-                  Text('Already have an account? '),
-                  GestureDetector(
-                    onTap: navigateToLogin,
-                    child: const Text(
-                      'Login',
-                      style: TextStyle(
-                        fontWeight: primaryFontWeight,
-                      ),),
+
+                const SizedBox(height: 20,),
+
+                TextFieldInput(
+                  textEditingController: _usernameController, 
+                  hintText: 'username',
+                  textInputType: TextInputType.text),
+            
+                const SizedBox(height: 20,),
+            
+                TextFieldInput(
+                  textEditingController: _emailController, 
+                  hintText: 'email',
+                  textInputType: TextInputType.emailAddress),
+                
+                const SizedBox(height: 20,),
+            
+                TextFieldInput(
+                  textEditingController: _passwordController, 
+                  hintText: 'password ',
+                  textInputType: TextInputType.text,
+                  isPass: true),
+                
+                const SizedBox(height: 20,),
+            
+            
+                InkWell(
+                onTap: signUpUser,          
+                child: Container(
+                  width: double.infinity,
+                  color:  secondaryColor,
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.symmetric(vertical: 12),  
+                  child: _isLoading ? const Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(tertiaryColor),
+                    ),
+                  ) : const Text(
+                    'Sign up',
+                    style: TextStyle(
+                      fontWeight: primaryFontWeight,
+                      color: tertiaryColor,
+                    ),
+                    ),
                   ),
-                ],
-              ),
-            ],
+                ),
+                const SizedBox(height: 30,),
+                Row(
+                  children: [
+                    Text('Already have an account? '),
+                    GestureDetector(
+                      onTap: navigateToLogin,
+                      child: const Text(
+                        'Login',
+                        style: TextStyle(
+                          fontWeight: primaryFontWeight,
+                        ),),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-        )
-      );
+        );
   }
 }
