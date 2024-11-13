@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:korazon/src/screens/home_page.dart';
 import 'package:korazon/src/screens/scanner.dart';
-import 'package:korazon/src/screens/yourEventsPage.dart';
 import 'package:korazon/src/screens/socialPage.dart';
 import 'package:korazon/src/screens/user_profile_screen.dart';
-import 'package:korazon/src/screens/home_page.dart';
-import 'package:korazon/src/screens/yourEventsPage.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
+import 'package:korazon/src/screens/eventcreation_screen.dart';
 
 
 
@@ -18,7 +16,6 @@ class BasePage extends StatefulWidget {
     return _BasePage();
   }
 }
-
 
 
 class _BasePage extends State<BasePage> {
@@ -35,6 +32,8 @@ class _BasePage extends State<BasePage> {
   @override
   Widget build(BuildContext context) {
 
+    //! If statement to display 
+
     Widget activePage = const HomePage();
     String activePageTitle = 'Home Page';
 
@@ -45,15 +44,19 @@ class _BasePage extends State<BasePage> {
       activePageTitle = 'Home Page';
     } else if (selectedPageIndex == 1) {
       setState(() {
-        activePage = const yourEventsPage();
+        activePage = const ScannerScreen();
       });
       activePageTitle = 'Your Events'; 
     } else if (selectedPageIndex == 2) {
       setState(() {
-        // activePage = const SocialPage();
-        activePage = const ScannerScreen();
+        activePage = const SocialPage();
       });
       activePageTitle = 'Social';
+    } else if (selectedPageIndex == 3) {
+      setState(() {
+        activePage = const EventCreationScreen();
+      });
+      activePageTitle = 'Create Event';
     }
       
     return Scaffold(
@@ -101,6 +104,13 @@ class _BasePage extends State<BasePage> {
               color: secondaryColor,
               ),
             label: 'Social',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.upload,
+              color: secondaryColor,
+              ),
+            label: 'Post Event',
           ),
         ],
       ),

@@ -65,6 +65,7 @@ class AuthMethods{
       //await _firebaseFirestore.collection('users').doc(credentials.user!.uid).set(user.toJson());//this creates a document in the users collection in firestore
         //to Json means that the data in the document is in a map structured format.
         //CONSIDER: using transaction
+        
       return 'success';
 
     }on FirebaseAuthException catch (err) {
@@ -112,6 +113,7 @@ class AuthMethods{
 
  Future<void> signOut() async {
     await _auth.signOut();
+
     // Clear any stored user data
     // For example, if you're using shared preferences:
     // await SharedPreferences.getInstance().then((prefs) => prefs.clear());

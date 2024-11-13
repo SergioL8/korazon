@@ -1,4 +1,7 @@
 # korazon
+
+Note: check for release fingerprint of android (this is related with google login method of firebase) we currently have only configured the test version
+Note: Make all paddings proportional to the size of the screen
  
 Next steps:
 

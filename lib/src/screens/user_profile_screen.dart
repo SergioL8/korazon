@@ -73,7 +73,6 @@ class _UserSettingsState extends State<UserSettings> {
         ],
       ),
       body: Center(
-        // child: Text('User Settings'),
         child: qrCodeBase64 == null
               ?  const CircularProgressIndicator()
               : Image.memory(

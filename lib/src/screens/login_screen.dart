@@ -25,7 +25,8 @@ class _Loginscreen extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
 
-  void loginUser() async {                  //function from resources/auth_method.dart
+  void loginUser() async {                  
+    //function from resources/auth_method.dart
       setState(() {
         _isLoading = true;
       });
@@ -39,11 +40,12 @@ class _Loginscreen extends State<LoginScreen> {
       _isLoading = false;
     });
 
-    if(res == 'success'){  //Make sure to change the string in auth_methods.login as well
+    if(res == 'success'){  
+      //Make sure to change the string in auth_methods.login as well
+      //TODO: change this method, checking with Strings is not a good practice.
+      
       showSnackBar(context, 'Glad to have you back');
       
-      //final userProvider = Provider.of<UserProvider>(context, listen: false);
-      //await userProvider.refreshUser();
       Navigator.of(context).push(MaterialPageRoute(builder: (context) => const BasePage()));
 
     } else {
@@ -65,8 +67,7 @@ class _Loginscreen extends State<LoginScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [              
-              const SizedBox(height: 64,),
-              const SizedBox(height: 64,),
+              const SizedBox(height: 128,),
               Text(
                 'Welcome back',
                 textAlign: TextAlign.center,
