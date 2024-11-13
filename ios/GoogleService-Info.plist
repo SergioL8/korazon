@@ -2,6 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CLIENT_ID</key>
+	<string>368181595286-0m0gsccmg9hi2ku1omk0qid13k89t9qi.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.368181595286-0m0gsccmg9hi2ku1omk0qid13k89t9qi</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>368181595286-rnnqah0b9uebum0lkiaqosi30tbbpv2p.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
 	<string>AIzaSyASmVtEzDVL1OHtdyLIW26UbXfoyGtZVV0</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +19,7 @@
 	<key>PROJECT_ID</key>
 	<string>korazon-dc77a</string>
 	<key>STORAGE_BUCKET</key>
-	<string>korazon-dc77a.appspot.com</string>
+	<string>korazon-dc77a.firebasestorage.app</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>

@@ -10,6 +10,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   await Firebase.initializeApp(
+    name: 'db2',
+
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
@@ -22,6 +24,7 @@ void main() async {
     appleProvider: AppleProvider.appAttest,
   );
 
+    
   runApp(const App());
 }
 
