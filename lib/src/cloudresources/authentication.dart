@@ -48,8 +48,8 @@ class AuthMethods{
       if (credentials.user == null) {
         return "Failed to create user";
       }
+      
       // add user to database as a model within this file
-
       model.User user = model.User(
         username: username,
         uid: credentials.user!.uid,

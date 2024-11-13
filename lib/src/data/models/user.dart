@@ -11,7 +11,7 @@ class User {
   final String? bio;
   final int? age;
   final String? profilePicUrl;
-  final String? qrcode;
+  final String? qrCode;
   final List? yourEvents;  //List with the event eventids
   final String? instagram;
 
@@ -25,7 +25,7 @@ class User {
     this.bio,
     this.age,
     this.profilePicUrl,
-    this.qrcode,
+    this.qrCode,
     this.yourEvents,
     this.instagram,
   });
@@ -39,7 +39,7 @@ class User {
     "bio": bio,
     "age": age,
     "profilePicUrl": profilePicUrl,
-    "qrcode": qrcode,
+    "qrCode": qrCode,
     "yourEvents": yourEvents,
     "instagram": instagram,
   };
@@ -58,7 +58,7 @@ class User {
       bio: snapshot['bio'],
       age: snapshot['age'],
       profilePicUrl: snapshot['profilePicUrl'],
-      qrcode: snapshot['qrcode'],
+      qrCode: snapshot['qrCode'],
       yourEvents: snapshot['yourEvents'],
     );
   }

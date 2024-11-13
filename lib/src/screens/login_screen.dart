@@ -4,8 +4,6 @@ import 'package:korazon/src/screens/signup_screen.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/cloudresources/authentication.dart';
 import 'package:korazon/src/utilities/utils.dart';
-import 'package:korazon/src/data/providers/user_provider.dart';
-import 'package:provider/provider.dart';
 import 'package:korazon/src/widgets/textfield.dart';
 import 'package:korazon/src/screens/basePage.dart';
 
