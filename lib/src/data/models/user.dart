@@ -6,7 +6,7 @@ class User {
   final String uid;
   final bool isHost;
   final bool? gender;
-  final String? username; //this is a data map
+  final String username; //this is a data map
   final String? name;
   final String? bio;
   final String? age;
@@ -19,8 +19,8 @@ class User {
     required this.email,
     required this.uid,
     required this.isHost,
+    required this.username,
     this.gender,
-    this.username,
     this.name,
     this.bio,
     this.age,

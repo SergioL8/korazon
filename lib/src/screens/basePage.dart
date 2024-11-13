@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:korazon/src/data/providers/user_provider.dart';
 import 'package:korazon/src/screens/home_page.dart';
 import 'package:korazon/src/screens/scanner.dart';
 import 'package:korazon/src/screens/socialPage.dart';
 import 'package:korazon/src/screens/user_profile_screen.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/screens/eventcreation_screen.dart';
+import 'package:provider/provider.dart';
 
 
 
@@ -27,7 +29,17 @@ class _BasePage extends State<BasePage> {
       selectedPageIndex = index;
     });
   }
+void initState() {
+    super.initState();
+    addData();
+  }
 
+  addData() async{
+    UserProvider userProvider = Provider.of(context, listen: false);
+     // This line sets up the foundation for interacting with your user data in a way that's consistent across your app and efficiently updates the UI when changes occur.
+     //Provider.of is a method to read data from a provider without listening to changes.
+    await userProvider.refreshUser();
+  }
 
   @override
   Widget build(BuildContext context) {

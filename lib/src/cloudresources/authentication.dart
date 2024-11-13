@@ -17,12 +17,14 @@ class AuthMethods{
     if (currentUser == null) {
     print("No user is currently signed in");
     return null;
-    }
 
-    try {
+    } try {
+    print('trying to fetch user details');
     DocumentSnapshot snap = await _firebaseFirestore.collection('users').doc(currentUser.uid).get();
     //this function gives us the info of the authenticated user
+    //TODO: this function is trying to fetch required details that are not there
     return model.User.fromSnap(snap);
+
     } catch (e){
       print("Error fetching user details: $e");
       return null;

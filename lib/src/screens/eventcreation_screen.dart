@@ -1,8 +1,11 @@
 import 'dart:typed_data';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:korazon/src/cloudresources/authentication.dart';
 import 'package:korazon/src/cloudresources/firestore_methods.dart';
+import 'package:korazon/src/data/models/user.dart' as model;
 import 'package:korazon/src/data/providers/user_provider.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/utilities/utils.dart';
@@ -24,14 +27,29 @@ class _EventCreationScreenState extends State<EventCreationScreen> {
 
   bool _isLoading = false;
 
-  final user = FirebaseAuth.instance.currentUser; // get instance of the current user
-
 
   @override
   void initState() {
     super.initState();
     // Refresh user data when the screen initializes
-    //TODO context.read<UserProvider>().refreshUser();
+    //context.read<UserProvider>().refreshUser(); //? use
+    _loadUserData();
+
+  }
+  final AuthMethods _userService = AuthMethods();
+  model.User? _user;
+
+  Future<void> _loadUserData() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    model.User? user = await _userService.getUserDetails();
+    print('USER DATA REFRESHED');
+    setState(() {
+      _user = user;
+      _isLoading = false;
+    });
   }
 
   void postEvent(
@@ -133,11 +151,12 @@ class _EventCreationScreenState extends State<EventCreationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final UserProvider userProvider = Provider.of<UserProvider>(context);
-    final user = userProvider.getUser;
 
-    if (user != null) {
-      print('User data refreshed: ${user.username}');
+    //final UserProvider userProvider = Provider.of<UserProvider>(context);
+    //final user = userProvider.getUser;
+
+    if (_user != null) {
+      print('User data refreshed: ${_user?.username}');
     } else {
       print('No user data available');
     }
@@ -165,11 +184,11 @@ class _EventCreationScreenState extends State<EventCreationScreen> {
         actions: [
           TextButton(
             onPressed: () {
-              if (user != null) {
+              if (_user != null) {
                 postEvent(
-                  user.uid,
-                  user.username!,
-                  user.profilePicUrl,
+                  _user!.uid,
+                  _user!.username,
+                  _user?.profilePicUrl,
                 );
               } else {
                 // Handle the case where user is null
