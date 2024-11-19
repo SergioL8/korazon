@@ -10,18 +10,17 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   await Firebase.initializeApp(
-    name: 'db2',
-
     options: DefaultFirebaseOptions.currentPlatform,
   );
+ // FirebaseAppCheck.instance.activate();
 
   await FirebaseAppCheck.instance.activate(
+    //providerFactory: AppCheckProviderFactory.debugProviderFactory,
     //webRecaptchaSiteKey: 'YOUR_RECAPTCHA_SITE_KEY',
-    
     // Use AndroidProvider.debug for development
     androidProvider: AndroidProvider.debug, 
-    //use AndroidProvider.playIntegrity for production
-    appleProvider: AppleProvider.appAttest,
+    // AndroidProvider.playIntegrity, for production
+    //appleProvider: AppleProvider.appAttest,
   );
 
     
@@ -39,8 +38,8 @@ class App extends StatelessWidget {
           create: (context)=> UserProvider(),),
       ],
       child: MaterialApp(
-      title: 'FlutterChat',
-      home: const isSignedLogic(),
+        title: 'korazon',
+        home: const isSignedLogic(),
     ),
     );
   }

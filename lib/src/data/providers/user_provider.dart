@@ -12,10 +12,19 @@ import 'package:korazon/src/cloudresources/authentication.dart';
     //the function user will return _user when called outside of the class, besides _user being a private variable
     //it is a function that returns _user as a nullable User object 
 
-    Future<void> refreshUser() async{// Implementation to refresh user data goes here
-      User? user = await _authMethods.getUserDetails(); //getUserDetails is defined in auth_method file 
-      _user = user;
-      notifyListeners(); // notify listeners that the user has been updated
+    Future<void> refreshUser() async{
+      print('Refreshing user data in user provider...');
+
+      User? user = await _authMethods.getUserDetails(); 
+      //getUserDetails is defined in auth_method file 
+      if (user != null) {
+        print('User data fetched in provider: ${user.username}');
+        _user = user;
+        notifyListeners(); 
+      // notify listeners that the user has been updated
+      }else {
+        print('Failed to fetch user data in provider');
+  }
     }
   }
 

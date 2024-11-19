@@ -2,11 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Event {
   
-  final String uid;
-  final String username; //this is a data map
-  final String eventName;
-  final String eventImage;
-  final String description;
+  final String accountId;
+  final String postId;
+  final String? username; //this is a data map
+  final String? eventName;
+  final String eventImageUrl;
+  final String? description;
   final String? eventAge;
   final String? profilePicUrl;
 
@@ -14,21 +15,23 @@ class Event {
 
 
   const Event ({
-    required this.uid,
+    required this.accountId,
+    required this.postId,
     required this.username,
-    required this.eventName,
-    required this.description,
-    required this.eventImage,
+    this.eventName,
+    this.description,
+    required this.eventImageUrl,
     this.eventAge,
     this.profilePicUrl,
   });
 
   Map<String, dynamic> toJson() => {
-      "uid": uid,
+      "uid": accountId,
+      "postId":postId,
       "username": username,
       "eventName": eventName,
       "description": description,
-      "eventImage": eventImage,
+      "eventImage": eventImageUrl,
       "eventAge": eventAge,
       "profilePicUrl": profilePicUrl,
     };
@@ -38,11 +41,12 @@ class Event {
     var snapshot = snap.data() as Map<String, dynamic>;
 
     return Event(
-      uid: snapshot['uid'],
+      accountId: snapshot['uid'],
+      postId: snapshot['postId'],
       username: snapshot['username'],
       eventName: snapshot['eventName'],
       description: snapshot['description'],
-      eventImage: snapshot['eventImage'],
+      eventImageUrl: snapshot['eventImage'],
       eventAge: snapshot['eventAge'],
       profilePicUrl: snapshot['profilePicUrl'],
     );

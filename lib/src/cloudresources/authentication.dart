@@ -21,12 +21,15 @@ class AuthMethods{
     } try {
     print('trying to fetch user details');
     DocumentSnapshot snap = await _firebaseFirestore.collection('users').doc(currentUser.uid).get();
+
+    print('Snapshot data from getuserdetails: ${snap.data()}');
     //this function gives us the info of the authenticated user
+
     //TODO: this function is trying to fetch required details that are not there
     return model.User.fromSnap(snap);
 
     } catch (e){
-      print("Error fetching user details: $e");
+      print("Error fetching user details in getuserdetails: $e");
       return null;
     }
   }
@@ -58,13 +61,11 @@ class AuthMethods{
         email:email,
         isHost: isHost,
         name: name,
-        age: age,
+  //      age: age,
       );
 
       await _firebaseFirestore.collection('users').doc(credentials.user!.uid).set(user.toJson(), SetOptions(merge: true));
 
-
-      //await _firebaseFirestore.collection('users').doc(credentials.user!.uid).set(user.toJson());//this creates a document in the users collection in firestore
         //to Json means that the data in the document is in a map structured format.
         //CONSIDER: using transaction
         

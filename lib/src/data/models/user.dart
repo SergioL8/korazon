@@ -7,7 +7,7 @@ class User {
   final bool isHost;
   final bool? gender;
   final String username; //this is a data map
-  final String? name;
+  final String name;
   final String? bio;
   final int? age;
   final String? profilePicUrl;
@@ -21,7 +21,7 @@ class User {
     required this.isHost,
     required this.username,
     this.gender,
-    this.name,
+    required this.name,
     this.bio,
     this.age,
     this.profilePicUrl,
@@ -49,16 +49,16 @@ class User {
     var snapshot = snap.data() as Map<String, dynamic>;
 
     return User(
-      email: snapshot['email'],
-      uid: snapshot['uid'],
+      email: snapshot['email']?? '',
+      uid: snapshot['uid']?? '',
       isHost: snapshot['isHost'],
       gender: snapshot['gender'],
-      username: snapshot['username'],
-      name: snapshot['name'],
-      bio: snapshot['bio'],
+      username: snapshot['username']?? '',
+      name: snapshot['name']?? '',
+      bio: snapshot['bio']?? '',
       age: snapshot['age'],
-      profilePicUrl: snapshot['profilePicUrl'],
-      qrCode: snapshot['qrCode'],
+      profilePicUrl: snapshot['profilePicUrl']?? '',
+      qrCode: snapshot['qrCode']?? '',
       yourEvents: snapshot['yourEvents'],
     );
   }

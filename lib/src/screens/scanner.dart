@@ -29,6 +29,9 @@ class _ScannerScreenState extends State<ScannerScreen> {
       isScrollControlled: true,
       context: context,
       builder: (ctx) => SafeArea(child: UserAccessToEvent(code: code,))
+      // code is the uid which allows us to access the document of the user in the widget 
+      // UserAccessToEvent
+
     ).whenComplete(() => controller.start()); // when the modal bottom sheet is closed, start the scanner again
   }
 
@@ -40,9 +43,12 @@ class _ScannerScreenState extends State<ScannerScreen> {
       body: MobileScanner(
         controller: controller,
         onDetect: (BarcodeCapture barcodeCapture) {
-          final String? code = barcodeCapture.barcodes.first.rawValue; // this method returns the detected barcode
-          if (code != null) { // if the barcode is not null, then display the user access to event
+          final String? code = barcodeCapture.barcodes.first.rawValue;
+           // this method returns the detected barcode
+          if (code != null) { 
+            // if the barcode is not null, then display the user access to event
             _displayUserAccessToEvent(code);
+            // code is the uid given by the scanned QR code
           }
         }
       ),
