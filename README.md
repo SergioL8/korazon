@@ -21,9 +21,10 @@ Next steps:
 
 
 ### - Sergio:
-1. Pull all information about user
-2. Change email for phone number
-3. 
+1. Fix iOS
+2. Upload image to Storage
+3. Create the home page where you can see events
+
 
 
 ### - Jona:
