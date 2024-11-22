@@ -22,8 +22,9 @@ Next steps:
 
 ### - Sergio:
 1. Fix iOS
-2. Upload image to Storage
-3. Create the home page where you can see events
+2. Dynamically select the bottom navigation bar
+3. Upload image to Storage
+4. Create the home page where you can see events
 
 
 
