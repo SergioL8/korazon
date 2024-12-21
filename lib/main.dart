@@ -10,6 +10,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   await Firebase.initializeApp(
+    name: 'korazon_app', // String.fromCharCode(charCode),
     options: DefaultFirebaseOptions.currentPlatform,
   );
  // FirebaseAppCheck.instance.activate();

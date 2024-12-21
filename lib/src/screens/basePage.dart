@@ -29,7 +29,9 @@ class _BasePage extends State<BasePage> {
       selectedPageIndex = index;
     });
   }
-void initState() {
+
+  @override
+  void initState() {
     super.initState();
     addData();
   }
@@ -44,7 +46,14 @@ void initState() {
   @override
   Widget build(BuildContext context) {
 
+    final userProvider = Provider.of<UserProvider>(context);
+    final user = userProvider.getUser;
+    final host = user?.isHost;
+    print('user: $host');
+
+
     //! If statement to display 
+    
 
     Widget activePage = const HomePage();
     String activePageTitle = 'Home Page';
