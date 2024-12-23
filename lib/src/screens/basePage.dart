@@ -49,6 +49,7 @@ class _BasePage extends State<BasePage> {
     final userProvider = Provider.of<UserProvider>(context);
     final user = userProvider.getUser;
     final host = user?.isHost;
+
     print('user: $host');
 
 
@@ -80,7 +81,7 @@ class _BasePage extends State<BasePage> {
       activePageTitle = 'Create Event';
     }
       
-    return Scaffold(
+    return user != null ? Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text(activePageTitle),
@@ -105,7 +106,9 @@ class _BasePage extends State<BasePage> {
         backgroundColor: primaryColor,
         onTap: (selectedPageIndex) { _selectedPage(selectedPageIndex); },
         currentIndex: selectedPageIndex,
-        items: const [
+        items: user!.isHost ? [ 
+          //! Returns null value, need to return Placeholder for the Scaffold
+
           BottomNavigationBarItem(
             icon: Icon(Icons.home,
             color: secondaryColor,
@@ -133,9 +136,30 @@ class _BasePage extends State<BasePage> {
               ),
             label: 'Post Event',
           ),
+        ]:[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home,
+            color: secondaryColor,
+              ),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.diamond_sharp,
+              color: secondaryColor,
+              ),
+            label: 'Your events',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.people,
+              color: secondaryColor,
+              ),
+            label: 'Social',
+          ),
         ],
       ),
       body: activePage
-    );
+    ):Placeholder();
   }
 }
