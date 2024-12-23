@@ -13,7 +13,8 @@ class FirestoreMethods{
     String uid,
     String? username,
     String? eventName,
-    Uint8List eventImageFile, //This is the actual raw data of the file
+    String imageUrl,
+    // Uint8List eventImageFile, //This is the actual raw data of the file
     String? description,
     String? accountImage,
     String? eventAge,
@@ -31,7 +32,7 @@ class FirestoreMethods{
         username: username,
         eventName: eventName,
         description: description,
-        eventImageUrl: 'imageUrlPlaceholder',
+        eventImageUrl: imageUrl,
         eventAge: eventAge,
         profilePicUrl: accountImage,
       );

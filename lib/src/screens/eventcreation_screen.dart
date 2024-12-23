@@ -6,6 +6,8 @@ import 'package:korazon/src/data/providers/user_provider.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/utilities/utils.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 class EventCreationScreen extends StatefulWidget {
   const EventCreationScreen({super.key});
@@ -34,30 +36,74 @@ class _EventCreationScreenState extends State<EventCreationScreen> {
   }
 
 
-  void postEvent(
-    String uid,
-    String username,
-    String? accountImage,
-  ) async {
+  Future<Uint8List> compressImage(Uint8List image) async {
+    final result = await FlutterImageCompress.compressWithList(
+      image,
+      minHeight: 1000,
+      minWidth: 1000,
+      quality: 50,
+      rotate: 0,
+    );
+
+    return result;
+  }
+
+
+  void postEvent(String uid, String username, String? accountImage, ) async {
+
     setState(() {
       _isLoading = true;
     });
+
     if (_photofile == null) {
       showSnackBar(context, 'Please select an image before posting');
+
     } else {
+
       try {
+        // create storage reference
+        Reference storageRef = FirebaseStorage.instance.ref();
+        
+        // check that the image is not null
+        if (_photofile == null) {
+          showSnackBar(context, 'Please select an image before posting');
+          return;
+        }
+
+        // specify the path and name of the image
+        Reference fileRef = storageRef.child('images/events/${uid}_${_eventTitleController.text}_${DateTime.now()}.png');
+        
+        // compress the image
+        _photofile = await compressImage(_photofile!);
+
+        // upload the image to the storage
+        UploadTask uploadTask = fileRef.putData(_photofile!);
+
+        TaskSnapshot taskSnapshot = await uploadTask;
+
+        if (taskSnapshot.state != TaskState.success) {
+          showSnackBar(context, 'Image upload failed. Try again.');
+          return;
+        }
+
+        // get the download url of the image
+        // String filePath = await fileRef.fullPath();
+
+
         String res = await FirestoreMethods().uploadPost(
           //1.uid, 2.username, 3.EventName, 4.file, 5.description
           uid,
           username,
           _eventTitleController.text,
-          _photofile!,
+          fileRef.fullPath,  
           _descriptionController.text,
           accountImage, // 6. account image
           _eventAgeController.text, // 7. event age
 
           //we can use the null asertion because to press the button you must have already selected the photofile
         );
+
+
         print('Upload result: $res');
 
 
@@ -73,6 +119,7 @@ class _EventCreationScreenState extends State<EventCreationScreen> {
           });
           showSnackBar(context, res);
         }
+
       } catch (e) {
         showSnackBar(context, e.toString());
       }
