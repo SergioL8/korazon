@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:typed_data';
+import 'package:korazon/src/screens/eventDetails.dart';
 
 
 
@@ -50,14 +52,25 @@ Future<Uint8List?> _getImage(eventImage) async{
 
 
 class PostCard extends StatelessWidget {
-  const PostCard({super.key, required this.eventName, required this.eventAge, required this.eventImage});
-  final String eventName;
-  final String eventAge;
-  final String eventImage;
+  // const PostCard({super.key, required this.eventName, required this.eventAge, required this.eventImage});
+  // final String eventName;
+  // final String eventAge;
+  // final String eventImage;
 
+  PostCard({super.key, required this.document});
+  final DocumentSnapshot document;
+
+  
+  
 
   @override
   Widget build (context) {
+
+    final String eventName = document['eventName'];
+    final String eventAge = document['eventAge'];
+    final String eventImage = document['eventImage'];
+
+
     return FutureBuilder<Uint8List?>(
       future: _getImage(eventImage),
       builder: (context, snapshot) {
@@ -68,18 +81,31 @@ class PostCard extends StatelessWidget {
           clipBehavior: Clip.hardEdge, // this gives the borders a nice, curved look
           elevation: 2, // this gives a bit of elevation to the card with respect the background (shadow of the card) 
           child: InkWell(
-            onTap: () { print('Card tapped'); },
+            onTap: () { 
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => EventDetails(
+                    document: document,
+                    imageData: snapshot.data,
+                  )
+                )
+              );
+
+             },
             child: Stack(
               children: [
-                FadeInImage(
-                  placeholder: MemoryImage(kTransparentImage),
-                  // image: snapshot.data ?? 'https://cdn.pixabay.com/photo/2017/07/21/23/57/concert-2527495_640.jpg',
-                  image: snapshot.data != null
-                        ? MemoryImage(snapshot.data!)
-                        : AssetImage('assets/images/pary.jpg'),
-                  fit: BoxFit.cover, // make sure that the image is properly fittet
-                  height: 200,
-                  width: double.infinity,
+                Hero(
+                  tag: document.id,
+                  child: FadeInImage(
+                    placeholder: MemoryImage(kTransparentImage),
+                    // image: snapshot.data ?? 'https://cdn.pixabay.com/photo/2017/07/21/23/57/concert-2527495_640.jpg',
+                    image: snapshot.data != null
+                          ? MemoryImage(snapshot.data!)
+                          : AssetImage('assets/images/pary.jpg'),
+                    fit: BoxFit.cover, // make sure that the image is properly fittet
+                    height: 200,
+                    width: double.infinity,
+                  ),
                 ),
                 Positioned(
                   bottom: 0,

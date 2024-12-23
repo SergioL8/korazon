@@ -91,9 +91,7 @@ class _HomePageState extends State<HomePage> {
           }
 
           return PostCard(
-            eventName: _documents[index]['eventName'],
-            eventAge: _documents[index]['eventAge'],
-            eventImage: _documents[index]['eventImage'],
+            document: _documents[index]
           );
         }
       )
