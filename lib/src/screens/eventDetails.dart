@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:typed_data';
+import 'package:korazon/src/screens/buyTicketPage.dart';
 
 
 
@@ -18,6 +19,8 @@ class EventDetails extends StatelessWidget {
     final String eventName = document['eventName'];
     final String eventDescription = document['description'];
     final String eventAge = document['eventAge'];
+
+    final String eventID = document.id;
 
     return Scaffold(
       appBar: AppBar(
@@ -41,6 +44,29 @@ class EventDetails extends StatelessWidget {
               Text(eventDescription),
               SizedBox(height: 10), 
               Text('Event Age: $eventAge'),
+              SizedBox(height: 10), 
+              Center(
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.5,
+                  child: TextButton(
+                    onPressed: () { 
+                      showModalBottomSheet(
+                        useSafeArea: true,
+                        isScrollControlled: true,
+                        context: context,
+                        builder: (ctx) => SafeArea(child: BuyTicketPage(eventID: eventID))
+
+                      );
+                     },
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStatePropertyAll(const Color.fromARGB(255, 241, 177, 201)), // light pink background
+                      foregroundColor: WidgetStatePropertyAll(Colors.white), // white text
+                    ),
+                    child: Text('Buy Ticket'), 
+                  ),
+                ),
+              ),
+              SizedBox(height: 30),
             ],
           ),
         ),
