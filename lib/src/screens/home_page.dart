@@ -95,68 +95,6 @@ class _HomePageState extends State<HomePage> {
           );
         }
       )
-
-
-
-
-
-
-      // NotificationListener(
-      //   onNotification: (ScrollNotification scrollInfo) {
-      //     if (!_isLoading && _moreEventsleft && scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
-      //       _retrieveData();
-      //     }
-      //     return false;
-      //   },
-      //   child: ListView.builder(
-      //     itemCount: _documents.length + (_moreEventsleft ? 1 : 0),
-      //     itemBuilder: (context, index) {
-      //       final singleDoc = _documents[index];
-      //       return PostCard(
-      //         eventName: singleDoc['eventName'],
-      //         eventAge: singleDoc['eventAge'],
-      //         eventImage: singleDoc['eventImage'],
-      //       );
-      //     }
-      //   ),
-      // )
-
-
-
-      // body: FutureBuilder(
-      //   future: _retrieveData(),
-      //   builder: (context, snapshot) {
-      //     if (snapshot.connectionState != ConnectionState.done) {
-      //       return const Center(
-      //         child: CircularProgressIndicator(),
-      //       );
-      //     } else if (snapshot.hasError) {
-      //       return const Center(
-      //         child: Text('An error occurred'),
-      //       );
-      //     } else if (!snapshot.hasData) {
-      //       return const Center(
-      //         child: Text('No data'),
-      //       );
-      //     } else {
-      //       List<DocumentSnapshot> documents = snapshot.data!;
-      //       print('documents length: ${documents.length}');
-      //       return ListView.builder(
-      //         itemCount: documents.length,
-      //         itemBuilder: (context, index) {
-                
-      //           final singleDoc = snapshot.data![index];
-      //           print('index: $index documen: $singleDoc');
-      //           return PostCard(
-      //             eventName: singleDoc['eventName'],
-      //             eventAge: singleDoc['eventAge'],
-      //             eventImage: singleDoc['eventImage'],
-      //           );
-      //         }
-      //       );
-      //     }
-      //   }
-      // )
     );
   }
 }

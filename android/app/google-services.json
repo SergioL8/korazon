@@ -2,7 +2,7 @@
   "project_info": {
     "project_number": "368181595286",
     "project_id": "korazon-dc77a",
-    "storage_bucket": "korazon-dc77a.appspot.com"
+    "storage_bucket": "korazon-dc77a.firebasestorage.app"
   },
   "client": [
     {
@@ -12,7 +12,20 @@
           "package_name": "com.differentbeatsonerhythm.korazon"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "368181595286-rnnqah0b9uebum0lkiaqosi30tbbpv2p.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.differentbeatsonerhythm.korazon",
+            "certificate_hash": "b9e5c3b1d85ff0b51bc06341a8645125edf8c9ab"
+          }
+        },
+        {
+          "client_id": "368181595286-6qis5uqr6s6r4htrfl0qatuvhuc7cidp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyD_dXh82cbWrSjAXqR_7Dxf03HRArMhols"
@@ -20,26 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:368181595286:android:309e644b02dbc8a78046b7",
-        "android_client_info": {
-          "package_name": "com.example.korazon"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyD_dXh82cbWrSjAXqR_7Dxf03HRArMhols"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "368181595286-6qis5uqr6s6r4htrfl0qatuvhuc7cidp.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "368181595286-0m0gsccmg9hi2ku1omk0qid13k89t9qi.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.korazon"
+              }
+            }
+          ]
         }
       }
     }

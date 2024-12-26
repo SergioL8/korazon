@@ -7,27 +7,6 @@ import 'package:korazon/src/screens/eventDetails.dart';
 
 
 
-
-// Future<String> _getImage(eventImage) async{
-
-//   if (eventImage == null) {
-
-//     return 'assets/images/party.jpg';
-
-//   } else {
-//     // get the storage reference
-//     Reference storageRef = FirebaseStorage.instance.ref();
-
-//     // get the file reference
-//     Reference fileRef = storageRef.child(eventImage);
-
-//     String downloadUrl = await fileRef.getDownloadURL();
-
-//     return downloadUrl;
-//   }
-// }
-
-
 Future<Uint8List?> _getImage(eventImage) async{
 
   if (eventImage == null) {
@@ -52,19 +31,16 @@ Future<Uint8List?> _getImage(eventImage) async{
 
 
 class PostCard extends StatelessWidget {
-  // const PostCard({super.key, required this.eventName, required this.eventAge, required this.eventImage});
-  // final String eventName;
-  // final String eventAge;
-  // final String eventImage;
 
   PostCard({super.key, required this.document});
   final DocumentSnapshot document;
+  
 
-  
-  
 
   @override
   Widget build (context) {
+
+    
 
     final String eventName = document['eventName'];
     final String eventAge = document['eventAge'];
@@ -74,6 +50,9 @@ class PostCard extends StatelessWidget {
     return FutureBuilder<Uint8List?>(
       future: _getImage(eventImage),
       builder: (context, snapshot) {
+
+        print('eventImage: $eventImage');
+        print('image data: ${snapshot.data}');
 
         return Card(
           margin: const EdgeInsets.all(10),
