@@ -74,6 +74,8 @@ class BuyTicketPage extends StatelessWidget {
                 ),
                 child: Text('Buy'),
               ),
+              SizedBox(height: 20),
+              Text('Are you sure you want to buy this ticket?'),
             ]
           ),
         ),
