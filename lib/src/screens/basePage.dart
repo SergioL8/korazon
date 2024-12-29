@@ -5,7 +5,7 @@ import 'package:korazon/src/screens/scanner.dart';
 import 'package:korazon/src/screens/socialPage.dart';
 import 'package:korazon/src/screens/user_profile_screen.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
-import 'package:korazon/src/screens/eventcreation_screen.dart';
+import 'package:korazon/src/screens/eventCreationScreen.dart';
 import 'package:provider/provider.dart';
 
 
@@ -76,7 +76,7 @@ class _BasePage extends State<BasePage> {
       activePageTitle = 'Social';
     } else if (selectedPageIndex == 3) {
       setState(() {
-        activePage = const EventCreationScreen();
+        activePage = const Eventcreationscreen();
       });
       activePageTitle = 'Create Event';
     }
