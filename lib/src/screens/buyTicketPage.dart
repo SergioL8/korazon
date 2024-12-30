@@ -12,7 +12,7 @@ void buyTicket(BuildContext context, String eventID) async {
   try {
 
     // Reference the user's document
-    final userDoc = await FirebaseFirestore.instance.collection('users').doc(uid);
+    final userDoc = FirebaseFirestore.instance.collection('users').doc(uid);
     final snapShot = await userDoc.get();
 
     final tickets = snapShot.data()?['tickets'] ?? [];

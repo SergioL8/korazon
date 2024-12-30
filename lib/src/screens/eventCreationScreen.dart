@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:wheel_chooser/wheel_chooser.dart';
+
+
 
 
 class Eventcreationscreen extends StatefulWidget {
@@ -14,9 +18,10 @@ class _EventcreationscreenState extends State<Eventcreationscreen> {
 
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _dateTimeController = TextEditingController();
-  final TextEditingController _ageController = TextEditingController();
+  TextEditingController _ageController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
+  final TextEditingController _priceController = TextEditingController();
 
 
 
@@ -90,7 +95,71 @@ class _EventcreationscreenState extends State<Eventcreationscreen> {
                     ),
                   ),
                 ),
-              ],
+                const SizedBox(height: 20),
+                SizedBox( // necessary to size the column to a fixed height
+                  height: 100,
+                  child: Column(
+                    children: [
+                      Text('Age'),
+                      Expanded( // necessary to make the wheel chooser take the full height of the column
+                        child: WheelChooser.integer(
+                          onValueChanged: (s) => _ageController = s,
+                          initValue: 18,
+                          minValue: 1,
+                          maxValue: 99,
+                          horizontal: true,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.12,
+                  width: double.infinity,
+                  padding: EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    color: const Color.fromRGBO(250, 177, 177, 1),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Center(
+                          child: Text(
+                            'Price',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )
+                        )
+                      ),
+                      Expanded(
+                        child: TextField(
+                          style: TextStyle(color: Colors.white),
+                          controller: _priceController,
+                          keyboardType: TextInputType.numberWithOptions(decimal: true),
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')), // only allow digits and a decimal point
+                          ],
+                          decoration: InputDecoration(
+                            hintText: '0.00',
+                            hintStyle: TextStyle(color: Colors.white),
+                            filled: true,
+                            fillColor: Colors.black,
+                            prefixIcon: Icon(Icons.attach_money),
+                            prefixIconColor: Colors.white,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              ]
             ),
           ),
         )
