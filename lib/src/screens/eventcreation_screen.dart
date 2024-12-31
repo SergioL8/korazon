@@ -48,9 +48,17 @@ class _EventCreationScreenState extends State<EventCreationScreen> {
     return result;
   }
 
-
+  /// This function posts the event to the firestore database. It calls the compressImage function.
+  /// 
+  /// Inputs: [uid] is the user id of the user posting the event.
+  /// [username] is the username of the user posting the event.
+  /// [accountImage] is the profile picture of the user posting the event.
+  /// 
+  /// Output: void function, no output. The result is the posted event in the database.
   void postEvent(String uid, String username, String? accountImage, ) async {
-
+    '''
+    This function posts the event to the database.
+    ''';
     setState(() {
       _isLoading = true;
     });
