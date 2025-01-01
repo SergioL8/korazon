@@ -1,9 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:korazon/src/screens/userAccessToEvent.dart';
-// import 'package:qr_code_scanner/qr_code_scanner.dart';
-// import 'package:permission_handler/permission_handler.dart';
+import 'package:korazon/src/screens/hostscreens/userAccessToEvent.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-
+import 'package:flutter/material.dart';
 
 
 class ScannerScreen extends StatefulWidget {

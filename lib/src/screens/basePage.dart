@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:korazon/src/data/providers/user_provider.dart';
 import 'package:korazon/src/screens/home_page.dart';
-import 'package:korazon/src/screens/hostAnalytics.dart';
-import 'package:korazon/src/screens/scanner.dart';
-import 'package:korazon/src/screens/socialPage.dart';
-import 'package:korazon/src/screens/user_profile_screen.dart';
-import 'package:korazon/src/screens/yourEvents.dart';
+import 'package:korazon/src/screens/hostscreens/hostAnalytics.dart';
+import 'package:korazon/src/screens/hostscreens/scanner.dart';
+import 'package:korazon/src/screens/userscreens/socialPage.dart';
+import 'package:korazon/src/screens/userscreens/user_profile_screen.dart';
+import 'package:korazon/src/screens/userscreens/yourEvents.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
-import 'package:korazon/src/screens/eventCreationScreen.dart';
 import 'package:provider/provider.dart';
+import 'package:korazon/src/screens/hostscreens/eventCreationScreen.dart';
 
 class BasePage extends StatefulWidget {
   const BasePage({super.key});
