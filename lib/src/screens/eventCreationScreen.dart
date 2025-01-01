@@ -175,11 +175,11 @@ class _EventcreationscreenState extends State<Eventcreationscreen> {
                     width: double.infinity, // take the full width of the screen
 
                     // if there is no image uploaded, set the container to default style
-                    decoration: _photofile == null ? BoxDecoration( 
+                    decoration: _photofile == null ? 
+                    BoxDecoration( 
                       borderRadius: BorderRadius.circular(15), // rounded corners
                       color: const Color.fromARGB(255, 158, 158, 158), // set background color of the container to grey
                     ) :
-
                     // if there is an image uploaded, set the container to the image
                     BoxDecoration(
                       borderRadius: BorderRadius.circular(15), // rounded corners
