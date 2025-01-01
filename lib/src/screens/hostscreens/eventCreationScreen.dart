@@ -8,17 +8,17 @@ import 'package:korazon/src/utilities/utils.dart';
 
 
 
-class Eventcreationscreen extends StatefulWidget {
-  const Eventcreationscreen({super.key});
+class EventCreationScreen extends StatefulWidget {
+  const EventCreationScreen({super.key});
 
   @override
-  _EventcreationscreenState createState() => _EventcreationscreenState();
+  EventCreationScreenState createState() => EventCreationScreenState();
 }
 
 
 
 
-class _EventcreationscreenState extends State<Eventcreationscreen> {
+class EventCreationScreenState extends State<EventCreationScreen> {
 
   // get the uid of the host creating the event
   final uid = FirebaseAuth.instance.currentUser!.uid;

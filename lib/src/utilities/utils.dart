@@ -5,7 +5,7 @@ import 'design_variables.dart';
 import 'dart:typed_data';
 
 
-// for picking up image from gallery
+// for picking up image from galleryc
 
 pickImage(ImageSource source) async { //To instanciate this: Uint8List image = await pickImage(ImageSource.gallery);
   final ImagePicker imagePicker = ImagePicker();
