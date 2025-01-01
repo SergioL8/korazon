@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:korazon/src/utilities/utils.dart';
 import 'package:wheel_chooser/wheel_chooser.dart';
 
 
@@ -12,9 +14,7 @@ class Eventcreationscreen extends StatefulWidget {
   _EventcreationscreenState createState() => _EventcreationscreenState();
 }
 
-
 class _EventcreationscreenState extends State<Eventcreationscreen> {
-
 
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _dateTimeController = TextEditingController();
@@ -23,7 +23,63 @@ class _EventcreationscreenState extends State<Eventcreationscreen> {
   final TextEditingController _locationController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
 
+  Uint8List? _photofile;
 
+
+  /// This function prompts the user a menu ("Dialog") for the user to select wheter the image 
+  /// he is going to submit will come from the camera or the gallery
+  /// 
+  /// The result is that when the user has selected that image, it will now be a Uint8List 
+  /// stored as _photofile
+
+
+_selectImage(BuildContext context) async {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return SimpleDialog(
+            title: const Text('Create a Post'),
+            children: [
+              SimpleDialogOption(
+                padding: const EdgeInsets.all(20),
+                child: Text('Take Photo'),
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                  Uint8List file = await pickImage(ImageSource.camera);
+                  //pickimage is a function from utils.
+
+                  setState(() {
+                    _photofile = file;
+                  });
+                  print('image set');
+                },
+              ),
+              SimpleDialogOption(
+                padding: const EdgeInsets.all(20),
+                child: Text('From Gallery'),
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                  Uint8List file = await pickImage(ImageSource
+                      .gallery); //pickimage is a function from utils.
+
+                  setState(() {
+                    _photofile = file;
+                    //photofile is now the picture we selected
+                  });
+                  print('image set');
+                },
+              ),
+              SimpleDialogOption(
+                  padding: const EdgeInsets.all(20),
+                  child: Text('Cancel'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    //closes the dialog when pressed somewhere else
+                  }),
+            ],
+          );
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,8 +105,13 @@ class _EventcreationscreenState extends State<Eventcreationscreen> {
                 ),
                 const SizedBox(height: 20),
                 InkWell(
-                  onTap: () {print('Upload Image');},
-                  child: Container(
+                  onTap: () => _selectImage(context),
+
+                  // We will display a container if the image has not been selected otherwise
+                  // we will display the image 
+
+                  child: _photofile == null 
+                  ? Container(
                     height: MediaQuery.of(context).size.height * 0.23,
                     width: double.infinity,
                     decoration: BoxDecoration(
@@ -60,6 +121,15 @@ class _EventcreationscreenState extends State<Eventcreationscreen> {
                     child: Center(
                       child: Icon(Icons.upload, size: 50, color: Colors.white),
                     ),
+                  ): Container(
+                    //TODO set a standard size compression
+                    width: double.infinity,
+                    height: MediaQuery.of(context).size.height * 0.23,
+                    decoration: BoxDecoration(
+                        image: DecorationImage(
+                            image: MemoryImage(
+                                _photofile!)) //we have already selected it so we can assure it is not null
+                        ),
                   ),
                 ),                
                 const SizedBox(height: 20),
