@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:wheel_chooser/wheel_chooser.dart';
-import 'package:korazon/src/utilities/helperFunctions.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:korazon/src/utilities/utils.dart';
+
 
 
 class Eventcreationscreen extends StatefulWidget {
@@ -34,7 +35,16 @@ class _EventcreationscreenState extends State<Eventcreationscreen> {
   Uint8List? _photofile; // this variable will be used to store the image file that the user uploads
 
 
+
+
+
+  /// This function uploads the image to firebase storage and the event to firebase firestore. It uses the function from utils compressImage
+  /// 
+  /// The function doesn't take any parameters and doesn't return anything. But the result is the event uploaded to firestore
   void postEvent() async {
+
+    // Dismiss the keyboard
+    FocusScope.of(context).unfocus();
 
     // Check mandatory inputs
     if (_titleController.text.isEmpty) {
@@ -49,10 +59,10 @@ class _EventcreationscreenState extends State<Eventcreationscreen> {
       print('Location is empty. Use alert box in the future');
       return;
     }
-    // if (_photofile == null) {
-    //   print('Photo is empty. Use alert box in the future');
-    //   return;
-    // }
+    if (_photofile == null) {
+      print('Photo is empty. Use alert box in the future');
+      return;
+    }
     if (_priceController.text.isEmpty) {
       print('Price is empty. Use alert box in the future');
       return;
@@ -90,9 +100,25 @@ class _EventcreationscreenState extends State<Eventcreationscreen> {
         'location': _locationController.text,
         'price': double.parse(_priceController.text),
         'age': double.parse(_ageController.text),
-        // 'photoPath': fileRef.fullPath,
+        'photoPath': fileRef.fullPath,
         'host': uid,
       });
+
+
+      // Clear all controllers
+      _titleController.clear();
+      _dateTimeController.clear();
+      _ageController.clear();
+      _descriptionController.clear();
+      _locationController.clear();
+      _priceController.clear();
+      _photofile = null; // Clear the image file
+
+
+      // show a success message to the user
+      showSnackBar(context, 'Post created successfully');
+
+
     } catch (e) { // catch any errors that occur during the upload
       print('There was an error uploading the event. In the future use an alert box to show the error');
     }
@@ -102,7 +128,6 @@ class _EventcreationscreenState extends State<Eventcreationscreen> {
       _isLoading = false; // set the loading spinner to true
     });
   }
-
 
 
 
@@ -137,15 +162,34 @@ class _EventcreationscreenState extends State<Eventcreationscreen> {
 
                 // UPLOAD IMAGE
                 InkWell( // this will make the container clickable
-                  onTap: () { print('Upload Image'); },
+                  onTap: () async {
+                    Uint8List? file = await selectImage(context); // get the image file from the user
+                    if (file != null) {
+                      setState(() {
+                        _photofile = file; // set the image file to the file that the user uploaded
+                      });
+                    }
+                  },
                   child: Container(
                     height: MediaQuery.of(context).size.height * 0.23, // set the container to a height relative to the device
                     width: double.infinity, // take the full width of the screen
-                    decoration: BoxDecoration(
+
+                    // if there is no image uploaded, set the container to default style
+                    decoration: _photofile == null ? BoxDecoration( 
                       borderRadius: BorderRadius.circular(15), // rounded corners
                       color: const Color.fromARGB(255, 158, 158, 158), // set background color of the container to grey
+                    ) :
+
+                    // if there is an image uploaded, set the container to the image
+                    BoxDecoration(
+                      borderRadius: BorderRadius.circular(15), // rounded corners
+                      image: DecorationImage(
+                        image: MemoryImage(_photofile!), // set the image to the image that the user uploaded
+                        fit: BoxFit.cover, // cover the whole container with the image
+                      ),
                     ),
-                    child: Center(
+
+                    child: Center( // child is the same for both cases of _photofile null or not since the user might want to change the image
                       child: Icon(Icons.upload, size: 50, color: Colors.white), // add an icon to the center of the container
                     ),
                   ),
@@ -304,5 +348,17 @@ class _EventcreationscreenState extends State<Eventcreationscreen> {
         )
       ),
     );
+  }
+
+  // Dispose controllers to avoid memory leaks
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _dateTimeController.dispose();
+    _ageController.dispose();
+    _descriptionController.dispose();
+    _locationController.dispose();
+    _priceController.dispose();
+    super.dispose();
   }
 }
