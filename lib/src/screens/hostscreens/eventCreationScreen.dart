@@ -7,14 +7,14 @@ import 'package:wheel_chooser/wheel_chooser.dart';
 
 
 
-class Eventcreationscreen extends StatefulWidget {
-  const Eventcreationscreen({super.key});
+class EventCreationScreen extends StatefulWidget {
+  const EventCreationScreen({super.key});
 
   @override
-  _EventcreationscreenState createState() => _EventcreationscreenState();
+  State<EventCreationScreen> createState() => _EventCreationScreenState();
 }
 
-class _EventcreationscreenState extends State<Eventcreationscreen> {
+class _EventCreationScreenState extends State<EventCreationScreen> {
 
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _dateTimeController = TextEditingController();
@@ -92,7 +92,7 @@ _selectImage(BuildContext context) async {
               children: [
                 TextField(
                   style: TextStyle(
-                    fontSize: 40,
+                    fontSize: 30,
                   ),
                   controller: _titleController,
                   decoration: InputDecoration(
@@ -166,7 +166,7 @@ _selectImage(BuildContext context) async {
                   ),
                 ),
                 const SizedBox(height: 20),
-                SizedBox( // necessary to size the column to a fixed height
+                /* SizedBox( // necessary to size the column to a fixed height
                   height: 100,
                   child: Column(
                     children: [
@@ -182,7 +182,7 @@ _selectImage(BuildContext context) async {
                       ),
                     ],
                   ),
-                ),
+                ), */
                 const SizedBox(height: 20),
                 Container(
                   height: MediaQuery.of(context).size.height * 0.12,
