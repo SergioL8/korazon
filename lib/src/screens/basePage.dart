@@ -10,6 +10,7 @@ import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:provider/provider.dart';
 import 'package:korazon/src/screens/hostscreens/eventCreationScreen.dart';
 
+
 class BasePage extends StatefulWidget {
   const BasePage({super.key});
 
