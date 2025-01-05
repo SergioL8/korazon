@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:korazon/src/data/providers/user_provider.dart';
 import 'package:korazon/src/screens/home_page.dart';
 import 'package:korazon/src/screens/hostscreens/hostAnalytics.dart';
-import 'package:korazon/src/screens/hostscreens/scanner.dart';
 import 'package:korazon/src/screens/userscreens/socialPage.dart';
 import 'package:korazon/src/screens/userscreens/user_profile_screen.dart';
 import 'package:korazon/src/screens/userscreens/yourEvents.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:provider/provider.dart';
 import 'package:korazon/src/screens/hostscreens/eventCreationScreen.dart';
+import 'package:korazon/src/screens/hostscreens/accessToEvent/startEventPage.dart';
 
 
 class BasePage extends StatefulWidget {
@@ -86,9 +86,9 @@ class _BasePage extends State<BasePage> {
           activePageTitle = 'Create Event';
         }else if (selectedPageIndex == 2) {
           setState(() {
-            activePage = const ScannerScreen();
+            activePage = const SelectEventPage();
           });
-          activePageTitle = 'QR Code Scanner';
+          activePageTitle = 'Start Event';
         } else if (selectedPageIndex == 3) {
           setState(() {
             activePage = const HostAnalytics();

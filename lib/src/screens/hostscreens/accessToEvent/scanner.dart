@@ -1,4 +1,4 @@
-import 'package:korazon/src/screens/hostscreens/userAccessToEvent.dart';
+import 'package:korazon/src/screens/hostscreens/accessToEvent/userAccessToEvent.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:flutter/material.dart';
 
@@ -37,25 +37,20 @@ class _ScannerScreenState extends State<ScannerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ElevatedButton(
-        onPressed: () {
-          final String code = 'code';
-          _displayUserAccessToEvent(code);
-          },
-        child: Text('Scan QR Code'),
-        )
-      // body: MobileScanner(
-      //   controller: controller,
-      //   onDetect: (BarcodeCapture barcodeCapture) {
-      //     final String? code = barcodeCapture.barcodes.first.rawValue;
-      //      // this method returns the detected barcode
-      //     if (code != null) { 
-      //       // if the barcode is not null, then display the user access to event
-      //       _displayUserAccessToEvent(code);
-      //       // code is the uid given by the scanned QR code
-      //     }
-      //   }
-      // ),
+      appBar: AppBar(
+        title: const Text('Scan QR Code To Check In'),
+      ),
+      body: MobileScanner(
+        controller: controller,
+        onDetect: (BarcodeCapture barcodeCapture) {
+          final String? code = barcodeCapture.barcodes.first.rawValue;
+           // this method returns the detected barcode
+          if (code != null) { 
+            // if the barcode is not null, then display the user access to event
+            _displayUserAccessToEvent(code); // "code" is the uid given by the scanned QR code
+          }
+        }
+      ),
     );
   }
 

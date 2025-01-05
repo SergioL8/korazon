@@ -10,8 +10,7 @@ class UserAccessToEvent extends StatelessWidget {
   Future<String> getUserInfo() async {
     final DocumentReference<Map<String, dynamic>> documentSnapshot = FirebaseFirestore.instance.collection('users').doc(code);
     final data = (await documentSnapshot.get());
-    print('data ${data.data()}');
-    return 'Test';
+    return code;
   }
 
 
