@@ -91,9 +91,11 @@ class EventCreationScreenState extends State<EventCreationScreen> {
       print('Fail uploading image. Use alert box in the future');
     }
 
+    // String eventID = 
+
     try {
       // save the event to firebase firestore
-      await FirebaseFirestore.instance.collection('events').add({
+      DocumentReference docRef =await FirebaseFirestore.instance.collection('events').add({
         'title': _titleController.text,
         'description': _descriptionController.text,
         'dateTime': _dateTimeController.text,
@@ -102,6 +104,12 @@ class EventCreationScreenState extends State<EventCreationScreen> {
         'age': double.parse(_ageController.text),
         'photoPath': fileRef.fullPath,
         'host': uid,
+      });
+
+
+      // add the created event to the host list of events
+      await FirebaseFirestore.instance.collection('users').doc(uid).update({
+        'createdEvents': FieldValue.arrayUnion([docRef.id])
       });
 
 

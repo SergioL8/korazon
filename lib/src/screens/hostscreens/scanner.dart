@@ -37,18 +37,25 @@ class _ScannerScreenState extends State<ScannerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: MobileScanner(
-        controller: controller,
-        onDetect: (BarcodeCapture barcodeCapture) {
-          final String? code = barcodeCapture.barcodes.first.rawValue;
-           // this method returns the detected barcode
-          if (code != null) { 
-            // if the barcode is not null, then display the user access to event
-            _displayUserAccessToEvent(code);
-            // code is the uid given by the scanned QR code
-          }
-        }
-      ),
+      body: ElevatedButton(
+        onPressed: () {
+          final String code = 'code';
+          _displayUserAccessToEvent(code);
+          },
+        child: Text('Scan QR Code'),
+        )
+      // body: MobileScanner(
+      //   controller: controller,
+      //   onDetect: (BarcodeCapture barcodeCapture) {
+      //     final String? code = barcodeCapture.barcodes.first.rawValue;
+      //      // this method returns the detected barcode
+      //     if (code != null) { 
+      //       // if the barcode is not null, then display the user access to event
+      //       _displayUserAccessToEvent(code);
+      //       // code is the uid given by the scanned QR code
+      //     }
+      //   }
+      // ),
     );
   }
 
