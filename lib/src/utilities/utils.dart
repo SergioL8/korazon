@@ -1,4 +1,5 @@
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'design_variables.dart';
@@ -94,4 +95,29 @@ Future<Uint8List> compressImage(Uint8List image, int quality) async {
     );
 
     return result;
+}
+
+
+
+/// This function retrieves an image from the storage
+/// 
+/// Input: the path to the image in the storage
+/// Output: the image as a Uint8List
+Future<Uint8List?> getImage(imagePath) async{
+
+  if (imagePath == null) {
+
+    return null;
+
+  } else {
+    // get the storage reference
+    Reference storageRef = FirebaseStorage.instance.ref();
+
+    // get the file reference
+    Reference fileRef = storageRef.child(imagePath);
+
+    Uint8List? imageData = await fileRef.getData();
+
+    return imageData;
+  }
 }
