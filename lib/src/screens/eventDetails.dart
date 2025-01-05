@@ -16,9 +16,9 @@ class EventDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    final String eventName = document['eventName'];
+    final String eventName = document['title'];
     final String eventDescription = document['description'];
-    final String eventAge = document['eventAge'];
+    final double eventAge = document['age'];
 
     final String eventID = document.id;
 

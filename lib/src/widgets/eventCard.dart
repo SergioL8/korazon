@@ -1,38 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:transparent_image/transparent_image.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:typed_data';
 import 'package:korazon/src/screens/eventDetails.dart';
-
-
-
-Future<Uint8List?> _getImage(eventImage) async{
-
-  if (eventImage == null) {
-
-    return null;
-
-  } else {
-    // get the storage reference
-    Reference storageRef = FirebaseStorage.instance.ref();
-
-    // get the file reference
-    Reference fileRef = storageRef.child(eventImage);
-
-    Uint8List? imageData = await fileRef.getData();
-
-    return imageData;
-  }
-}
+import 'package:korazon/src/utilities/utils.dart';
 
 
 
 
 
-class PostCard extends StatelessWidget {
 
-  PostCard({super.key, required this.document});
+
+
+class EventCard extends StatelessWidget {
+
+  const EventCard({super.key, required this.document});
   final DocumentSnapshot document;
   
 
@@ -42,17 +24,14 @@ class PostCard extends StatelessWidget {
 
     
 
-    final String eventName = document['eventName'];
-    final String eventAge = document['eventAge'];
-    final String eventImage = document['eventImage'];
+    final String eventName = document['title'];
+    final double eventAge = document['age'];
+    final String eventImage = document['photoPath'];
 
 
     return FutureBuilder<Uint8List?>(
-      future: _getImage(eventImage),
+      future: getImage(eventImage),
       builder: (context, snapshot) {
-
-        print('eventImage: $eventImage');
-        print('image data: ${snapshot.data}');
 
         return Card(
           margin: const EdgeInsets.all(10),
