@@ -91,7 +91,7 @@ class _SelectEventCardState extends State<SelectEventCard> {
           trailing: ElevatedButton(
             onPressed: () {
               Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) { return const ScannerScreen(); },)
+                MaterialPageRoute(builder: (context) { return ScannerScreen(eventID: widget.eventID,); },)
               );
             },
             child: Text('Start Scanning')

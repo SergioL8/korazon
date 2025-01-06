@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:korazon/src/screens/hostscreens/accessToEvent/selectEventCard.dart';
+import 'package:korazon/src/widgets/accessToEventWidgets/selectEventCard.dart';
 import 'package:flutter/material.dart';
 
 
@@ -19,7 +19,7 @@ class SelectEventPage extends StatefulWidget {
 class _SelectEventPageState extends State<SelectEventPage> {
 
   List<String> listOfCreatedEvents = [];
-  bool _isLoading = false;
+  bool _isLoading = true;
 
 
   /// This function retrieves the list of events created by the current user

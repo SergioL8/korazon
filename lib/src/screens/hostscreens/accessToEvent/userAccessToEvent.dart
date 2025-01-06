@@ -1,29 +1,59 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:korazon/src/screens/hostscreens/accessToEvent/userDoesntHaveAccess.dart';
+import 'package:korazon/src/screens/hostscreens/accessToEvent/userHasAccess.dart';
 
 
 class UserAccessToEvent extends StatelessWidget {
-  const UserAccessToEvent({super.key, required this.code});
-  final String code;
+  UserAccessToEvent({super.key, required this.guestID, required this.eventID});
+  final String guestID;
+  final String eventID;
+  Map<String, dynamic> userData = {};
 
 
-  Future<String> getUserInfo() async {
-    final DocumentReference<Map<String, dynamic>> documentSnapshot = FirebaseFirestore.instance.collection('users').doc(code);
-    final data = (await documentSnapshot.get());
-    return code;
+  Future<bool> checkAccessToEvent() async {
+
+    final userDocument = await FirebaseFirestore.instance.collection('users').doc(guestID).get();
+    userData = userDocument.data() ?? {};
+    
+    if (userData.isEmpty) {
+      print('There was an error loading the user, try again later. In the future use an alert box');
+      return false;
+    }
+
+    final List<String> eventsAttending = List<String>.from(userData['tickets'] ?? []);
+
+    if (eventsAttending.contains(eventID)) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
-
+  
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('User Access To Event'),
-        ),
-        body: Center(
-          child: Text(getUserInfo().toString()),
+
+    return Scaffold(
+      body: Center(
+        child: FutureBuilder<bool>(
+          future: checkAccessToEvent(),
+          builder: (ctx, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const CircularProgressIndicator();
+            } else {
+              if (snapshot.hasError) {
+                return const Text('An error occurred, try again later');
+              } else {
+                if (snapshot.data == true) {
+                  return UserHasAccess(userData: userData);
+                } else {
+                  return UserDoesntHaveAccess(userData: userData);
+                }
+              }
+            }
+          },
         ),
       ),
     );
