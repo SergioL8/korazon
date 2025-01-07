@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:korazon/src/data/providers/user_provider.dart';
 import 'package:korazon/src/screens/home_page.dart';
-import 'package:korazon/src/screens/hostscreens/hostAnalytics.dart';
 import 'package:korazon/src/screens/userscreens/socialPage.dart';
 import 'package:korazon/src/screens/userscreens/user_profile_screen.dart';
 import 'package:korazon/src/screens/userscreens/yourEvents.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:provider/provider.dart';
 import 'package:korazon/src/screens/hostscreens/eventCreationScreen.dart';
-import 'package:korazon/src/screens/hostscreens/accessToEvent/startEventPage.dart';
+import 'package:korazon/src/screens/hostscreens/selectEventForAction.dart';
+import 'package:korazon/src/utilities/utils.dart';
 
 
 class BasePage extends StatefulWidget {
@@ -86,12 +86,12 @@ class _BasePage extends State<BasePage> {
           activePageTitle = 'Create Event';
         }else if (selectedPageIndex == 2) {
           setState(() {
-            activePage = const SelectEventPage();
+            activePage = const SelectEventForAction(action: HostAction.scan);
           });
           activePageTitle = 'Start Event';
         } else if (selectedPageIndex == 3) {
           setState(() {
-            activePage = const HostAnalytics();
+            activePage = const SelectEventForAction(action: HostAction.analytics);
           });
           activePageTitle = 'Analytics ';
         } 

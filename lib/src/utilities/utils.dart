@@ -6,6 +6,14 @@ import 'design_variables.dart';
 import 'dart:typed_data';
 
 
+// This enum is used to determine if the user is in the scan page or the analytics page
+// It is used to render the correct icon button and the correct onTap action when selecting an event in these pages
+enum HostAction {
+  scan,
+  analytics,
+}
+
+
 // for picking up image from galleryc
 
 pickImage(ImageSource source) async { //To instanciate this: Uint8List image = await pickImage(ImageSource.gallery);

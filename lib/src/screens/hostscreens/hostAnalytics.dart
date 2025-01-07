@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+
 class HostAnalytics extends StatefulWidget {
   const HostAnalytics({super.key});
 
@@ -8,10 +9,17 @@ class HostAnalytics extends StatefulWidget {
 }
 
 class _HostAnalyticsState extends State<HostAnalytics> {
+
+
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Here will be displayed the info on how your current events are doing'),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Analytics'),
+      ),
+      body: const Center(
+        child: Text('Host Analytics'),
+      ),
     );
   }
 }

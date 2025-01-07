@@ -7,11 +7,11 @@ class DenyGuestIn extends StatelessWidget {
 
   @override
   Widget build(context) {
-    return InkWell(
+    return InkWell( // make the button clickable
       onTap:() {
-        Navigator.of(context).pop();
+        Navigator.of(context).pop(); // just pop the modal bottom sheet and return to the scanner screen
       },
-      child: Container(
+      child: Container( 
         width: 100,
         height: 100,
         decoration: BoxDecoration(
