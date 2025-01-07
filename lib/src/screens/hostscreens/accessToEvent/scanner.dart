@@ -1,4 +1,4 @@
-import 'package:korazon/src/screens/hostscreens/accessToEvent/checkForAccessToEvent.dart';
+import 'package:korazon/src/screens/hostscreens/accessToEvent/checkTheAccessToEvent.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:flutter/material.dart';
 
