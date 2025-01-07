@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:korazon/src/widgets/pickDateTime.dart';
 import 'package:wheel_chooser/wheel_chooser.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -90,8 +91,6 @@ class EventCreationScreenState extends State<EventCreationScreen> {
     if (imageTaskSnapshot.state != TaskState.success) {
       print('Fail uploading image. Use alert box in the future');
     }
-
-    // String eventID = 
 
     try {
       // save the event to firebase firestore
@@ -238,18 +237,39 @@ class EventCreationScreenState extends State<EventCreationScreen> {
                 const SizedBox(height: 20),
 
 
-                TextField( // DATE&TIME text field
-                  controller: _dateTimeController, // set the controller
-                  decoration: InputDecoration(
-                    labelText: 'Date&Time',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15), // rounded corners
+                // DATE TIME BUTTON
+                SizedBox(
+                  width: double.infinity, // take the full width of the screen
+                  child: TextButton(
+
+                    style: ButtonStyle(
+                      fixedSize: WidgetStatePropertyAll(Size(double.infinity, 50)), // set the size of the button
+                      shape: WidgetStatePropertyAll<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15), // rounded corners
+                          side: BorderSide(color: const Color.fromARGB(255, 127, 127, 127), width: 1.1), // add a border to the button
+                        ),
+                      ),
                     ),
+
+                    onPressed: () async {
+                      final String? date = await selectDateTime(context); // execute the function to get the date and time
+                      setState(() {
+                        if (date != null) {
+                          _dateTimeController.text = date; // once the date and time is selected, set the controller to the selected date and time
+                        }
+                      });
+                    },
+
+                    child: _dateTimeController.text.isEmpty ? // dynamically change the text of the button
+                    const Text('Select Date&Time') : 
+                    Text(_dateTimeController.text),
                   ),
                 ),
 
 
                 const SizedBox(height: 20),
+
 
                 // AGE WHEEL
                 SizedBox( // necessary to size the column to a fixed height
@@ -259,7 +279,7 @@ class EventCreationScreenState extends State<EventCreationScreen> {
                       Text('Age'), // add a label
                       Expanded( // necessary to make the wheel chooser take the full height of the column
                         child: WheelChooser.integer( // this is a widget from the wheel_chooser package
-                          onValueChanged: (s) => _ageController = s, // when the wheel is moved update the controller
+                          onValueChanged: (s) => _ageController.text = s.toString(), // when the wheel is moved update the controller
                           initValue: 18, // set an initial value
                           minValue: 1, // set the minimum value
                           maxValue: 99, // set the maximum value
@@ -301,9 +321,20 @@ class EventCreationScreenState extends State<EventCreationScreen> {
                           controller: _priceController, // set the controller
                           keyboardType: TextInputType.numberWithOptions(decimal: true), // set the keyboard type to only numbers and a decimal point
                           inputFormatters: [ // this field forces a type of input
-                            FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')), // only allow digits and a decimal point (need to know regex to understand this)
+                            FilteringTextInputFormatter.allow(RegExp(r'^\d+([.,]\d{0,2})?$')), // only allow digits and a decimal point (need to know regex to understand this)
                           ],
+                          onChanged: (value) {
+                            // If the user typed a comma, replace it with a dot
+                            if (value.contains(',')) {
+                              final cursorPos = _priceController.selection.baseOffset;
+                              final newValue = value.replaceAll(',', '.');
+                              _priceController.text = newValue;
+                              // Restore the cursor position
+                              _priceController.selection = TextSelection.collapsed(offset: cursorPos);
+                            }
+                          },
                           decoration: InputDecoration( // decoration for the text field
+                            contentPadding: const EdgeInsets.symmetric(vertical: 38), // add vertical padding
                             filled: true, // allows to add a fill color
                             fillColor: Colors.black, // set the fill color to black
                             prefixIcon: Icon(Icons.attach_money), // add a money icon to the left of the text field
