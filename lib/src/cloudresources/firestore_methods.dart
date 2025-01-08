@@ -1,6 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:korazon/src/cloudresources/storage_methods.dart';
-import 'dart:typed_data'; // for the Uint8List
 import 'package:korazon/src/data/models/event.dart' as model;
 import 'package:uuid/uuid.dart'; 
 
