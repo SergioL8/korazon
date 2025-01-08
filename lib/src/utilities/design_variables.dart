@@ -1,9 +1,25 @@
 import 'package:flutter/material.dart';
 
-const primaryColor = Color.fromRGBO(250, 177, 177, 1);
-const secondaryColor = Colors.black;
+
+// Colors
+const korazonColor = Color.fromRGBO(250, 177, 177, 1);
+const secondaryColor = Color.fromARGB(255, 3, 0, 54);
 const tertiaryColor = Colors.white;
 
+
+
+// Text Styles
+const titleTextStyle = TextStyle(
+  fontSize: 24,
+  fontWeight: FontWeight.w800,
+  color: secondaryColor,
+  fontFamily: primaryFont
+);
+
+
+
+// Font styles:
+const primaryFont = 'Pacifico';
 const double primaryFontSize = 16;
 const primaryFontWeight = FontWeight.w800;
 const double primaryBorderWidth = 4;

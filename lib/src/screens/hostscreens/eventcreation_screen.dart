@@ -213,7 +213,7 @@ class _EventCreationScreenState extends State<EventCreationScreen> {
           )
         : Scaffold(
             appBar: AppBar(
-              backgroundColor: primaryColor,
+              backgroundColor: korazonColor,
               leading: IconButton(
                 color: secondaryColor,
                 onPressed: clearImage,

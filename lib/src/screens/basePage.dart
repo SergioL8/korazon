@@ -123,7 +123,7 @@ class _BasePage extends State<BasePage> {
               selectedItemColor: secondaryColor,
               unselectedItemColor: secondaryColor,
               elevation: navBarElevation,
-              backgroundColor: primaryColor,
+              backgroundColor: korazonColor,
               onTap: (selectedPageIndex) {
                 _selectedPage(selectedPageIndex);
               },

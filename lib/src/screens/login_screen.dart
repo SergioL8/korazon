@@ -58,7 +58,7 @@ class _Loginscreen extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: primaryColor,
+      backgroundColor: korazonColor,
       body: Container(
           padding: const EdgeInsets.symmetric(horizontal: 32 ),
           width: double.infinity,

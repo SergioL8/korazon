@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:korazon/src/screens/basePage.dart';
 import 'package:korazon/src/screens/signup_screen.dart';
+import 'package:korazon/src/screens/singUpLogin/signUpScreen1.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 
 
@@ -24,7 +25,7 @@ class isSignedLogic extends StatelessWidget {
           return const BasePage(); 
           // Base page is the widget where all the different pages of the app are displayed
         } else {
-          return const SignupScreen(); // This is the widget where the user can sign in
+          return const SignUpScreen(); // This is the widget where the user can sign in
         }
       },
     );
