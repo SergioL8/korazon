@@ -14,6 +14,7 @@ class YourEvents extends StatefulWidget {
 class _YourEventsState extends State<YourEvents> {
   List<String> eventUids = []; // List to store event UIDs
   List<DocumentSnapshot> events = []; // List to store event details as DocumentSnapshots
+  bool _isLoading = false;
   
   @override
   void initState() {
@@ -23,20 +24,31 @@ class _YourEventsState extends State<YourEvents> {
 
   // Fetch the user's tickets and retrieve event details
   Future<void> getEvents() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    final String? userId = FirebaseAuth.instance.currentUser?.uid;
+
+    if (userId == null) {
+      showSnackBar(context, 'This error is fucked ngl');
+      return;
+    }
     try {
       // Get the current user's document
       var userDoc = await FirebaseFirestore.instance
           .collection('users')
-          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .doc(userId)
           .get();
 
-      if (userDoc.exists) {
-        // Extract the 'tickets' array from the user document
-        List<dynamic> tickets = userDoc.data()?['tickets'] ?? [];
+      if (!userDoc.exists) {
+        showSnackBar(context, 'User not found');
+        return;
+      }
 
         setState(() {
-          // Convert the retrieved tickets into List<String>
-          eventUids = tickets.cast<String>(); 
+          // Extract the fetched tickets array and turn them into a list 
+          eventUids = List.from(userDoc.data()?['tickest'] ?? []); 
         });
 
         // Fetch event details for each event UID
@@ -57,17 +69,24 @@ class _YourEventsState extends State<YourEvents> {
             }); 
           } 
         } 
-      }
+      
     } catch (e) {
       showSnackBar(context, e.toString());
     }
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       
-      body: eventUids.isEmpty
+      body: _isLoading 
+      ? const Center(
+        child: CircularProgressIndicator(),
+      )
+      :eventUids.isEmpty
           ? const Center(
             child: Text('You dont have any events yet, lets find some'), // Show a loader while fetching data
             )
