@@ -4,14 +4,6 @@ import 'package:transparent_image/transparent_image.dart';
 import 'dart:typed_data';
 import 'package:korazon/src/screens/eventDetails.dart';
 import 'package:korazon/src/utilities/utils.dart';
-
-
-
-
-
-
-
-
 class EventCard extends StatelessWidget {
 
   const EventCard({super.key, required this.document});
@@ -21,8 +13,6 @@ class EventCard extends StatelessWidget {
 
   @override
   Widget build (context) {
-
-    
 
     final String eventName = document['title'];
     final double eventAge = document['age'];
@@ -34,8 +24,9 @@ class EventCard extends StatelessWidget {
       builder: (context, snapshot) {
 
         return Card(
-          margin: const EdgeInsets.all(10),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          margin: const EdgeInsets.all(12
+          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           clipBehavior: Clip.hardEdge, // this gives the borders a nice, curved look
           elevation: 2, // this gives a bit of elevation to the card with respect the background (shadow of the card) 
           child: InkWell(
@@ -50,8 +41,9 @@ class EventCard extends StatelessWidget {
               );
 
              },
-            child: Stack(
+            child: Stack( 
               children: [
+                // Hero is a goated widget
                 Hero(
                   tag: document.id,
                   child: FadeInImage(

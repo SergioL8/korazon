@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:korazon/src/data/models/event.dart' as model;
 import 'package:uuid/uuid.dart'; 
 
-class FirestoreMethods{
+class FireStoreMethods{
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   //Method for uploading a post
@@ -48,4 +48,36 @@ class FirestoreMethods{
   } 
 
   //Updating likes and comments will also be here
+
+  Future<void> followUser(
+    String uid,
+    String followingUserId, // This is the user of the profile you are in 
+  ) async {
+    try{
+      DocumentSnapshot snap = await _firestore.collection('users').doc(uid).get();
+      List following = (snap.data()! as dynamic)['following'];
+
+      if (following.contains(followingUserId)) {
+        await _firestore.collection('users').doc(followingUserId).update({
+          'followers': FieldValue.arrayRemove([uid]),
+        });
+
+        await _firestore.collection('users').doc(uid).update({
+          'following': FieldValue.arrayRemove([followingUserId]),
+        });
+
+      } else {
+        await _firestore.collection('users').doc(followingUserId).update({
+          'followers': FieldValue.arrayUnion([uid]),
+        });
+
+        await _firestore.collection('users').doc(uid).update({
+          'following': FieldValue.arrayUnion([followingUserId]),
+        });
+      }
+    } catch (e){
+      print(e.toString());
+    }
+  }
+
 }

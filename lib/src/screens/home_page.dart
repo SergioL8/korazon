@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/widgets/eventCard.dart';
+import 'package:korazon/src/widgets/eventCard2.0.dart';
 
 
 
@@ -80,6 +82,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: tertiaryColor,
       body: _documents.isEmpty && !_isLoading ? // if there are no documents and it's not because of loading
         Center(child: const Text('No events :(')) : 
         ListView.builder( // if there are documents, build the list view
@@ -94,7 +97,7 @@ class _HomePageState extends State<HomePage> {
             }
 
             // show the event card
-            return EventCard(
+            return EventCard2(
                 document: _documents[index]
               );
           }

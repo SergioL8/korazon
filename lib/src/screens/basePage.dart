@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:korazon/src/data/providers/user_provider.dart';
 import 'package:korazon/src/screens/home_page.dart';
+import 'package:korazon/src/screens/hostscreens/hostProfile.dart';
 import 'package:korazon/src/screens/userscreens/socialPage.dart';
 import 'package:korazon/src/screens/userscreens/user_profile_screen.dart';
 import 'package:korazon/src/screens/userscreens/yourEvents.dart';
@@ -81,20 +82,25 @@ class _BasePage extends State<BasePage> {
           activePageTitle = 'korazon';
         } else if (selectedPageIndex == 1) {
           setState(() {
-            activePage = const EventCreationScreen();
-          });
-          activePageTitle = 'Create Event';
-        }else if (selectedPageIndex == 2) {
-          setState(() {
             activePage = const SelectEventForAction(action: HostAction.scan);
           });
           activePageTitle = 'Start Event';
-        } else if (selectedPageIndex == 3) {
+        }else if (selectedPageIndex == 2) {
+          setState(() {
+            activePage = const EventCreationScreen();
+          });
+          activePageTitle = 'Create Event';
+        }  else if (selectedPageIndex == 3) {
           setState(() {
             activePage = const SelectEventForAction(action: HostAction.analytics);
           });
           activePageTitle = 'Analytics ';
-        } 
+        } else if (selectedPageIndex == 4) {
+          setState(() {
+            activePage = HostProfileScreen(uid: user.uid,);
+          });
+          activePageTitle = user.name;
+        }
       }
     }
 
@@ -139,17 +145,17 @@ class _BasePage extends State<BasePage> {
                       ),
                       BottomNavigationBarItem(
                         icon: Icon(
-                          Icons.add_circle_outline,
-                          color: secondaryColor,
-                        ),
-                        label: 'Create Event',
-                      ),
-                      BottomNavigationBarItem(
-                        icon: Icon(
                           Icons.qr_code_scanner_rounded,
                           color: secondaryColor,
                         ),
                         label: 'QR Code Scanner',
+                      ),
+                      BottomNavigationBarItem(
+                        icon: Icon(
+                          Icons.add_circle_outline,
+                          color: secondaryColor,
+                        ),
+                        label: 'Create Event',
                       ),
                       BottomNavigationBarItem(
                         icon: Icon(
@@ -158,6 +164,14 @@ class _BasePage extends State<BasePage> {
                         ),
                         label: 'Analytics',
                       ),
+                      BottomNavigationBarItem(
+                        icon: Icon(
+                          Icons.person,
+                          color: secondaryColor,
+                        ),
+                        label: 'Profile',
+                      ),
+                      
                     ]
                   : [
                       BottomNavigationBarItem(
