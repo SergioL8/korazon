@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+/*import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'dart:typed_data';
@@ -74,4 +74,4 @@ class EventCard extends StatelessWidget {
       },
     );
   }
-}
+}*/

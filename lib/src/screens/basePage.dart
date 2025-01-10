@@ -107,6 +107,7 @@ class _BasePage extends State<BasePage> {
     return user != null
         ? Scaffold(
             appBar: AppBar(
+              backgroundColor: tertiaryColor,
               automaticallyImplyLeading: false,
               title: Text(activePageTitle),
               actions: [
