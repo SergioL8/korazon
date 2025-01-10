@@ -12,6 +12,8 @@ class AuthMethods{
   static const String weakPassword = "Password should be at least 6 characters long";
 
   Future<model.User?> getUserDetails() async{
+    // await _auth.signOut();
+
     User? currentUser = _auth.currentUser;
 
     if (currentUser == null) {

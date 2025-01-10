@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:korazon/src/utilities/design_variables.dart';
 
 
 class KorazonSignUpLogo extends StatelessWidget {
