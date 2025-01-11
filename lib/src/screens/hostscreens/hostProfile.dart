@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:korazon/src/screens/hostscreens/editHostProfile.dart';
 import 'package:korazon/src/screens/singUpLogin/signUpScreen1.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/utilities/utils.dart';
@@ -234,7 +235,19 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
                                   backgroundColor: secondaryColor,
                                   borderColor: Colors.grey.shade600,
                                   text: 'Edit Profile',
-                                  textColor: tertiaryColor)
+                                  textColor: tertiaryColor,
+                                  function: () {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => EditProfilePage(
+                                          currentName: userData['name'] ?? '',
+                                          currentBio: userData['bio'] ?? '',
+                                          currentImageUrl: userData['profilePicUrl'],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                              )
 
                               
           

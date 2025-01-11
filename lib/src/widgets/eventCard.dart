@@ -99,15 +99,25 @@ class _EventCardState extends State<EventCard> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          CircleAvatar(
-                            backgroundColor: korazonColor,
-                            backgroundImage:
-                            // TODO: poner la imagen de perfil del user
-                            // widget.document['hostProfilePicture'] ??
-                            AssetImage(
-                              'assets/images/no_profile_picture.webp',
+                          Container(
+                            width: 44, // Adjust to fit your desired border size (radius + border thickness)
+                            height: 44, // Same as width
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle, 
+                              border: Border.all(
+                                color: Colors.white, // White border color
+                                width: 2.0, // Border width
+                              ),
                             ),
-                            radius: 20,
+                            child: CircleAvatar(
+                              backgroundColor: korazonColor,
+                              backgroundImage: widget.document['hostProfilePicUrl'] != null
+                                  ? NetworkImage(widget.document['hostProfilePicUrl'])
+                                  : AssetImage(
+                                      'assets/images/no_profile_picture.webp',
+                                    ) as ImageProvider,
+                              radius: 20, // Adjust to fit inside the container
+                            ),
                           ),
                           const SizedBox(width: 8),
                           Text(

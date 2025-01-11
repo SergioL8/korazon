@@ -25,7 +25,7 @@ class EventCreationScreen extends StatefulWidget {
 class EventCreationScreenState extends State<EventCreationScreen> {
 
   // get the uid of the host creating the event
-  final uid = FirebaseAuth.instance.currentUser!.uid;
+  final uid = FirebaseAuth.instance.currentUser?.uid;
 
   // Variable declaration
   final TextEditingController _titleController = TextEditingController();
@@ -34,6 +34,7 @@ class EventCreationScreenState extends State<EventCreationScreen> {
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
   final TextEditingController _priceController = TextEditingController(text: '0.00'); // set initial value of the price to 0.00
+  var userData = {};
 
   bool _isLoading = false; // this variable will be used to show a loading spinner when the user clicks the submit button
   Uint8List? _photofile; // this variable will be used to store the image file that the user uploads
@@ -46,8 +47,27 @@ class EventCreationScreenState extends State<EventCreationScreen> {
   /// 
   /// The function doesn't take any parameters and doesn't return anything. But the result is the event uploaded to firestore
   void postEvent(
-    String? hostName, 
+    //String? hostName,  //! These could come from the provider but we will get them from firestore 
+    //String? profilePicUrl,
   ) async {
+
+    if (uid == null) {
+      showSnackBar(context, 'No user');
+      return;
+    }
+
+    var userDocument = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .get();
+    
+    if (!userDocument.exists) {
+      showSnackBar(context, 'User not found');
+      return;
+    }
+
+    userData = userDocument.data()!;
+
 
     // Dismiss the keyboard
     FocusScope.of(context).unfocus();
@@ -108,8 +128,11 @@ class EventCreationScreenState extends State<EventCreationScreen> {
         'price': double.parse(_priceController.text),
         'age': double.parse(_ageController.text),
         'photoPath': fileRef.fullPath,
+        
+        // Host variables
         'hostId': uid,
-        'hostName': hostName,
+        'hostName': userData['name'],
+        'hostProfilePicUrl': userData['profilePicUrl'],
       });
 
 
@@ -390,7 +413,8 @@ class EventCreationScreenState extends State<EventCreationScreen> {
                 // POST EVENT BUTTON
                 InkWell(
                   onTap:() => postEvent(
-                    user?.name,
+                  //  user?.name, //! This could also come from provider
+                  //  user?.profilePicUrl, //! Make sure to add to provider 
                   ),
                   child: Container(
                     height: MediaQuery.of(context).size.height * 0.12, // set the container to a height relative to the device

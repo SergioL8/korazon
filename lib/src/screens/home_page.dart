@@ -125,7 +125,7 @@ Widget build(BuildContext context) {
               preferredSize: const Size.fromHeight(2.0),
               child: Container(
                 color: korazonColor,
-                height: 4.0,
+                height: 2.0,
               ),
             ),
           ),

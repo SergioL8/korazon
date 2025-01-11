@@ -6,7 +6,7 @@ const korazonColor = Color.fromRGBO(250, 177, 177, 1);
 const secondaryColor = Color.fromARGB(255, 3, 0, 54);
 const tertiaryColor = Colors.white;
 
-const korazonColorLP = Color.fromRGBO(250, 177, 177, 0.5);
+const korazonColorLP = Color.fromRGBO(250, 177, 177, 0.2);
 const secondaryColorLP = Color.fromRGBO(3, 0, 54, 0.5);
 
 

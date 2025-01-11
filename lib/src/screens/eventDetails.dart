@@ -28,6 +28,7 @@ class EventDetails extends StatelessWidget {
     final String eventId = document.id;
     final String hostName = document['hostName'];
     final String hostId = document['hostId'];
+    final String hostProfilePicUrl = document['hostProfilePicUrl'];
 
     return Scaffold(
       // AppBar with a slightly transparent background
@@ -111,13 +112,26 @@ class EventDetails extends StatelessWidget {
                                       HostProfileScreen(uid: hostId))),
                           child: Row(
                             children: [
-                              CircleAvatar(
-                                backgroundColor: korazonColor,
-                                backgroundImage: const AssetImage(
-                                  'assets/images/no_profile_picture.webp',
-                                ),
-                                radius: 20,
+                              Container(
+                            width: 44, // Adjust to fit your desired border size (radius + border thickness)
+                            height: 44, // Same as width
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle, 
+                              border: Border.all(
+                                color: Colors.white, // White border color
+                                width: 2.0, // Border width
                               ),
+                            ),
+                            child: CircleAvatar(
+                              backgroundColor: korazonColor,
+                              backgroundImage: hostProfilePicUrl != null
+                                  ? NetworkImage(hostProfilePicUrl)
+                                  : AssetImage(
+                                      'assets/images/no_profile_picture.webp',
+                                    ) as ImageProvider,
+                              radius: 20, // Adjust to fit inside the container
+                            ),
+                          ),
                               SizedBox(width: 8),
                               Text(
                                 hostName,
