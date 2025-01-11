@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/widgets/eventCard.dart';
-import 'package:korazon/src/widgets/eventCard2.0.dart';
 
 class YourEvents extends StatefulWidget {
   const YourEvents({super.key});
@@ -102,7 +101,7 @@ class _YourEventsState extends State<YourEvents> {
 
                 //! Fill with the list of your events
               // The event card needs to take a document snapshot 
-              return EventCard2(
+              return EventCard(
                 document: event,
               );
               },

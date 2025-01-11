@@ -106,9 +106,16 @@ class _BasePage extends State<BasePage> {
 
     return user != null
         ? Scaffold(
-            appBar: AppBar(
+           /* appBar: AppBar(
               backgroundColor: tertiaryColor,
               automaticallyImplyLeading: false,
+              bottom: PreferredSize(
+      preferredSize: const Size.fromHeight(1.0), // Line heigth
+      child: Container(
+        color: korazonColor,
+        height: 2.0,        // Line width
+      ),
+    ),
               title: Text(activePageTitle),
               actions: [
                 IconButton(
@@ -125,7 +132,7 @@ class _BasePage extends State<BasePage> {
                   },
                 ),
               ],
-            ),
+            ),*/
             bottomNavigationBar: BottomNavigationBar(
               selectedItemColor: secondaryColor,
               unselectedItemColor: secondaryColor,

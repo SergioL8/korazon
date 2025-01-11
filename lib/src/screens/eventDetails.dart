@@ -35,7 +35,7 @@ class EventDetails extends StatelessWidget {
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
-            color: Colors.black,
+            color: tertiaryColor,
           ),
         ),
         elevation: 0,
@@ -109,9 +109,14 @@ class EventDetails extends StatelessWidget {
                             builder: (context) => HostProfileScreen(uid: document['host']))),
                             child: Row(
                             children: [
-                              Icon(Icons.person, color: korazonColor),
-                          
-                              SizedBox(width: 8),
+                              CircleAvatar(
+                            backgroundColor: korazonColor,
+                            backgroundImage: const AssetImage(
+                              'assets/images/no_profile_picture.webp',
+                            ),
+                            radius: 20,
+                          ),
+                               SizedBox(width: 8),
                           
                               Text(
                                 'Host Name',

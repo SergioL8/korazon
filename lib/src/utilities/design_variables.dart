@@ -6,7 +6,9 @@ const korazonColor = Color.fromRGBO(250, 177, 177, 1);
 const secondaryColor = Color.fromARGB(255, 3, 0, 54);
 const tertiaryColor = Colors.white;
 
+// Radius 
 
+// border radius of the event cards is 16
 
 // Text Styles
 const titleTextStyle = TextStyle(
