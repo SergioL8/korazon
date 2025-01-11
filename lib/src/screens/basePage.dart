@@ -3,7 +3,6 @@ import 'package:korazon/src/data/providers/user_provider.dart';
 import 'package:korazon/src/screens/home_page.dart';
 import 'package:korazon/src/screens/hostscreens/hostProfile.dart';
 import 'package:korazon/src/screens/userscreens/socialPage.dart';
-import 'package:korazon/src/screens/userscreens/user_profile_screen.dart';
 import 'package:korazon/src/screens/userscreens/yourEvents.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:provider/provider.dart';
@@ -54,7 +53,6 @@ class _BasePage extends State<BasePage> {
     //! If statement to display
 
     Widget activePage = const HomePage();
-    String activePageTitle = 'Home Page';
 
     if (user?.isHost != null) {
       if (user!.isHost == false) {
@@ -62,82 +60,47 @@ class _BasePage extends State<BasePage> {
           setState(() {
             activePage = const HomePage();
           });
-          activePageTitle = 'korazon';
         } else if (selectedPageIndex == 1) {
           setState(() {
             activePage = const YourEvents();
           });
-          activePageTitle = 'Your Events';
         } else if (selectedPageIndex == 2) {
           setState(() {
             activePage = const SocialPage();
           });
-          activePageTitle = 'Social';
         }
       } else {
         if (selectedPageIndex == 0) {
           setState(() {
             activePage = const HomePage();
           });
-          activePageTitle = 'korazon';
         } else if (selectedPageIndex == 1) {
           setState(() {
             activePage = const SelectEventForAction(action: HostAction.scan);
           });
-          activePageTitle = 'Start Event';
         }else if (selectedPageIndex == 2) {
           setState(() {
             activePage = const EventCreationScreen();
           });
-          activePageTitle = 'Create Event';
         }  else if (selectedPageIndex == 3) {
           setState(() {
             activePage = const SelectEventForAction(action: HostAction.analytics);
           });
-          activePageTitle = 'Analytics ';
         } else if (selectedPageIndex == 4) {
           setState(() {
             activePage = HostProfileScreen(uid: user.uid,);
           });
-          activePageTitle = user.name;
         }
       }
     }
 
     return user != null
         ? Scaffold(
-           /* appBar: AppBar(
-              backgroundColor: tertiaryColor,
-              automaticallyImplyLeading: false,
-              bottom: PreferredSize(
-      preferredSize: const Size.fromHeight(1.0), // Line heigth
-      child: Container(
-        color: korazonColor,
-        height: 2.0,        // Line width
-      ),
-    ),
-              title: Text(activePageTitle),
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.person),
-                  color: Theme.of(context).colorScheme.primary,
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) {
-                          return const UserSettings();
-                        },
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),*/
             bottomNavigationBar: BottomNavigationBar(
               selectedItemColor: secondaryColor,
               unselectedItemColor: secondaryColor,
               elevation: navBarElevation,
-              backgroundColor: korazonColor,
+              backgroundColor: korazonColorLP,
               onTap: (selectedPageIndex) {
                 _selectedPage(selectedPageIndex);
               },

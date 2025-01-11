@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:korazon/src/screens/singUpLogin/signUpScreen1.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/widgets/eventCard.dart';
@@ -96,6 +97,7 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
     // this is how we know if this is us
@@ -117,21 +119,61 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.only(top: 48),
-                    decoration: const BoxDecoration(
+                    color: korazonColorLP,
+                    /*decoration: const BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
                           korazonColor,
-                          Color.fromARGB(255, 255, 255, 255)
+                          secondaryColor,
                         ],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                       ),
-                    ),
+                    ),*/
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          Stack(
+                              alignment: Alignment.center, // Aligns children at the center of the Stack
+                              children: [
+                                // Centered Text
+                                Align(
+                                  alignment: Alignment.center, // Ensures the text is at the exact middle
+                                  child: Text(
+                                    userData['name'] ?? 'No Name',
+                                    textAlign: TextAlign.center, // Ensures the text stays centered
+                                    style: const TextStyle(
+                                      fontSize: 20,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                // Positioned Icon at the top-right
+                                if (isCurrentUser)
+                                  Positioned(
+                                    right: 16, // Adjust based on your design
+                                    child: InkWell(
+                                      onTap: () async {
+                                        await FirebaseAuth.instance.signOut();
+                                        if (!mounted) return;
+                                        Navigator.of(context).pushReplacement(
+                                          MaterialPageRoute(
+                                            builder: (context) => const SignUpScreen(),
+                                          ),
+                                        );
+                                      },
+                                      child: Icon(
+                                          Icons.login_outlined,
+                                          color: secondaryColor,
+                                          size: 32,
+                                        ),
+                                    ),
+                                  ),
+                              ],
+                            ),
                           // Avatar
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -141,7 +183,7 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
                                 Row(
                                   children: [
                                     CircleAvatar(
-                                      radius: 42,
+                                      radius: 48,
                                       backgroundColor: Colors.white,
                                       child: CircleAvatar(
                                         backgroundColor: Colors.grey,
@@ -152,34 +194,29 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
                                             : const AssetImage(
                                                 'assets/images/no_profile_picture.webp',
                                               ),
-                                        radius: 40,
+                                        radius: 48,
                                       ),
                                     ),
                                     SizedBox(
                                       width: 16,
                                     ),
-                                    Text(
-                                      userData['name'] ?? 'No Name',
-                                      style: const TextStyle(
-                                        fontSize: 20,
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
                                     Spacer(),
                                     buildStatColumn( numberOfCreatedEvents ,'Events'),
-                                    SizedBox(width: 16,),
+                                    SizedBox(width: 32,),
                                     buildStatColumn( followers,'Followers'),
+                                    SizedBox(width: 16,),
                                   ],
                                 ),
                                 const SizedBox(height: 12),
 
                           // Bio
+                          
                           Text(
-                            userData['bio'] ?? 'No bio available',
+                            userData['bio'] ?? '',
                             style: const TextStyle(
                               fontSize: 16,
-                              color: Colors.white70,
+                              color: tertiaryColor,
+                              fontWeight: FontWeight.w500
                             ),
                           ),
                               ],
@@ -194,26 +231,13 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
                               ?
                               // Sign Out button if it's your own profile
                               FollowButton(
-                                  backgroundColor: Colors.grey.shade700,
+                                  backgroundColor: secondaryColor,
                                   borderColor: Colors.grey.shade600,
                                   text: 'Edit Profile',
                                   textColor: tertiaryColor)
 
-                              /*FollowButton(
-        text: 'Sign Out',
-        backgroundColor: secondaryColor,
-        textColor: tertiaryColor,
-        borderColor: Colors.white,
-        function: () async {
-          await AuthMethods().signOut();
-          if (!mounted) return;
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => const SignUpScreen(),
-            ),
-          );
-        },
-      ); */
+                              
+          
                               // If it's someone else's profile, show follow/unfollow button
                               : isFollowing
                                   ? FollowButton(
@@ -254,22 +278,25 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
                                     ),
 
                           const SizedBox(height: 12),
+                         
                         ],
                       ),
+                      
                     ),
+                    
                   ),
 
-
-                  const Divider(
+                 /*  const Divider(
                     thickness: 4,
                     color: secondaryColor,
-                  ),
+                  ), */
+                
 
                   // === Events List ===
                   StreamBuilder<QuerySnapshot>(
                     stream: FirebaseFirestore.instance
                         .collection('events')
-                        .where('host', isEqualTo: widget.uid)
+                        .where('hostId', isEqualTo: widget.uid)
                         .snapshots(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
@@ -313,7 +340,7 @@ Column buildStatColumn(int num, String label) {
           num.toString(),
           style: const TextStyle(
             color: tertiaryColor,
-            fontSize: 18,
+            fontSize: 24,
             fontWeight: FontWeight.w900,
           ),
         ),
@@ -323,7 +350,7 @@ Column buildStatColumn(int num, String label) {
             label,
             style: const TextStyle(
               fontSize: 16,
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w700,
               color: tertiaryColor,
             ),
           ),

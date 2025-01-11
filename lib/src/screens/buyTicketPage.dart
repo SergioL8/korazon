@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:korazon/src/utilities/design_variables.dart';
 
 void buyTicket(BuildContext context, String eventID) async {
   if (FirebaseAuth.instance.currentUser == null) {
@@ -48,38 +49,87 @@ void buyTicket(BuildContext context, String eventID) async {
 }
 
 class BuyTicketPage extends StatelessWidget {
-  const BuyTicketPage({super.key, required this.eventID});
+  const BuyTicketPage({super.key, required this.eventID}); 
   final String eventID;
 
   @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Buy Ticket'),
-        ),
-        body: Center(
-          child: Column(
-            children: [
-              SizedBox(height: 20),
-              Text('Are you sure you want to buy this ticket?'),
-              SizedBox(height: 20),
-              TextButton(
-                onPressed: () {
-                  buyTicket(context, eventID);
-                },
-                style: ButtonStyle(
-                  backgroundColor: WidgetStatePropertyAll(const Color.fromARGB(255, 241, 177, 201)), // light pink background
-                  foregroundColor: WidgetStatePropertyAll(Colors.white), // white text
-                ),
-                child: Text('Buy'),
+   Widget build(BuildContext context) {
+  return Scaffold(
+    backgroundColor: tertiaryColor,
+    body: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min, // Adjust to fit children
+          crossAxisAlignment: CrossAxisAlignment.center, // Horizontal centering
+          children: [
+            // Modal Header
+            Container(
+              width: 60,
+              height: 6,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(20),
               ),
-              SizedBox(height: 20),
-              Text('Are you sure you want to buy this ticket?'),
-            ]
-          ),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Confirm Ticket Purchase',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Are you sure you want to buy this ticket?',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 14, color: Colors.grey),
+            ),
+
+            const SizedBox(height: 20),
+
+            // Buy Button
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: korazonColor,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 40,
+                  vertical: 12,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(25),
+                ),
+              ),
+              onPressed: () {
+                buyTicket(context, eventID); // Implement your purchase logic
+              },
+              child: const Text(
+                'Confirm Purchase',
+                style: TextStyle(
+                  fontSize: 24,
+                  color: secondaryColor,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 12),
+
+            // Cancel Button
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close the modal
+              },
+              child: const Text(
+                'Cancel',
+                style: TextStyle(fontSize: 14, color: Colors.grey),
+              ),
+            ),
+          ],
         ),
-      )
-    );
-  }
+      ),
+    ),
+  );
+}
 }

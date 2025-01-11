@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:korazon/src/data/providers/user_provider.dart';
+import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/widgets/pickDateTime.dart';
 import 'package:provider/provider.dart';
-import 'package:uuid/uuid.dart';
 import 'package:wheel_chooser/wheel_chooser.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:korazon/src/utilities/utils.dart';
-import 'package:korazon/src/data/models/event.dart' as model;
 
 
 
@@ -39,18 +38,15 @@ class EventCreationScreenState extends State<EventCreationScreen> {
   bool _isLoading = false; // this variable will be used to show a loading spinner when the user clicks the submit button
   Uint8List? _photofile; // this variable will be used to store the image file that the user uploads
 
- 
+
 
 
 
   /// This function uploads the image to firebase storage and the event to firebase firestore. It uses the function from utils compressImage
   /// 
   /// The function doesn't take any parameters and doesn't return anything. But the result is the event uploaded to firestore
-  /// 
-  /// we could get the user data when posting but provider will do the work for those values 
   void postEvent(
-    String? profilePicUrl,
-    String? name,
+    String? hostName, 
   ) async {
 
     // Dismiss the keyboard
@@ -59,6 +55,7 @@ class EventCreationScreenState extends State<EventCreationScreen> {
     // Check mandatory inputs
     if (_titleController.text.isEmpty) {
       print('Title is empty. Use alert box in the future');
+
       return;
     }
     if (_dateTimeController.text.isEmpty) {
@@ -102,44 +99,26 @@ class EventCreationScreenState extends State<EventCreationScreen> {
     }
 
     try {
-      
-      String eventId = const Uuid().v1(); // creates a unique id for the post every time
-
-      model.Event event = model.Event(
-        hostId: uid,
-        hostName: name,
-        hostProfilePicture: profilePicUrl,
-        title: _titleController.text,
-        description: _descriptionController.text,
-        dateTime: _dateTimeController.text,
-        location: _locationController.text,
-        price: double.parse(_priceController.text),
-        age: double.parse(_ageController.text),
-        photoPath: fileRef.fullPath,
-      );
-
-      await FirebaseFirestore.instance.collection('events').doc(eventId).set(event.toJson(),); //we can format the document
-      /*
       // save the event to firebase firestore
       DocumentReference docRef = await FirebaseFirestore.instance.collection('events').add({
-        //'title': _titleController.text,
-        //'description': _descriptionController.text,
-        //'dateTime': _dateTimeController.text,
-        //'location': _locationController.text,
+        'title': _titleController.text,
+        'description': _descriptionController.text,
+        'dateTime': _dateTimeController.text,
+        'location': _locationController.text,
         'price': double.parse(_priceController.text),
         'age': double.parse(_ageController.text),
-        //'photoPath': fileRef.fullPath,
-        //'hostId': uid,
-        //'profilePicUrl':profilePicUrl,
-        //'hostName': name,
-      }); */
+        'photoPath': fileRef.fullPath,
+        'hostId': uid,
+        'hostName': hostName,
+      });
 
 
       print('uid: $uid');
       // add the created event to the host list of events
       await FirebaseFirestore.instance.collection('users').doc(uid).update({
-        'createdEvents': FieldValue.arrayUnion([eventId]),
+        'createdEvents': FieldValue.arrayUnion([docRef.id])
       });
+
 
       // Clear all controllers
       _titleController.clear();
@@ -165,6 +144,10 @@ class EventCreationScreenState extends State<EventCreationScreen> {
     });
   }
 
+
+
+
+
   @override
   Widget build(BuildContext context) {
 
@@ -172,6 +155,28 @@ class EventCreationScreenState extends State<EventCreationScreen> {
     final user = userProvider.getUser;
     
     return Scaffold(
+      appBar: AppBar(
+            backgroundColor: korazonColorLP,
+            automaticallyImplyLeading: false,
+            title: Row(
+              children: [
+                const Text('Create an Event',
+                style: TextStyle(
+                  color: secondaryColor,
+                  fontWeight: primaryFontWeight,
+                  fontSize: 32.0,
+                ),
+                ),
+              ],
+            ),
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(2.0),
+              child: Container(
+                color: korazonColor,
+                height: 4.0,
+              ),
+            ),
+          ),
       body: Center(
         child: SingleChildScrollView( // makes the column scrollable
           child: Padding(
@@ -384,12 +389,9 @@ class EventCreationScreenState extends State<EventCreationScreen> {
 
                 // POST EVENT BUTTON
                 InkWell(
-                   onTap: () {
-                    postEvent(
-                      user?.profilePicUrl,
-                      user?.name,
-                    );
-                  },
+                  onTap:() => postEvent(
+                    user?.name,
+                  ),
                   child: Container(
                     height: MediaQuery.of(context).size.height * 0.12, // set the container to a height relative to the device
                     width: double.infinity, // take the full width of the screen

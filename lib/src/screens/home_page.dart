@@ -102,17 +102,27 @@ Widget build(BuildContext context) {
             snap: true,
             floating: true,
             // or pinned: true if desired
-            backgroundColor: tertiaryColor,
+            backgroundColor: korazonColorLP,
             automaticallyImplyLeading: false,
-            title: const Text('Korazon',
-            style: TextStyle(
-              color: secondaryColor,
-              fontWeight: primaryFontWeight,
-              fontSize: 32.0,
-            ),
+            title: Row(
+              children: [
+                const Icon(
+                  Icons.account_balance, // Greek temple-like icon
+                  size: 40,
+                  color: secondaryColor,
+                ),
+                SizedBox(width: 8.0), // spacing between the icon and the text
+                const Text('Korazon',
+                style: TextStyle(
+                  color: secondaryColor,
+                  fontWeight: primaryFontWeight,
+                  fontSize: 32.0,
+                ),
+                ),
+              ],
             ),
             bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(3.0),
+              preferredSize: const Size.fromHeight(2.0),
               child: Container(
                 color: korazonColor,
                 height: 4.0,

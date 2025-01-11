@@ -101,9 +101,10 @@ class _EventCardState extends State<EventCard> {
                         children: [
                           CircleAvatar(
                             backgroundColor: korazonColor,
-                            backgroundImage: widget.document['profilePicUrl'] != null ?  AssetImage(
-                              widget.document['profilePicUrl'],
-                            ):AssetImage(
+                            backgroundImage:
+                            // TODO: poner la imagen de perfil del user
+                            // widget.document['hostProfilePicture'] ??
+                            AssetImage(
                               'assets/images/no_profile_picture.webp',
                             ),
                             radius: 20,

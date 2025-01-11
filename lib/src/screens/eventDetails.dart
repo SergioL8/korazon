@@ -20,18 +20,21 @@ class EventDetails extends StatelessWidget {
   final String formattedDate;
   final String formattedTime;
 
-
   @override
   Widget build(BuildContext context) {
     final String eventName = document['title'];
     final String eventDescription = document['description'];
     final double eventAge = document['age'];
-    final String eventID = document.id;
+    final String eventId = document.id;
+    final String hostName = document['hostName'];
+    final String hostId = document['hostId'];
 
     return Scaffold(
       // AppBar with a slightly transparent background
+      backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
-        title: Text('Event Details',
+        title: Text(
+          'Event Details',
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
@@ -39,26 +42,25 @@ class EventDetails extends StatelessWidget {
           ),
         ),
         elevation: 0,
-        backgroundColor: korazonColor,
+        backgroundColor: korazonColorLP,
       ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
+            // === Event Name ===
 
-             // === Event Name ===
-
-                        Padding(
-                          padding: const EdgeInsets.only(left: 32,right: 32, top: 16),
-                          child: Text(
-                            eventName,
-                            style: const TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
+            Padding(
+              padding: const EdgeInsets.only(left: 32, right: 32, top: 16),
+              child: Text(
+                eventName,
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
             // === Hero Image ===
             // Put the image in a top container with rounded corners
             Padding(
@@ -101,25 +103,24 @@ class EventDetails extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-
                         // === Creator Name ===
                         InkWell(
                           onTap: () => Navigator.of(context).push(
-                            MaterialPageRoute(
-                            builder: (context) => HostProfileScreen(uid: document['host']))),
-                            child: Row(
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      HostProfileScreen(uid: hostId))),
+                          child: Row(
                             children: [
                               CircleAvatar(
-                            backgroundColor: korazonColor,
-                            backgroundImage: const AssetImage(
-                              'assets/images/no_profile_picture.webp',
-                            ),
-                            radius: 20,
-                          ),
-                               SizedBox(width: 8),
-                          
+                                backgroundColor: korazonColor,
+                                backgroundImage: const AssetImage(
+                                  'assets/images/no_profile_picture.webp',
+                                ),
+                                radius: 20,
+                              ),
+                              SizedBox(width: 8),
                               Text(
-                                'Host Name',
+                                hostName,
                                 style: const TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold,
@@ -151,7 +152,7 @@ class EventDetails extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(width: 16),
-                             Text(
+                            Text(
                               formattedTime,
                               style: const TextStyle(
                                 fontSize: 16,
@@ -165,7 +166,6 @@ class EventDetails extends StatelessWidget {
                         // === Event Age ===
                         Row(
                           children: [
-                            
                             Text(
                               'Age: $eventAge+',
                               style: const TextStyle(
@@ -183,29 +183,37 @@ class EventDetails extends StatelessWidget {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: korazonColor,
                               padding: const EdgeInsets.symmetric(
-                                horizontal: 24,
+                                horizontal: 40,
                                 vertical: 12,
                               ),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(25),
+                                borderRadius: BorderRadius.circular(24),
                               ),
                             ),
                             onPressed: () {
                               showModalBottomSheet(
                                 useSafeArea: true,
                                 isScrollControlled: true,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.vertical(
+                                    top: Radius.circular(24),
+                                  ),
+                                ),
                                 context: context,
-                                builder: (ctx) => SafeArea(
-                                  child: BuyTicketPage(eventID: eventID),
+                                builder: (ctx) => FractionallySizedBox(
+                                  heightFactor:
+                                      0.35, // Occupies 50% of the screen height
+                                  child: BuyTicketPage(eventID: eventId),
                                 ),
                               );
                             },
                             child: const Text(
-                              'Buy Ticket',
+                              'Buy Now',
                               style: TextStyle(
-                                fontSize: 16,
-                                color: secondaryColor
-                                ),
+                                  fontSize: 24, 
+                                  color: secondaryColor,
+                                  fontWeight: FontWeight.w800
+                                  ),
                             ),
                           ),
                         ),

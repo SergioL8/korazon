@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/widgets/selectEventCard.dart';
 import 'package:flutter/material.dart';
 import 'package:korazon/src/utilities/utils.dart';
@@ -26,7 +27,7 @@ class _SelectEventForActionState extends State<SelectEventForAction> {
 
 
   List<String> listOfCreatedEvents = []; // list of the events that the host has created
-  bool _isLoading = true; // boolean to check if the events created by the user are still loading
+  bool _isLoading = false; // boolean to check if the events created by the user are still loading
 
 
 
@@ -37,6 +38,9 @@ class _SelectEventForActionState extends State<SelectEventForAction> {
   /// 
   /// Returns a list of event IDs
   void _getListOfEvents() async {
+    setState(() {
+      _isLoading = true;
+    });
     
     // Get current user ID and check that it is not null
     final uid = FirebaseAuth.instance.currentUser?.uid;
@@ -56,6 +60,7 @@ class _SelectEventForActionState extends State<SelectEventForAction> {
     // Get the list of event IDs from the user document
     setState(() {
       listOfCreatedEvents = List<String>.from(userDocument.data()?['createdEvents'] ?? []);
+      print('SET STATE REACHED');
       _isLoading = false;
     });
   }
@@ -77,6 +82,24 @@ class _SelectEventForActionState extends State<SelectEventForAction> {
   @override 
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+            backgroundColor: korazonColorLP,
+            automaticallyImplyLeading: false,
+            title: Text(widget.action == HostAction.scan? 'Scan Events' : 'Analytics',
+            style: TextStyle(
+                  color: secondaryColor,
+                  fontWeight: primaryFontWeight,
+                  fontSize: 32.0,
+                ),
+            ), // set the app bar title based on the action
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(2.0),
+              child: Container(
+                color: korazonColor,
+                height: 4.0,
+              ),
+            ),
+          ),
       body: _isLoading // dynamically set the loading indicator or show the list of events
         ? const Center(child: CircularProgressIndicator()) 
         : listOfCreatedEvents.isEmpty  // check if the user has created any events

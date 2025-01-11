@@ -1,6 +1,6 @@
 import 'package:korazon/src/screens/hostscreens/accessToEvent/scanner.dart';
-import 'package:korazon/src/screens/hostscreens/hostAnalytics.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:korazon/src/screens/hostscreens/hostAnalytics.dart';
 import 'package:korazon/src/utilities/utils.dart';
 import 'package:flutter/material.dart';
 import 'dart:typed_data';
@@ -112,7 +112,7 @@ class _SelectEventCardState extends State<SelectEventCard> {
             : IconButton(  // else show the analytics icon button
               onPressed: () {
                 Navigator.of(context).push(
-                  MaterialPageRoute(builder: (context) { return HostAnalytics(); },) // navigate to the analytics screen
+                  MaterialPageRoute(builder: (context) { return HostanAlytics(); },) // navigate to the analytics screen
                 );
               },
               icon: Icon(Icons.analytics),
