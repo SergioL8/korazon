@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:korazon/src/screens/login_screen.dart';
+import 'package:korazon/src/screens/basePage.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/screens/singUpLogin/hostSignUp.dart';
 import 'package:korazon/src/screens/singUpLogin/signUpScreen2.dart';
@@ -127,6 +127,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
     setState(() {
       isLoading = false;
     });
+
+    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const BasePage()));
     
   }
 
