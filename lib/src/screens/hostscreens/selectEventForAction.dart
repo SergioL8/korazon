@@ -51,7 +51,6 @@ class _SelectEventForActionState extends State<SelectEventForAction> {
 
     // Get the user document from Firestore and check that it exists
     final userDocument = await FirebaseFirestore.instance.collection('users').doc(uid).get();
-    print('userDocument ${userDocument.data()}');
     if (!userDocument.exists) {
       print('There was an error loading the events, try again later. In the future use an alert box');
       return;

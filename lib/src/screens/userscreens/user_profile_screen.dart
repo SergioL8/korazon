@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:korazon/src/cloudresources/signedin_logic.dart';
 import 'dart:convert'; // For base64 decoding
 // import 'dart:typed_data'; // For Uint8List
 import 'package:korazon/src/screens/login_screen.dart';
@@ -67,7 +68,7 @@ class _UserSettingsState extends State<UserSettings> {
             onPressed: () {
               FirebaseAuth.instance.signOut();
               Navigator.of(context).pop();
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) => const LoginScreen()));
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) => const isSignedLogic()));
             },
           ),
         ],

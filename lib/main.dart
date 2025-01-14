@@ -32,15 +32,9 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-          create: (context)=> UserProvider(),),
-      ],
-      child: MaterialApp(
-        title: 'korazon',
-        home: const isSignedLogic(),
-    ),
+    return MaterialApp(
+      title: 'korazon',
+      home: const isSignedLogic(),
     );
   }
 }
