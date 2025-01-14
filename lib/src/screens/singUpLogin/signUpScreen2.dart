@@ -19,32 +19,42 @@ class SignUpScreen2 extends StatefulWidget {
 }
 
 
+
 class _SignUpScreen2State extends State<SignUpScreen2> {
 
-
+  // text field controllers
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _genderController = TextEditingController();
   final TextEditingController _ageController = TextEditingController(text: '18');
 
+  // focus nodes to detect when the text field is in focus
   final FocusNode _nameFocusNode = FocusNode();
   final FocusNode _lastNameFocusNode = FocusNode();
 
+  // variable declaration
   bool _siningUpLoading = false;
 
 
+
+  /// Function to sign up the user
+  /// This function validates the fields and then signs up the user.
+  /// 
   void signUpUser() async {
 
     if (_siningUpLoading) return; // check for double tap from the user
 
     _siningUpLoading = true; // update the variable but don't call setState becayse I don't want the UI to update if there are empty fields
 
+    // check for empty fields
     if (_nameController.text.isEmpty || _lastNameController.text.isEmpty) {
       showSnackBar(context, 'Please fill all the fields. In the future use an alert box');
+      _siningUpLoading = false;
       return;
     }
     if (_genderController.text.isEmpty) {
       showSnackBar(context, 'Please select a gender. In the future use an alert box');
+      _siningUpLoading = false;
       return;
     }
 
@@ -70,24 +80,22 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
         'isHost': false,
       });
 
+      // Why is this necessary push needed? Because even though the streambuild of "signedin_logic.dart" is listening to the authentication state, we are
+      // not in the same page that the streambuilder has returned. So we need to push the new page to the navigator stack.
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const BasePage()));
 
     } catch (e) {
-      print('Error creating user: $e');
+      print('Error creating user. Please try again. In the future use an alert box');
     }
 
     setState(() {
       _siningUpLoading = false;
     });
-
-
-    
-
   }
 
 
 
-
+  // Initialize the listeners for the focus nodes
   @override
   void initState() {
     super.initState();
@@ -98,6 +106,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
       setState(() {});
     });
   }
+
 
 
   @override
@@ -125,7 +134,8 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
             Row(
               children: [
                 Expanded(
-                  child: TextFormField( // LOCATION text field
+                  child: TextFormField(
+                    autocorrect: false, // Disable auto-correction
                     controller: _nameController, // set the controller
                     focusNode: _nameFocusNode,
                     decoration: InputDecoration(
@@ -158,7 +168,8 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
                 const SizedBox(width: 20),
 
                 Expanded(
-                  child: TextFormField( // LOCATION text field
+                  child: TextFormField( 
+                    autocorrect: false, // Disable auto-correction
                     controller: _lastNameController, // set the controller
                     focusNode: _lastNameFocusNode,
                     decoration: InputDecoration(
@@ -292,7 +303,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
               ],
             ),
             const SizedBox(height: 50, width: double.infinity,),
-            InkWell(
+            InkWell( // make the container clickable
               onTap: signUpUser,
               child: Container(
                 height: 75, // set the container to a height relative to the device

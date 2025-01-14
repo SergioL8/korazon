@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:korazon/src/screens/basePage.dart';
 // import 'package:korazon/src/screens/signup_screen.dart';
-import 'package:korazon/src/screens/singUpLogin/signUpScreen1.dart';
+import 'package:korazon/src/screens/singUpLogin/signUpLogin.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 
 
