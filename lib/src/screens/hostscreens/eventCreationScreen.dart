@@ -106,7 +106,6 @@ class EventCreationScreenState extends State<EventCreationScreen> {
       });
 
 
-      print('uid: $uid');
       // add the created event to the host list of events
       await FirebaseFirestore.instance.collection('users').doc(uid).update({
         'createdEvents': FieldValue.arrayUnion([docRef.id])
