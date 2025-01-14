@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-// import 'package:korazon/src/data/providers/user_provider.dart';
 import 'package:korazon/src/screens/home_page.dart';
 import 'package:korazon/src/screens/hostscreens/hostProfile.dart';
 import 'package:korazon/src/screens/userscreens/socialPage.dart';
 import 'package:korazon/src/screens/userscreens/yourEvents.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
-// import 'package:provider/provider.dart';
 import 'package:korazon/src/screens/hostscreens/eventCreationScreen.dart';
 import 'package:korazon/src/screens/hostscreens/selectEventForAction.dart';
 import 'package:korazon/src/utilities/utils.dart';
@@ -24,7 +22,7 @@ class BasePage extends StatefulWidget {
 
 class _BasePage extends State<BasePage> {
   int selectedPageIndex = 0;
-
+  String? _uid;
   bool? isHost;
 
   void _selectedPage(int index) {
@@ -57,6 +55,7 @@ class _BasePage extends State<BasePage> {
 
     setState(() {
       isHost = host;
+      _uid = uid;
     });
   }
 
@@ -77,13 +76,8 @@ class _BasePage extends State<BasePage> {
 
   @override
   Widget build(BuildContext context) {
-    // final userProvider = Provider.of<UserProvider>(context);
-    // final user = userProvider.getUser;
-    // final host = user?.isHost;
-  
 
     Widget activePage = const HomePage();
-
 
     if (isHost == null) {
       return const Scaffold(
@@ -100,51 +94,43 @@ class _BasePage extends State<BasePage> {
         setState(() {
           activePage = const HomePage();
         });
-        activePageTitle = 'korazon';
       } else if (selectedPageIndex == 1) {
         setState(() {
           activePage = const YourEvents();
         });
-        activePageTitle = 'Your Events';
       } else if (selectedPageIndex == 2) {
         setState(() {
           activePage = const SocialPage();
         });
-        activePageTitle = 'Social';
       }
-    } 
-    
-    
-    else {
+    } else {
       if (selectedPageIndex == 0) {
         setState(() {
           activePage = const HomePage();
         });
-        activePageTitle = 'korazon';
       } else if (selectedPageIndex == 1) {
         setState(() {
           activePage = const EventCreationScreen();
         });
-        activePageTitle = 'Create Event';
       }else if (selectedPageIndex == 2) {
         setState(() {
           activePage = const SelectEventForAction(action: HostAction.scan);
         });
-        activePageTitle = 'Start Event';
       } else if (selectedPageIndex == 3) {
         setState(() {
           activePage = const SelectEventForAction(action: HostAction.analytics);
         });
-        activePageTitle = 'Analytics ';
       } else if (selectedPageIndex == 4) {
           setState(() {
-            activePage = HostProfileScreen(uid: user.uid,);
+            // If have used the null assertion operator because if the uid is null this would
+            // never execute
+            activePage = HostProfileScreen(uid: _uid!);
           });
         }
     }
-    
+  
 
-         Scaffold(
+    return Scaffold(
             bottomNavigationBar: BottomNavigationBar(
               selectedItemColor: secondaryColor,
               unselectedItemColor: secondaryColor,

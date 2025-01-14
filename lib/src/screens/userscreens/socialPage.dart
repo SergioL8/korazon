@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:korazon/src/screens/singUpLogin/signUpScreen1.dart';
+import 'package:korazon/src/screens/singUpLogin/signUpLogin.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 
 class SocialPage extends StatelessWidget{
