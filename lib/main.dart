@@ -13,7 +13,6 @@ void main() async {
     name: 'korazon_app', // String.fromCharCode(charCode),
     options: DefaultFirebaseOptions.currentPlatform,
   );
- // FirebaseAppCheck.instance.activate();
 
   await FirebaseAppCheck.instance.activate(
     //providerFactory: AppCheckProviderFactory.debugProviderFactory,

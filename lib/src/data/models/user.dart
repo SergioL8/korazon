@@ -6,13 +6,14 @@ class User {
   final String uid;
   final bool isHost;
   final bool? gender;
-  final String username; //this is a data map
+  final String username; // we are not using the username right now 
   final String name;
   final String? bio;
   final int? age;
   final String? profilePicUrl;
   final String? qrCode;
   final List? yourEvents;  //List with the event eventids
+  final List<String>? followers;
   final String? instagram;
 
   const User ({
@@ -27,6 +28,7 @@ class User {
     this.profilePicUrl,
     this.qrCode,
     this.yourEvents,
+    this.followers,
     this.instagram,
   });
 
@@ -42,6 +44,7 @@ class User {
     "qrCode": qrCode,
     "yourEvents": yourEvents,
     "instagram": instagram,
+    "followers": followers,
   };
 
   static User fromSnap(DocumentSnapshot snap){ 
@@ -59,7 +62,8 @@ class User {
       age: snapshot['age'],
       profilePicUrl: snapshot['profilePicUrl']?? '',
       qrCode: snapshot['qrCode']?? '',
-      yourEvents: snapshot['yourEvents'],
+      yourEvents: snapshot['yourEvents']??[], 
+      followers: snapshot['followers']??[],
     );
   }
 }

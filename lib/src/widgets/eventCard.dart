@@ -1,83 +1,194 @@
+import 'dart:typed_data';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:transparent_image/transparent_image.dart';
-import 'dart:typed_data';
+import 'package:intl/intl.dart';
 import 'package:korazon/src/screens/eventDetails.dart';
+import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/utilities/utils.dart';
+import 'package:transparent_image/transparent_image.dart';
 
-
-
-
-
-
-
-
-class EventCard extends StatelessWidget {
-
+class EventCard extends StatefulWidget {
   const EventCard({super.key, required this.document});
   final DocumentSnapshot document;
-  
-
 
   @override
-  Widget build (context) {
+  State<EventCard> createState() => _EventCardState();
+}
+class _EventCardState extends State<EventCard> {
+  bool isLikeAnimating = false;
 
-    
+  @override
+  Widget build(BuildContext context) {
 
-    final String eventName = document['title'];
-    final double eventAge = document['age'];
-    final String eventImage = document['photoPath'];
+    final String dateTimeStr = widget.document['dateTime']; // e.g., "2025-01-15 22:00"
+    DateTime eventDateTime = DateTime.parse(dateTimeStr);
 
+    // Format the date and time separately
+    String formattedDate = DateFormat('MMMM d, yyyy').format(eventDateTime); // e.g., "January 15, 2025"
+    String formattedTime = DateFormat('h:mm a').format(eventDateTime); // e.g., "10:00 PM"
 
     return FutureBuilder<Uint8List?>(
-      future: getImage(eventImage),
+      future: getImage(widget.document['photoPath']),
       builder: (context, snapshot) {
+        return InkWell(
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => EventDetails(
+                document: widget.document,
+                imageData: snapshot.data,
+                formattedDate: formattedDate,
+                formattedTime: formattedTime,
+              ),
+            ),
+          ),
 
-        return Card(
-          margin: const EdgeInsets.all(10),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          clipBehavior: Clip.hardEdge, // this gives the borders a nice, curved look
-          elevation: 2, // this gives a bit of elevation to the card with respect the background (shadow of the card) 
-          child: InkWell(
-            onTap: () { 
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => EventDetails(
-                    document: document,
-                    imageData: snapshot.data,
-                  )
-                )
-              );
-
-             },
-            child: Stack(
+          /// We keep a `margin` so the card is spaced nicely,
+          /// but remove any background color/shadow from the Container.
+          child: Container(
+            margin: const EdgeInsets.only(bottom: 16.0, right: 16, left: 16),
+            child: Column(
               children: [
-                Hero(
-                  tag: document.id,
-                  child: FadeInImage(
-                    placeholder: MemoryImage(kTransparentImage),
-                    // image: snapshot.data ?? 'https://cdn.pixabay.com/photo/2017/07/21/23/57/concert-2527495_640.jpg',
-                    image: snapshot.data != null
-                          ? MemoryImage(snapshot.data!)
-                          : AssetImage('assets/images/pary.jpg'),
-                    fit: BoxFit.cover, // make sure that the image is properly fittet
-                    height: 200,
-                    width: double.infinity,
-                  ),
+                // Stack so the CircleAvatar can float over the clipped image.
+                Stack(
+                  children: [
+                    // 1) Clip the image with a rounded border:
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Hero(
+                        tag: widget.document.id,
+                        flightShuttleBuilder: (
+                          flightContext,
+                          animation,
+                          flightDirection,
+                          fromHeroContext,
+                          toHeroContext,
+                        ) {
+                          // Keep your slower animation curve:
+                          final curvedAnimation = CurvedAnimation(
+                            parent: animation,
+                            curve: Curves.easeInOut,
+                          );
+                          return AnimatedBuilder(
+                            animation: curvedAnimation,
+                            builder: (context, child) {
+                              return flightDirection == HeroFlightDirection.push
+                                  ? toHeroContext.widget
+                                  : fromHeroContext.widget;
+                            },
+                          );
+                        },
+                        child: FadeInImage(
+                          placeholder: MemoryImage(kTransparentImage),
+                          image: snapshot.data != null
+                              ? MemoryImage(snapshot.data!)
+                              : const AssetImage('assets/images/pary.jpg')
+                                  as ImageProvider,
+                          fit: BoxFit.cover,
+                          height: 400,
+                          width: double.infinity,
+                        ),
+                      ),
+                    ),
+
+                    // 2) Position the CircleAvatar so it overlaps the image:
+                    Positioned(
+                      top: 16,
+                      left: 16,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: 44, // Adjust to fit your desired border size (radius + border thickness)
+                            height: 44, // Same as width
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle, 
+                              border: Border.all(
+                                color: Colors.white, // White border color
+                                width: 2.0, // Border width
+                              ),
+                            ),
+                            child: CircleAvatar(
+                              backgroundColor: korazonColor,
+                              backgroundImage: widget.document['hostProfilePicUrl'] != null
+                                  ? NetworkImage(widget.document['hostProfilePicUrl'])
+                                  : AssetImage(
+                                      'assets/images/no_profile_picture.webp',
+                                    ) as ImageProvider,
+                              radius: 20, // Adjust to fit inside the container
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            widget.document['hostName']?? 'No host name',
+                            //widget.document['hostName'],
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
+                              color: tertiaryColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: Container( // this container shows the preview information (how had and expensie the recipe is) 
-                    color: Colors.black54,
-                    padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 44),
-                    child: Text('Event Name: $eventName, Age: $eventAge', style: const TextStyle(fontSize: 20, color: Colors.white), textAlign: TextAlign.center),
-                  ),
+
+                // (Optional) If you still want the "Host Name" below the image,
+                // simply add it here (or inside a separate Padding/Row):
+                
+
+              
+                // Date and Time Section
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            // Date
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.calendar_today, 
+                                  color: secondaryColor,
+                                  size: 24,
+                                  ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  formattedDate,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ],
+                            ),
+
+                            // Time
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.access_time, 
+                                  color: secondaryColor,
+                                   size: 24,
+                                   ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  formattedTime,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                 ),
               ],
-            )
-          )    
+            ),
+          ),
         );
       },
     );

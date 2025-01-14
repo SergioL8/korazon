@@ -1,24 +1,16 @@
 import 'package:flutter/material.dart';
 
-
-class HostAnalytics extends StatefulWidget {
-  const HostAnalytics({super.key});
-
-  @override
-  State<HostAnalytics> createState() => _HostAnalyticsState();
-}
-
-class _HostAnalyticsState extends State<HostAnalytics> {
-
+class HostanAlytics extends StatelessWidget {
+  const HostanAlytics({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Analytics'),
+        title: Text('HostanAlytics'),
       ),
-      body: const Center(
-        child: Text('Host Analytics'),
+      body: Center(
+        child: Text('HostanAlytics Fr fr'),
       ),
     );
   }

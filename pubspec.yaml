@@ -69,6 +69,7 @@ flutter:
     - assets/images/starship.jpg
     - assets/images/pary.jpg
     - assets/images/profilePicture.jpeg
+    - assets/images/no_profile_picture.webp
   #   - images/a_dot_ham.jpeg
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
