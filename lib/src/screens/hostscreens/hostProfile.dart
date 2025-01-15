@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:korazon/main.dart';
 import 'package:korazon/src/screens/hostscreens/editHostProfile.dart';
 import 'package:korazon/src/screens/singUpLogin/signUpLogin.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
@@ -112,6 +113,47 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
             ),
           )
         : Scaffold(
+            appBar: AppBar(
+              backgroundColor: korazonColorLP,
+              title: Text(
+                userData['name'] ?? 'No Name',
+                textAlign: TextAlign.center, // Ensures the text stays centered
+                style: const TextStyle(
+                  fontSize: 20,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              actions: isCurrentUser 
+              ? [
+                  InkWell(
+                    onTap: () async {
+                      await FirebaseAuth.instance.signOut();
+                      if (!mounted) return;
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                          builder: (context) => const SignUpScreen(),
+                        ),
+                      );
+                    },
+                    child: Icon(
+                        Icons.login_outlined,
+                        color: secondaryColor,
+                        size: 32,
+                      ),
+                  ),
+                ]
+              : [],
+              leading: !isCurrentUser ?
+              IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              )
+              : null,
+                
+            ),
             backgroundColor: tertiaryColor,
             body: SingleChildScrollView(
               child: Column(
@@ -121,61 +163,11 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
                     width: double.infinity,
                     padding: const EdgeInsets.only(top: 48),
                     color: korazonColorLP,
-                    /*decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          korazonColor,
-                          secondaryColor,
-                        ],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),
-                    ),*/
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Stack(
-                              alignment: Alignment.center, // Aligns children at the center of the Stack
-                              children: [
-                                // Centered Text
-                                Align(
-                                  alignment: Alignment.center, // Ensures the text is at the exact middle
-                                  child: Text(
-                                    userData['name'] ?? 'No Name',
-                                    textAlign: TextAlign.center, // Ensures the text stays centered
-                                    style: const TextStyle(
-                                      fontSize: 20,
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                                // Positioned Icon at the top-right
-                                if (isCurrentUser)
-                                  Positioned(
-                                    right: 16, // Adjust based on your design
-                                    child: InkWell(
-                                      onTap: () async {
-                                        await FirebaseAuth.instance.signOut();
-                                        if (!mounted) return;
-                                        Navigator.of(context).pushReplacement(
-                                          MaterialPageRoute(
-                                            builder: (context) => const SignUpScreen(),
-                                          ),
-                                        );
-                                      },
-                                      child: Icon(
-                                          Icons.login_outlined,
-                                          color: secondaryColor,
-                                          size: 32,
-                                        ),
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          // Avatar
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 8.0),
                             child: Column(

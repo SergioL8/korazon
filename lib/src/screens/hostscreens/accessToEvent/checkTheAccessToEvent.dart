@@ -93,7 +93,10 @@ class _CheckForAccessToEventState extends State<CheckForAccessToEvent> {
 
                       SizedBox(height: MediaQuery.of(context).size.height * 0.03),
 
-                      Text('User has access to event', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+                      Text(
+                        snapshot.data! ? 'User has access to event' : 'User does not have access to event', // show the message depending on the access
+                        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)
+                      ),
                       
                       SizedBox(height: MediaQuery.of(context).size.height * 0.03),
 

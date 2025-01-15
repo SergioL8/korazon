@@ -124,7 +124,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
 
-          // SliverToBoxAdapter(child: SizedBox(height: 20),),
+          SliverToBoxAdapter(child: SizedBox(height: 20),),
 
           SliverToBoxAdapter(
             child: _documents.isEmpty && !_isLoading
