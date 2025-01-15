@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:korazon/src/screens/signup_screen.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/cloudresources/authentication.dart';
@@ -7,7 +6,6 @@ import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/widgets/textfield.dart';
 import 'package:korazon/src/screens/basePage.dart';
 
-final _firebase = FirebaseAuth.instance;
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

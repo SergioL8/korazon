@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:korazon/src/cloudresources/signedin_logic.dart';
 import 'dart:convert'; // For base64 decoding
+// import 'dart:typed_data'; // For Uint8List
 
 
 class UserSettings extends StatefulWidget{

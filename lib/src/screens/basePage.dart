@@ -129,7 +129,6 @@ class _BasePage extends State<BasePage> {
         }
     }
   
-
     return Scaffold(
             bottomNavigationBar: BottomNavigationBar(
               selectedItemColor: secondaryColor,
