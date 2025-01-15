@@ -137,7 +137,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               fontSize: 32.0,
             ),
           ),
-        backgroundColor: korazonColorLP,
+        backgroundColor: appBarColor,
         actions: [
           IconButton(
             icon: const Icon(Icons.save),

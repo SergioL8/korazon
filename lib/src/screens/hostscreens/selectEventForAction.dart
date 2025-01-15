@@ -82,7 +82,7 @@ class _SelectEventForActionState extends State<SelectEventForAction> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-            backgroundColor: korazonColorLP,
+            backgroundColor: appBarColor,
             automaticallyImplyLeading: false,
             title: Text(widget.action == HostAction.scan? 'Scan Events' : 'Analytics',
             style: TextStyle(

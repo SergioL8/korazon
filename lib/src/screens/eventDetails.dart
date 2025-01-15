@@ -43,7 +43,14 @@ class EventDetails extends StatelessWidget {
           ),
         ),
         elevation: 0,
-        backgroundColor: korazonColorLP,
+        backgroundColor: appBarColor,
+        bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(2.0),
+              child: Container(
+                color: dividerColor,
+                height: barThickness,
+              ),
+            ),
       ),
       body: SingleChildScrollView(
         child: Column(
