@@ -124,7 +124,9 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
 
-          SliverToBoxAdapter(child: SizedBox(height: 20),),
+          //SliverToBoxAdapter(child: SizedBox(height: 20),),
+
+          // I added the padding to the postcard so that it is consistent across the app 
 
           SliverToBoxAdapter(
             child: _documents.isEmpty && !_isLoading

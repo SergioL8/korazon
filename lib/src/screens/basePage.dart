@@ -206,6 +206,5 @@ class _BasePage extends State<BasePage> {
             ),
             body: activePage
     );
-
   }
 }

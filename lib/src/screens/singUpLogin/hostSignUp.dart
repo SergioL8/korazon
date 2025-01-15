@@ -37,12 +37,12 @@ class HostSignUp extends StatelessWidget {
                   size: 100,
                   color: secondaryColor,
                 ),
-                Text(
+                /*Text(
                   'Greek Life',
                   style: TextStyle(
                     color: secondaryColor,
                   ),
-                ),
+                ),*/
           
                 const SizedBox(height: 30,),
           

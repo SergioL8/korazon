@@ -4,7 +4,10 @@ Note: check for release fingerprint of android (this is related with google logi
 Note: Make all paddings proportional to the size of the screen
 
 flutter run -d chrome --web-renderer html
- 
+
+flutter build web --web-renderer html --release
+
+
 Next steps:
 
 ### - Mario:

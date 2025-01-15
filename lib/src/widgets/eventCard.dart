@@ -46,7 +46,7 @@ class _EventCardState extends State<EventCard> {
           /// We keep a `margin` so the card is spaced nicely,
           /// but remove any background color/shadow from the Container.
           child: Container(
-            margin: const EdgeInsets.only(bottom: 16.0, right: 16, left: 16),
+            margin: const EdgeInsets.only(bottom: 16.0, right: 16, left: 16, top: 20),
             child: Column(
               children: [
                 // Stack so the CircleAvatar can float over the clipped image.

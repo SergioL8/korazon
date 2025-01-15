@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:korazon/src/cloudresources/signedin_logic.dart';
-import 'dart:convert'; // For base64 decoding
+import 'dart:convert';
+
+import 'package:korazon/src/utilities/design_variables.dart'; // For base64 decoding
 // import 'dart:typed_data'; // For Uint8List
 
 
@@ -52,35 +54,108 @@ class _UserSettingsState extends State<UserSettings> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
+  // For illustration purposes, let’s assume you already have values for:
+  // final String userName = 'John Doe';
+  // final String userSex = 'Male';
+  // final int userAge = 25;
+
+  return Scaffold(
+    backgroundColor: tertiaryColor,
+    appBar: AppBar(
+      backgroundColor: korazonColorLP,
+      title: const Text(
+        'User Settings',
+        style: TextStyle(
+          color: secondaryColor,
+          fontWeight: primaryFontWeight,
+          fontSize: 32.0,
         ),
-        title: const Text('User Settings'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            color: Theme.of(context).colorScheme.primary,
+      ),
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(2.0),
+        child: Container(
+          color: korazonColor,
+          height: 2.0,
+        ),
+      ),
+      actions: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: IconButton(
+            icon: const Icon(Icons.login_outlined),
+            iconSize: 32.0,
+            color: secondaryColor,
             onPressed: () {
               FirebaseAuth.instance.signOut();
               Navigator.of(context).pop();
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) => const isSignedLogic()));
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => const isSignedLogic()),
+              );
             },
           ),
-        ],
-      ),
-      body: Center(
-        child: qrCodeBase64 == null
-              ?  const CircularProgressIndicator()
-              : Image.memory(
-                  base64Decode(qrCodeBase64!.split(',')[1]), // Decode the base64 string
-                  fit: BoxFit.contain,
+        ),
+      ],
+    ),
+    body: SingleChildScrollView(
+      child: Padding(
+        // You can adjust horizontal padding to your liking
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Title or username
+            const Text(
+              'username',
+              style: TextStyle(
+                color: secondaryColor,
+                fontSize: 24.0,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            // QR Code Container
+            Container(
+              width: double.infinity, // Occupies entire width
+              // Optional: you can set a max height if desired
+              // height: MediaQuery.of(context).size.width * 0.8,
+              child: qrCodeBase64 == null
+                  ? const CircularProgressIndicator()
+                  : Image.memory(
+                      base64Decode(qrCodeBase64!.split(',')[1]),
+                      fit: BoxFit.contain,
+                    ),
+            ),
+
+           // const SizedBox(height: 24.0),
+
+            // Display other user info
+            Text(
+              'Name: John Doe', // Replace with your actual data
+              style: const TextStyle(
+                fontSize: 18.0,
+                fontWeight: FontWeight.w500,
                 ),
+            ),
+            const SizedBox(height: 8.0),
+            Text(
+              'Sex: Male', // Replace with your actual data
+              style: const TextStyle(
+                fontSize: 18.0,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 8.0),
+            Text(
+              'Age: 25', // Replace with your actual data
+              style: const TextStyle(
+                fontSize: 18.0,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
       ),
-    );
-  }
+    ),
+  );
+}
 }
