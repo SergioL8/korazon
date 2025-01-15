@@ -114,7 +114,7 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
           )
         : Scaffold(
             appBar: AppBar(
-              backgroundColor: appBarColor,
+              backgroundColor: secondaryColor,
               title: Text(
                 userData['name'] ?? 'No Name',
                 textAlign: TextAlign.center, // Ensures the text stays centered
@@ -138,7 +138,7 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
                     },
                     child: Icon(
                         Icons.login_outlined,
-                        color: secondaryColor,
+                        color: tertiaryColor,
                         size: 32,
                       ),
                   ),
@@ -146,7 +146,10 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
               : [],
               leading: !isCurrentUser ?
               IconButton(
-                icon: const Icon(Icons.arrow_back),
+                icon: const Icon(
+                  Icons.arrow_back,
+                  color: tertiaryColor,
+                  ),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -200,7 +203,7 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
                                     SizedBox(width: 16,),
                                   ],
                                 ),
-                                const SizedBox(height: 12),
+                                const SizedBox(height: 16),
 
                           // Bio
                           
@@ -208,14 +211,14 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
                             userData['bio'] ?? '',
                             style: const TextStyle(
                               fontSize: 16,
-                              color: tertiaryColor,
-                              fontWeight: FontWeight.w500
+                              color: secondaryColor,
+                              fontWeight: FontWeight.w400
                             ),
                           ),
                               ],
                             ),
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 16),
 
 
                           // === Follow/Unfollow/Edit Profile ===
@@ -248,7 +251,7 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
                                   ? FollowButton(
                                       text: 'Unfollow',
                                       backgroundColor: Colors.white,
-                                      textColor: Colors.black,
+                                      textColor: secondaryColor,
                                       borderColor: Colors.grey,
                                       function: () async {
                                         await followUser(
@@ -291,10 +294,10 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
                     
                   ),
 
-                 /*  const Divider(
-                    thickness: 4,
-                    color: secondaryColor,
-                  ), */
+                   const Divider(
+                    thickness: 0.5,
+                    color: dividerColor,
+                  ), 
                 
 
                   // === Events List ===
@@ -344,7 +347,7 @@ Column buildStatColumn(int num, String label) {
         Text(
           num.toString(),
           style: const TextStyle(
-            color: tertiaryColor,
+            color: secondaryColor,
             fontSize: 24,
             fontWeight: FontWeight.w900,
           ),
@@ -356,7 +359,7 @@ Column buildStatColumn(int num, String label) {
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w700,
-              color: tertiaryColor,
+              color: secondaryColor,
             ),
           ),
         ),
