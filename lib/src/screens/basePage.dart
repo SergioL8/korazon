@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:korazon/src/screens/home_page.dart';
 import 'package:korazon/src/screens/hostscreens/hostProfile.dart';
-import 'package:korazon/src/screens/userscreens/socialPage.dart';
+import 'package:korazon/src/screens/userscreens/user_profile_screen.dart';
 import 'package:korazon/src/screens/userscreens/yourEvents.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/screens/hostscreens/eventCreationScreen.dart';
@@ -100,7 +100,8 @@ class _BasePage extends State<BasePage> {
         });
       } else if (selectedPageIndex == 2) {
         setState(() {
-          activePage = const SocialPage();
+          // activePage = const SocialPage();
+          activePage = const UserSettings();
         });
       }
     } else {
@@ -110,11 +111,12 @@ class _BasePage extends State<BasePage> {
         });
       } else if (selectedPageIndex == 1) {
         setState(() {
-          activePage = const EventCreationScreen();
+          
+          activePage = const SelectEventForAction(action: HostAction.scan);
         });
       }else if (selectedPageIndex == 2) {
         setState(() {
-          activePage = const SelectEventForAction(action: HostAction.scan);
+          activePage = const EventCreationScreen();
         });
       } else if (selectedPageIndex == 3) {
         setState(() {
@@ -198,7 +200,7 @@ class _BasePage extends State<BasePage> {
                           Icons.people,
                           color: secondaryColor,
                         ),
-                        label: 'Social',
+                        label: 'Profile',
                       ),
                     ],
             ),
