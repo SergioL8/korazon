@@ -11,17 +11,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  bool _isLoading =
-      false; // variable to set execution of retrieving data (to avoid multiple requests and set the loading)
-  bool _moreEventsleft =
-      true; // variable needed to check if there are more events to retrieve
-  DocumentSnapshot?
-      _lastDocument; // variable needed to start the next query from the last document of the preivous query
+  bool _isLoading = false; // variable to set execution of retrieving data (to avoid multiple requests and set the loading)
+  bool _moreEventsleft = true; // variable needed to check if there are more events to retrieve
+  DocumentSnapshot? _lastDocument; // variable needed to start the next query from the last document of the preivous query
   List<DocumentSnapshot> _documents = []; // sotres all documents retrieved
-  final sizeOfData =
-      5; // variable that sets teh number of documents to retrieve per query
-  final ScrollController _scrollController =
-      ScrollController(); // controller to handle the scroll
+  final sizeOfData = 5; // variable that sets teh number of documents to retrieve per query
+  final ScrollController _scrollController = ScrollController(); // controller to handle the scroll
 
   @override
   void initState() {
@@ -46,8 +41,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _retrieveData() async {
-    if (_isLoading)
-      return; // if already loading, return (avoid multiple requests at the same time)
+    if (_isLoading) { return; } // if already loading, return (avoid multiple requests at the same time)
 
     setState(() {
       _isLoading = true;
@@ -56,6 +50,7 @@ class _HomePageState extends State<HomePage> {
     Query query = FirebaseFirestore.instance
         .collection('events')
         .limit(sizeOfData); // create query
+        
     if (_lastDocument != null) {
       query = FirebaseFirestore.instance
           .collection('events')
@@ -91,13 +86,12 @@ class _HomePageState extends State<HomePage> {
 
   @override
   @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    backgroundColor: tertiaryColor,
-    body: NestedScrollView(
-      // Builds the sliver(s) for the outer scrollable
-      headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-        return <Widget>[
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: tertiaryColor,
+      body: CustomScrollView(
+        // Builds the sliver(s) for the outer scrollable
+        slivers: [
           SliverAppBar(
             snap: true,
             floating: true,
@@ -129,26 +123,28 @@ Widget build(BuildContext context) {
               ),
             ),
           ),
-        ];
-      },
-      // The "body" is what remains below the SliverAppBar.
-      body: _documents.isEmpty && !_isLoading
-          ? const Center(child: Text('No events :('))
-          : ListView.builder(
-              // Remove custom scrollController here
-              physics: const NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: _documents.length +
-                  (_moreEventsleft ? 1 : 0),
-              itemBuilder: (context, index) {
-                if (_moreEventsleft && index == _documents.length) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                return EventCard(document: _documents[index]);
-              },
-            ),
-    ),
-  );
+
+          // SliverToBoxAdapter(child: SizedBox(height: 20),),
+
+          SliverToBoxAdapter(
+            child: _documents.isEmpty && !_isLoading
+            ? const Center(child: Text('No events :('))
+            : ListView.builder(
+                physics: const NeverScrollableScrollPhysics(), // Remove custom scrollController here
+                shrinkWrap: true,
+                itemCount: _documents.length +
+                    (_moreEventsleft ? 1 : 0),
+                itemBuilder: (context, index) {
+                  if (_moreEventsleft && index == _documents.length) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  return EventCard(document: _documents[index]);
+                },
+              ),
+          ),
+        ]
+      ),
+    );
+  }
 }
-}
-// }
+

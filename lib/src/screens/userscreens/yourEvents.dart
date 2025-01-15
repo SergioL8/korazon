@@ -12,15 +12,19 @@ class YourEvents extends StatefulWidget {
 }
 
 class _YourEventsState extends State<YourEvents> {
+
   List<String> eventUids = []; // List to store event UIDs
   List<DocumentSnapshot> events = []; // List to store event details as DocumentSnapshots
-  bool _isLoading = false;
+  bool _isLoading = true;
   
+
   @override
   void initState() {
     super.initState();
     getEvents();
   }
+
+
 
   // Fetch the user's tickets and retrieve event details
   Future<void> getEvents() async {
@@ -46,29 +50,29 @@ class _YourEventsState extends State<YourEvents> {
         return;
       }
 
-        setState(() {
-          // Extract the fetched tickets array and turn them into a list 
-          eventUids = List.from(userDoc.data()?['tickest'] ?? []); 
-        });
+      setState(() {
+        // Extract the fetched tickets array and turn them into a list 
+        eventUids = List.from(userDoc.data()?['tickets'] ?? []); 
+      });
 
-        // Fetch event details for each event UID
-        // This goes to the list of all events to find if they match any of the ones 
-        // in your tickets list.
+      // Fetch event details for each event UID
+      // This goes to the list of all events to find if they match any of the ones 
+      // in your tickets list.
 
-        for (String uid in eventUids) {
-          var eventDoc = await FirebaseFirestore.instance
-              .collection('events')
-              .doc(uid)
-              .get();
+      for (String uid in eventUids) {
+        var eventDoc = await FirebaseFirestore.instance
+            .collection('events')
+            .doc(uid)
+            .get();
 
-          if (eventDoc.exists) {
-            setState(() {
-              // Add event details to the list
-              // Here we are passing the event info as a snapshot which is the default setting
-              events.add(eventDoc); 
-            }); 
-          } 
+        if (eventDoc.exists) {
+          setState(() {
+            // Add event details to the list
+            // Here we are passing the event info as a snapshot which is the default setting
+            events.add(eventDoc); 
+          }); 
         } 
+      } 
       
     } catch (e) {
       showSnackBar(context, e.toString());
@@ -77,6 +81,8 @@ class _YourEventsState extends State<YourEvents> {
       _isLoading = false;
     });
   }
+
+
 
   @override
   Widget build(BuildContext context) {
