@@ -4,7 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:korazon/src/cloudresources/signedin_logic.dart';
 import 'dart:convert';
 
-import 'package:korazon/src/utilities/design_variables.dart'; // For base64 decoding
+import 'package:korazon/src/utilities/design_variables.dart';
+import 'package:korazon/src/utilities/utils.dart'; // For base64 decoding
 // import 'dart:typed_data'; // For Uint8List
 
 
@@ -18,6 +19,9 @@ class UserSettings extends StatefulWidget{
 class _UserSettingsState extends State<UserSettings> {
 
   String? qrCodeBase64;
+  var userData = {}; 
+  bool _isLoading = false;
+
 
   // DON'T HAVE TO EDIT THIS
   @override
@@ -29,6 +33,10 @@ class _UserSettingsState extends State<UserSettings> {
 
   // DON'T HAVE TO EDIT THIS
   Future<void> fetchQrCode() async {
+    setState(() {
+      _isLoading = true;
+    });
+
     try {
       
       final user = FirebaseAuth.instance.currentUser; // get instance of the current user
@@ -36,19 +44,34 @@ class _UserSettingsState extends State<UserSettings> {
       if (user == null) {  qrCodeBase64 = null; return;  }  // Ensure the user is logged in
 
       // Fetch data from firestore
-      final DocumentReference<Map<String, dynamic>> documentSnapshot = FirebaseFirestore.instance.collection('users').doc(user.uid);
-      final data = (await documentSnapshot.get());
+      //final DocumentReference<Map<String, dynamic>> userDocument = FirebaseFirestore.instance.collection('users').doc(user.uid);
+      //final data = (await userDocument.get());
 
-      if (!data.exists) {  qrCodeBase64 = null; return;  } // Ensure the user data exists
-      if (!data.data()!.containsKey('qrCode')) {  qrCodeBase64 = null; return;  } // Ensure the user data contains a QR code
+      var userDocument = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
 
+      if (!userDocument.exists) {  
+        qrCodeBase64 = null; return;  
+        } // Ensure the user data exists
 
-      setState(() {
-        qrCodeBase64 = data['qrCode'];
-      });
+      if (!userDocument.data()!.containsKey('qrCode')) {  
+        qrCodeBase64 = null; return;  
+         // Ensure the user data contains a QR code
+      } else {
+        userData = userDocument.data()!;
+      }
+      qrCodeBase64 = userDocument['qrCode'];
+
     } catch (e) {
-      throw Exception('Failed to fetch QR code: $e');
+      //TODO: Alert box in the future
+      showSnackBar(context, e.toString());
+      //throw Exception('Failed to fetch QR code: $e');
     }
+    setState(() {
+        _isLoading = false;
+      });
   }
 
 
@@ -64,7 +87,7 @@ class _UserSettingsState extends State<UserSettings> {
     appBar: AppBar(
       backgroundColor: korazonColorLP,
       title: const Text(
-        'User Settings',
+        'Profile',
         style: TextStyle(
           color: secondaryColor,
           fontWeight: primaryFontWeight,
@@ -75,7 +98,7 @@ class _UserSettingsState extends State<UserSettings> {
         preferredSize: const Size.fromHeight(2.0),
         child: Container(
           color: korazonColor,
-          height: 2.0,
+          height: barThickness,
         ),
       ),
       actions: [
@@ -96,7 +119,11 @@ class _UserSettingsState extends State<UserSettings> {
         ),
       ],
     ),
-    body: SingleChildScrollView(
+    body: _isLoading 
+    ? Center(
+       child: CircularProgressIndicator(),
+    )
+    : SingleChildScrollView(
       child: Padding(
         // You can adjust horizontal padding to your liking
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
@@ -104,49 +131,54 @@ class _UserSettingsState extends State<UserSettings> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Title or username
-            const Text(
-              'username',
-              style: TextStyle(
-                color: secondaryColor,
-                fontSize: 24.0,
-                fontWeight: FontWeight.bold,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  userData['name'] ?? '',
+                  style: TextStyle(
+                    color: secondaryColor,
+                    fontSize: 24.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(width: 8.0), // Add spacing between name and last name
+                Text(
+                  userData['lastName'] ?? '',
+                  style: TextStyle(
+                    color: secondaryColor,
+                    fontSize: 24.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
 
             // QR Code Container
-            Container(
+            SizedBox(
               width: double.infinity, // Occupies entire width
               // Optional: you can set a max height if desired
               // height: MediaQuery.of(context).size.width * 0.8,
               child: qrCodeBase64 == null
-                  ? const CircularProgressIndicator()
+                  ? const Text('Error fetching QR Code')
                   : Image.memory(
                       base64Decode(qrCodeBase64!.split(',')[1]),
                       fit: BoxFit.contain,
                     ),
             ),
 
-           // const SizedBox(height: 24.0),
-
             // Display other user info
             Text(
-              'Name: John Doe', // Replace with your actual data
-              style: const TextStyle(
-                fontSize: 18.0,
-                fontWeight: FontWeight.w500,
-                ),
-            ),
-            const SizedBox(height: 8.0),
-            Text(
-              'Sex: Male', // Replace with your actual data
+              userData['gender']?? 'Undefined Gender', 
               style: const TextStyle(
                 fontSize: 18.0,
                 fontWeight: FontWeight.w500,
               ),
             ),
             const SizedBox(height: 8.0),
-            Text(
-              'Age: 25', // Replace with your actual data
+            Text( userData['age'] != null?
+              userData['age'].toString(): 'Undefined Age',
+              // I am guessing 
               style: const TextStyle(
                 fontSize: 18.0,
                 fontWeight: FontWeight.w500,

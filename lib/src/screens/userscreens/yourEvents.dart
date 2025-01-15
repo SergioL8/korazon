@@ -103,7 +103,7 @@ class _YourEventsState extends State<YourEvents> {
             preferredSize: const Size.fromHeight(2.0),
             child: Container(
               color: korazonColor,
-              height: 2.0,
+              height: barThickness,
             ),
           ),
       ),
