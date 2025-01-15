@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:korazon/src/data/providers/user_provider.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/widgets/pickDateTime.dart';
-import 'package:provider/provider.dart';
 import 'package:wheel_chooser/wheel_chooser.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -172,9 +170,6 @@ class EventCreationScreenState extends State<EventCreationScreen> {
 
   @override
   Widget build(BuildContext context) {
-
-    final userProvider = Provider.of<UserProvider>(context);
-    final user = userProvider.getUser;
     
     return Scaffold(
       appBar: AppBar(
