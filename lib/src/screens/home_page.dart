@@ -119,7 +119,7 @@ class _HomePageState extends State<HomePage> {
               preferredSize: const Size.fromHeight(2.0),
               child: Container(
                 color: korazonColor,
-                height: 2.0,
+                height: barThickness,
               ),
             ),
           ),

@@ -209,19 +209,19 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
                     GestureDetector(
                       onTap: () {
                         setState(() {
-                          _genderController.text = 'male';
+                          _genderController.text = 'Male';
                         });
                       },
                       child: Icon(
                         Icons.male_rounded,
-                        color: _genderController.text == 'male' ? Colors.blue[900] : const Color.fromARGB(255, 123, 123, 123),
+                        color: _genderController.text == 'Male' ? Colors.blue[900] : const Color.fromARGB(255, 123, 123, 123),
                         size: 50,
                       ),
                     ),
                     Text(
                       'Male',
                       style: TextStyle(
-                        color: _genderController.text == 'male' ? Colors.blue[900] : const Color.fromARGB(255, 123, 123, 123),
+                        color: _genderController.text == 'Male' ? Colors.blue[900] : const Color.fromARGB(255, 123, 123, 123),
                       ),
                     ),
                   ]
@@ -232,19 +232,19 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
                     GestureDetector(
                       onTap: () {
                         setState(() {
-                          _genderController.text = 'other';
+                          _genderController.text = 'Other';
                         });
                       },
                       child: Icon(
                         Icons.transgender,
-                        color: _genderController.text == 'other' ? Colors.purple[600] : const Color.fromARGB(255, 123, 123, 123),
+                        color: _genderController.text == 'Other' ? Colors.purple[600] : const Color.fromARGB(255, 123, 123, 123),
                         size: 50,
                       ),
                     ),
                     Text(
-                      'other',
+                      'Other',
                       style: TextStyle(
-                        color: _genderController.text == 'other' ? Colors.purple[600] : const Color.fromARGB(255, 123, 123, 123),
+                        color: _genderController.text == 'Other' ? Colors.purple[600] : const Color.fromARGB(255, 123, 123, 123),
                       ),
                     ),
                   ]
@@ -255,19 +255,19 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
                     GestureDetector(
                       onTap: () {
                         setState(() {
-                          _genderController.text = 'female';
+                          _genderController.text = 'Female';
                         });
                       },
                       child: Icon(
                         Icons.female_rounded,
-                        color: _genderController.text == 'female' ? korazonColor : const Color.fromARGB(255, 123, 123, 123),
+                        color: _genderController.text == 'Female' ? korazonColor : const Color.fromARGB(255, 123, 123, 123),
                         size: 50,
                       ),
                     ),
                     Text(
-                      'female',
+                      'Female',
                       style: TextStyle(
-                        color: _genderController.text == 'female' ? korazonColor : const Color.fromARGB(255, 123, 123, 123),
+                        color: _genderController.text == 'Female' ? korazonColor : const Color.fromARGB(255, 123, 123, 123),
                       ),
                     ),
                   ]
