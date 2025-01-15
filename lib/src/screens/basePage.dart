@@ -156,7 +156,7 @@ class _BasePage extends State<BasePage> {
   final userNavItems = [
     BottomNavigationBarItem(
       icon: SvgPicture.asset('assets/icons/home-empty.svg', height: 32,),
-      activeIcon: SvgPicture.asset('assets/icons/home-filled.svg', height: 32, color: korazonColor,),
+      activeIcon: SvgPicture.asset('assets/icons/home-filled.svg', height: 32,),
       label: 'Home'
       ),
     BottomNavigationBarItem(
@@ -186,7 +186,7 @@ class _BasePage extends State<BasePage> {
                 iconSize: 32.0,
                 showSelectedLabels: false,
                 showUnselectedLabels: false,
-                selectedItemColor: korazonColor,
+                selectedItemColor: secondaryColor,
                 unselectedItemColor: secondaryColor,
                 elevation: navBarElevation,
                 backgroundColor: tertiaryColor,
