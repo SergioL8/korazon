@@ -36,17 +36,15 @@ dependencies:
   firebase_storage: ^12.3.4
   flutter:
     sdk: flutter
+  flutter_image_compress: ^2.3.0
+  flutter_svg: ^2.0.17
   image_picker: ^1.1.2
+  intl: ^0.20.1
   mobile_scanner: ^6.0.1
   provider: ^6.1.2
-  uuid: ^4.5.1
   transparent_image: ^2.0.0
-  flutter_image_compress: ^2.3.0
-  intl: ^0.20.1
   url_launcher: ^6.3.1
-
-  # permission_handler: ^11.3.1
-  # qr_code_scanner: ^1.0.1
+  uuid: ^4.5.1
   wheel_chooser: ^1.1.2
 
 dev_dependencies:
@@ -66,10 +64,19 @@ flutter:
   uses-material-design: true
   # To add assets to your application, add an assets section, like this:
   assets:
+
+    # Images
     - assets/images/starship.jpg
     - assets/images/pary.jpg
     - assets/images/profilePicture.jpeg
     - assets/images/no_profile_picture.webp
+
+    # icons
+    - assets/icons/ticket-empty.png
+    - assets/icons/ticket-filled.png
+
+    - assets/icons/home-empty.svg
+    - assets/icons/home-filled.svg
   #   - images/a_dot_ham.jpeg
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

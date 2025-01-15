@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:korazon/src/screens/home_page.dart';
 import 'package:korazon/src/screens/hostscreens/hostProfile.dart';
 import 'package:korazon/src/screens/userscreens/user_profile_screen.dart';
@@ -67,13 +68,6 @@ class _BasePage extends State<BasePage> {
     _getUserInfo();
   }
 
-  // addData() async {
-  //   UserProvider userProvider = Provider.of(context, listen: false);
-  //   // This line sets up the foundation for interacting with your user data in a way that's consistent across your app and efficiently updates the UI when changes occur.
-  //   //Provider.of is a method to read data from a provider without listening to changes.
-  //   await userProvider.refreshUser();
-  // }
-
   @override
   Widget build(BuildContext context) {
 
@@ -130,82 +124,81 @@ class _BasePage extends State<BasePage> {
           });
         }
     }
+
+      final hostNavItems = [
+    BottomNavigationBarItem(
+      icon: Icon(Icons.home_outlined),
+      activeIcon: Icon(Icons.home),
+      label: 'Home',
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.qr_code_scanner_rounded),
+      activeIcon: Icon(Icons.qr_code_rounded),
+      label: 'Scan',
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.add_circle_outline),
+      activeIcon: Icon(Icons.add_circle),
+      label: 'Create',
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.analytics_outlined),
+      activeIcon: Icon(Icons.analytics),
+      label: 'Analytics',
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.person_outline),
+      activeIcon: Icon(Icons.person),
+      label: 'Profile',
+    ),
+  ];
+
+  final userNavItems = [
+    BottomNavigationBarItem(
+      icon: SvgPicture.asset('assets/icons/home-empty.svg', height: 32,),
+      activeIcon: SvgPicture.asset('assets/icons/home-filled.svg', height: 32),
+      label: 'Home'
+      ),
+    BottomNavigationBarItem(
+      icon: ImageIcon(AssetImage('assets/icons/ticket-empty.png'),),
+      activeIcon: ImageIcon(AssetImage('assets/icons/ticket-filled.png'),),
+      label: 'Your events'
+      ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.person_outline_rounded),
+      activeIcon: Icon(Icons.person_rounded),
+      label: 'Social'
+      ),
+  ];
   
     return Scaffold(
-            bottomNavigationBar: BottomNavigationBar(
-              selectedItemColor: secondaryColor,
-              unselectedItemColor: secondaryColor,
-              elevation: navBarElevation,
-              backgroundColor: korazonColorLP,
-              onTap: (selectedPageIndex) {
-                _selectedPage(selectedPageIndex);
-              },
-              currentIndex: selectedPageIndex,
-              items: isHost == true
-                  ? [
-                      BottomNavigationBarItem(
-                        icon: Icon(
-                          Icons.home,
-                          color: secondaryColor,
-                        ),
-                        label: 'Home',
-                      ),
-                      BottomNavigationBarItem(
-                        icon: Icon(
-                          Icons.qr_code_scanner_rounded,
-                          color: secondaryColor,
-                        ),
-                        label: 'QR Code Scanner',
-                      ),
-                      BottomNavigationBarItem(
-                        icon: Icon(
-                          Icons.add_circle_outline,
-                          color: secondaryColor,
-                        ),
-                        label: 'Create Event',
-                      ),
-                      BottomNavigationBarItem(
-                        icon: Icon(
-                          Icons.analytics,
-                          color: secondaryColor,
-                        ),
-                        label: 'Analytics',
-                      ),
-                      BottomNavigationBarItem(
-                        icon: Icon(
-                          Icons.person,
-                          color: secondaryColor,
-                        ),
-                        label: 'Profile',
-                      ),
-                      
-                    ]
-                  : [
-                      BottomNavigationBarItem(
-                        icon: Icon(
-                          Icons.home,
-                          color: secondaryColor,
-                        ),
-                        label: 'Home',
-                      ),
-                      BottomNavigationBarItem(
-                        icon: Icon(
-                          Icons.diamond_sharp,
-                          color: secondaryColor,
-                        ),
-                        label: 'Your events',
-                      ),
-                      BottomNavigationBarItem(
-                        icon: Icon(
-                          Icons.people,
-                          color: secondaryColor,
-                        ),
-                        label: 'Profile',
-                      ),
-                    ],
+            bottomNavigationBar: Container(
+              decoration: BoxDecoration(
+                border: Border(
+                  top: BorderSide(
+                    width: barThickness,
+                    color: korazonColor, // change to your desired color
+                  ),
+                ),
+              ),
+              height: 70,
+              child: BottomNavigationBar(
+                iconSize: 32.0,
+                showSelectedLabels: false,
+                showUnselectedLabels: false,
+                selectedItemColor: secondaryColor,
+                unselectedItemColor: secondaryColor,
+                elevation: navBarElevation,
+                backgroundColor: korazonColorLP,
+                onTap: (selectedPageIndex) {
+                  _selectedPage(selectedPageIndex);
+                },
+                currentIndex: selectedPageIndex,
+                items: isHost == true
+                    ? hostNavItems : userNavItems,
+              ),
             ),
             body: activePage
     );
-
   }
 }

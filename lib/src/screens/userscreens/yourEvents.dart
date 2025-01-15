@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/widgets/eventCard.dart';
 
@@ -87,7 +88,25 @@ class _YourEventsState extends State<YourEvents> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
+      backgroundColor: tertiaryColor,
+      appBar: AppBar(
+        backgroundColor: korazonColorLP,
+        title: Text(
+          'Your Events',
+          style: TextStyle(
+                  color: secondaryColor,
+                  fontWeight: primaryFontWeight,
+                  fontSize: 32.0,
+                ),
+          ),
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(2.0),
+            child: Container(
+              color: korazonColor,
+              height: barThickness,
+            ),
+          ),
+      ),
       body: _isLoading 
       ? const Center(
         child: CircularProgressIndicator(),

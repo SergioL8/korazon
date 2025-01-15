@@ -7,7 +7,7 @@ const secondaryColor = Color.fromARGB(255, 3, 0, 54);
 const tertiaryColor = Colors.white;
 
 const korazonColorLP = Color.fromRGBO(250, 177, 177, 0.2);
-const secondaryColorLP = Color.fromRGBO(3, 0, 54, 0.5);
+const secondaryColorLP = Color.fromRGBO(3, 0, 54, 0.8);
 
 
 // Radius 
@@ -22,7 +22,7 @@ const titleTextStyle = TextStyle(
   fontFamily: primaryFont
 );
 
-
+const double barThickness = 1;
 
 // Font styles:
 const primaryFont = 'Pacifico';

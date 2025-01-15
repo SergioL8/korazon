@@ -119,12 +119,14 @@ class _HomePageState extends State<HomePage> {
               preferredSize: const Size.fromHeight(2.0),
               child: Container(
                 color: korazonColor,
-                height: 2.0,
+                height: barThickness,
               ),
             ),
           ),
 
-          SliverToBoxAdapter(child: SizedBox(height: 20),),
+          //SliverToBoxAdapter(child: SizedBox(height: 20),),
+
+          // I added the padding to the postcard so that it is consistent across the app 
 
           SliverToBoxAdapter(
             child: _documents.isEmpty && !_isLoading
