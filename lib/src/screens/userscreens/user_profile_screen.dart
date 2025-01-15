@@ -131,6 +131,7 @@ class _UserSettingsState extends State<UserSettings> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Title or username
+            SizedBox(height: 16.0), // Add spacing between name and last name
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -171,18 +172,20 @@ class _UserSettingsState extends State<UserSettings> {
             Text(
               userData['gender']?? 'Undefined Gender', 
               style: const TextStyle(
-                fontSize: 18.0,
-                fontWeight: FontWeight.w500,
-              ),
+                    color: secondaryColor,
+                    fontSize: 24.0,
+                    fontWeight: FontWeight.w500,
+                  ),
             ),
             const SizedBox(height: 8.0),
             Text( userData['age'] != null?
               userData['age'].toString(): 'Undefined Age',
               // I am guessing 
               style: const TextStyle(
-                fontSize: 18.0,
-                fontWeight: FontWeight.w500,
-              ),
+                    color: secondaryColor,
+                    fontSize: 24.0,
+                    fontWeight: FontWeight.w500,
+                  ),
             ),
           ],
         ),

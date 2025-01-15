@@ -39,7 +39,7 @@ class EventDetails extends StatelessWidget {
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
-            color: tertiaryColor,
+            color: secondaryColor,
           ),
         ),
         elevation: 0,
@@ -183,6 +183,7 @@ class EventDetails extends StatelessWidget {
                             Text(
                               'Age: $eventAge+',
                               style: const TextStyle(
+                                color: secondaryColor,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w400,
                               ),
@@ -198,7 +199,7 @@ class EventDetails extends StatelessWidget {
                               backgroundColor: korazonColor,
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 40,
-                                vertical: 12,
+                                vertical: 16,
                               ),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(24),
@@ -216,7 +217,7 @@ class EventDetails extends StatelessWidget {
                                 context: context,
                                 builder: (ctx) => FractionallySizedBox(
                                   heightFactor:
-                                      0.35, // Occupies 50% of the screen height
+                                      0.35, // Occupies 35% of the screen height
                                   child: BuyTicketPage(eventID: eventId),
                                 ),
                               );
