@@ -5,6 +5,7 @@ import 'package:korazon/src/screens/hostscreens/editHostProfile.dart';
 import 'package:korazon/src/screens/singUpLogin/signUpLogin.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/utilities/utils.dart';
+import 'package:korazon/src/widgets/alertBox.dart';
 import 'package:korazon/src/widgets/eventCard.dart';
 import 'package:korazon/src/widgets/followButton.dart';
 
@@ -56,7 +57,7 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
         numberOfCreatedEvents = (userData['createdEvents'] as List<dynamic>?)?.length ?? 0;
       }
     } catch (e) {
-      showSnackBar(context, e.toString());
+      showErrorMessage(context, content: 'There was an error loading the profile. Please try again');
     }
 
     setState(() {

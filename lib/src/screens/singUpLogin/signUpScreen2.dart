@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:korazon/src/utilities/utils.dart';
 import 'package:wheel_chooser/wheel_chooser.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:korazon/src/screens/basePage.dart';
+import 'package:korazon/src/widgets/alertBox.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 
@@ -48,12 +48,12 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
 
     // check for empty fields
     if (_nameController.text.isEmpty || _lastNameController.text.isEmpty) {
-      showSnackBar(context, 'Please fill all the fields. In the future use an alert box');
+      showErrorMessage(context, title: 'Please fill all fields');
       _siningUpLoading = false;
       return;
     }
     if (_genderController.text.isEmpty) {
-      showSnackBar(context, 'Please select a gender. In the future use an alert box');
+      showErrorMessage(context, title: 'Please select a gender');
       _siningUpLoading = false;
       return;
     }
@@ -67,7 +67,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
       );
 
       if (credentials.user == null) {
-        showSnackBar(context, 'Failed to create user. In the future use an alert box');
+        showErrorMessage(context, content: 'Error creating user. Please try again later');
         return;
       }
 
@@ -85,7 +85,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const BasePage()));
 
     } catch (e) {
-      print('Error creating user. Please try again. In the future use an alert box');
+      showErrorMessage(context, content: 'Error creating user. Please try again later');
     }
 
     setState(() {

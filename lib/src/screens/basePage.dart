@@ -10,6 +10,7 @@ import 'package:korazon/src/screens/hostscreens/selectEventForAction.dart';
 import 'package:korazon/src/utilities/utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';  
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:korazon/src/widgets/alertBox.dart';
 
 
 class BasePage extends StatefulWidget {
@@ -38,19 +39,18 @@ class _BasePage extends State<BasePage> {
     final uid = FirebaseAuth.instance.currentUser?.uid;
 
     if (uid == null) {
-      print('Something went wrong please log out and login again. In the future use an alert box');
+      showErrorMessage(context, content: 'There was an error loading your user. Please logout and login again.');
       return;
     }
 
     final userDocuement = await FirebaseFirestore.instance.collection('users').doc(uid).get();
     if (!userDocuement.exists) {
-      print('There was an error loading your profile, please log out and login again. In the future use an alert boxx');
-      return;
+      showErrorMessage(context, content: 'There was an error loading your user. Please logout and login again.');      return;
     }
 
     final bool? host = userDocuement.data()?['isHost'];
     if (host == null) {
-      print('There was an error loading your profile, please log out and login again. In the future use an alert box');
+      showErrorMessage(context, content: 'There was an error loading your user. Please logout and login again.');
       return;
     }
 

@@ -4,7 +4,7 @@ import 'package:korazon/src/screens/basePage.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/screens/singUpLogin/hostSignUp.dart';
 import 'package:korazon/src/screens/singUpLogin/signUpScreen2.dart';
-import 'package:korazon/src/utilities/utils.dart';
+import 'package:korazon/src/widgets/alertBox.dart';
 
 
 
@@ -110,16 +110,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
         email: _emailController.text,
         password: _passwordController.text
       );
+
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const BasePage()));
       
     } catch(e) {
       if (e is FirebaseAuthException && e.message != null) { // handle the error
         if (e.code == 'invalid-credential') {
-          showSnackBar(context, 'Invalid email or password. Please try again.');
+          showErrorMessage(context,title: 'Invalid Credentials', content: 'Invalid email or password. Please try again.');
         } else {
-          showSnackBar(context, e.message!);
+          showErrorMessage(context, content: e.message!);
         }
       } else {
-        showSnackBar(context, 'An error occurred. Please try again later.');
+        showErrorMessage(context, content: 'An error occurred. Please try again later.');
       }
     }
 
@@ -127,9 +129,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
     setState(() {
       isLoading = false;
     });
-
-    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const BasePage()));
-    
   }
 
 
@@ -433,32 +432,32 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
             const SizedBox(height: 90,),
             Container(
-                  color: Colors.white,
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    children: [
-                      Text(
-                        '\u00A9  Korazon 2024 all rights reserved',
-                        style: TextStyle(
-                          color: secondaryColor,
-                          fontWeight: FontWeight.w300,
-                          fontSize: 12,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(height: 8,),
-                      Text(
-                        'From Boulder, Colorado',
-                        style: TextStyle(
-                          color: secondaryColor,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 12,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
+              color: Colors.white,
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  Text(
+                    '\u00A9  Korazon 2024 all rights reserved',
+                    style: TextStyle(
+                      color: secondaryColor,
+                      fontWeight: FontWeight.w300,
+                      fontSize: 12,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                ),
+                  SizedBox(height: 8,),
+                  Text(
+                    'Boulder, CO',
+                    style: TextStyle(
+                      color: secondaryColor,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 12,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),

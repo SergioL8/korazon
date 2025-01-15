@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
+import 'package:korazon/src/widgets/alertBox.dart';
 
 void buyTicket(BuildContext context, String eventID) async {
   if (FirebaseAuth.instance.currentUser == null) {
@@ -19,10 +20,7 @@ void buyTicket(BuildContext context, String eventID) async {
     final tickets = snapShot.data()?['tickets'] ?? [];
 
     if (tickets.contains(eventID)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('You already have a ticket for this event')),
-      );
-      
+      showErrorMessage(context, title: 'Not that fast!', content: 'You already have a ticket for this event.');      
     } else {
 
       // Use set() with merge to either create or update the 'tickets' field as an array
@@ -39,10 +37,7 @@ void buyTicket(BuildContext context, String eventID) async {
 
      
   } catch (e) {
-    // Handle errors (e.g., permission issues, network errors)
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Could not purchase ticket: $e')),
-    );
+    showErrorMessage(context, content: 'There was an error purchasing the ticket. Please try again.');
   }
 
 

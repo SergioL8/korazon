@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
+import 'package:korazon/src/widgets/alertBox.dart';
 import 'package:korazon/src/widgets/selectEventCard.dart';
 import 'package:flutter/material.dart';
 import 'package:korazon/src/utilities/utils.dart';
@@ -45,21 +46,20 @@ class _SelectEventForActionState extends State<SelectEventForAction> {
     // Get current user ID and check that it is not null
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) {
-      print('Something went wrong please log out and login again. In the future use an alert box');
+      showErrorMessage(context, content: 'There was an error loading your user. Please logout and login again.');
       return;
     }
 
     // Get the user document from Firestore and check that it exists
     final userDocument = await FirebaseFirestore.instance.collection('users').doc(uid).get();
     if (!userDocument.exists) {
-      print('There was an error loading the events, try again later. In the future use an alert box');
+      showErrorMessage(context, content: 'There was an error loading your events. Please try again.');
       return;
     }
     
     // Get the list of event IDs from the user document
     setState(() {
       listOfCreatedEvents = List<String>.from(userDocument.data()?['createdEvents'] ?? []);
-      print('SET STATE REACHED');
       _isLoading = false;
     });
   }

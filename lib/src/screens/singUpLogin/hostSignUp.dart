@@ -131,7 +131,7 @@ class HostSignUp extends StatelessWidget {
                       ),
                       SizedBox(height: 8,),
                       Text(
-                        'From Boulder, Colorado',
+                        'Boulder, CO',
                         style: TextStyle(
                           color: secondaryColor,
                           fontWeight: FontWeight.w500,

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/utilities/utils.dart';
+import 'package:korazon/src/widgets/alertBox.dart';
 
 class EditProfilePage extends StatefulWidget {
   final String currentName;
@@ -82,7 +83,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       final downloadUrl = await ref.getDownloadURL();
       return downloadUrl;
     } catch (e) {
-      showSnackBar(context, 'Image upload failed. ${e.toString()}');
+      showErrorMessage(context, title: 'Image upload failed.');
       return null;
     }
   }
@@ -115,7 +116,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       showSnackBar(context, 'Profile updated successfully!');
       Navigator.of(context).pop(); // Return to the previous screen
     } catch (e) {
-      showSnackBar(context, e.toString());
+      showErrorMessage(context, content: 'There was an error updating your profile. Please try again.');
     }
 
     setState(() {
