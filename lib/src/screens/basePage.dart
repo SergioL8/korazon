@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:korazon/src/screens/home_page.dart';
 import 'package:korazon/src/screens/hostscreens/hostProfile.dart';
 import 'package:korazon/src/screens/userscreens/user_profile_screen.dart';
@@ -154,8 +155,8 @@ class _BasePage extends State<BasePage> {
 
   final userNavItems = [
     BottomNavigationBarItem(
-      icon: Icon(Icons.home_outlined),
-      activeIcon: Icon(Icons.home),
+      icon: SvgPicture.asset('assets/icons/home-empty.svg', height: 32,),
+      activeIcon: SvgPicture.asset('assets/icons/home-filled.svg', height: 32),
       label: 'Home'
       ),
     BottomNavigationBarItem(
