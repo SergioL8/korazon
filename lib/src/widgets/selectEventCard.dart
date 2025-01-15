@@ -5,6 +5,8 @@ import 'package:korazon/src/utilities/utils.dart';
 import 'package:flutter/material.dart';
 import 'dart:typed_data';
 
+import 'package:korazon/src/widgets/alertBox.dart';
+
 
 
 class SelectEventCard extends StatefulWidget {
@@ -49,14 +51,14 @@ class _SelectEventCardState extends State<SelectEventCard> {
     // get the event document from Firestore and check that it exists
     final eventDocument = await FirebaseFirestore.instance.collection('events').doc(widget.eventID).get();
     if (!eventDocument.exists) {
-      print('There was an error loading an event, try again later. In the future use an alert box');
+      showErrorMessage(context, content: 'There was an error loading the event. Please try again.');
       return;
     }
 
     // get the event data from the event document and check that it exists
     final documentData = eventDocument.data() ?? {};
     if (documentData.isEmpty) {
-      print('There was an error loading an event, try again later. In the future use an alert box');
+      showErrorMessage(context, content: 'There was an error loading the event. Please try again.');
       return;
     }
 

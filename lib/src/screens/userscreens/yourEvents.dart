@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/utilities/utils.dart';
+import 'package:korazon/src/widgets/alertBox.dart';
 import 'package:korazon/src/widgets/eventCard.dart';
 
 class YourEvents extends StatefulWidget {
@@ -36,7 +37,7 @@ class _YourEventsState extends State<YourEvents> {
     final String? userId = FirebaseAuth.instance.currentUser?.uid;
 
     if (userId == null) {
-      showSnackBar(context, 'This error is fucked ngl');
+      showErrorMessage(context, content: 'There was an error loading your user. Please logout and login back again.');
       return;
     }
     try {
@@ -47,7 +48,7 @@ class _YourEventsState extends State<YourEvents> {
           .get();
 
       if (!userDoc.exists) {
-        showSnackBar(context, 'User not found');
+        showErrorMessage(context, content: 'There was an error loading your user. Please logout and login back again.');
         return;
       }
 
@@ -76,7 +77,7 @@ class _YourEventsState extends State<YourEvents> {
       } 
       
     } catch (e) {
-      showSnackBar(context, e.toString());
+      showErrorMessage(context, content: e.toString());
     }
     setState(() {
       _isLoading = false;

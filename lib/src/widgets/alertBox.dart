@@ -1,25 +1,59 @@
 import 'package:flutter/material.dart';
+import 'package:korazon/src/utilities/design_variables.dart';
 
 
-
-class AlertBox extends StatelessWidget {
-  const AlertBox({super.key, this.title = 'Something went wrong...', this.content});
-  final String? title;
-  final String? content;
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('Alert'),
-      content: const Text('This is an alert box'),
+void showErrorMessage(BuildContext context, {String title = 'Something went wrong...', String content = ''}) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) => AlertDialog(
+      backgroundColor: Colors.white,
+      title: Row(
+        children: [
+          Icon(Icons.heart_broken, color: korazonColor),
+          const SizedBox(width: 8,),
+          Expanded(
+            child: Text(
+              title,
+              overflow: TextOverflow.clip,
+              style: const TextStyle(
+                fontSize: 20,
+                color: secondaryColor,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+        ],
+      ),
+      content: content == '' ? null 
+      : Text(
+        content,
+        style: const TextStyle(
+          fontSize: 16,
+          color: secondaryColor,
+          fontWeight: FontWeight.w400,
+        ),
+      ),
       actions: [
-        TextButton(
+        ElevatedButton(
+          style: ButtonStyle(
+            backgroundColor: WidgetStatePropertyAll<Color>(korazonColor),
+            shape: WidgetStatePropertyAll<OutlinedBorder>(RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            )),
+          ),
           onPressed: () {
             Navigator.of(context).pop();
           },
-          child: const Text('Close'),
+          child: const Text(
+            'Close',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 17,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
         ),
       ],
-    );
-  }
+    ),
+  );
 }

@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:korazon/src/widgets/accessToEventWidgets/allowGuestIntoPartyButton.dart';
 import 'package:korazon/src/widgets/accessToEventWidgets/denyGuestIntoPartyButton.dart';
 import 'package:korazon/src/widgets/accessToEventWidgets/tickCrossAccess.dart';
+import 'package:korazon/src/widgets/alertBox.dart';
 
 
 
@@ -31,7 +32,7 @@ class _CheckForAccessToEventState extends State<CheckForAccessToEvent> {
     
     // check that the user data is not empty
     if (userData.isEmpty) {
-      print('There was an error loading the user, try again later. In the future use an alert box');
+      showErrorMessage(context, content: 'There was an error loading the user. Please try again');
       return false;
     }
 
@@ -54,9 +55,8 @@ class _CheckForAccessToEventState extends State<CheckForAccessToEvent> {
             return const CircularProgressIndicator();
           } else {
             if (snapshot.hasError) { // if there is an error show an error message
-              return const Text('An error occurred, try again later'); // in the future change this to an alert box
+              return const Text('An error occurred, try again later');
             } else {
-
               return Scaffold(
                 backgroundColor: snapshot.data! ? const Color.fromARGB(255, 23, 177, 30) // set the background color to green
                 : const Color.fromARGB(255, 177, 23, 23), // set the background color to red

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:korazon/src/widgets/alertBox.dart';
 
 
 /// This function adds the user to the list of atendees of the event
@@ -7,13 +8,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 /// The input is the user ID and the event ID
 /// 
 /// No output but the result is that the user is added to the list of atendees of the event
-void _allowGuestIn(String userID, String eventID, ) async {
+void _allowGuestIn(BuildContext context, String userID, String eventID) async {
   try {
     await FirebaseFirestore.instance.collection('events').doc(eventID).update({
       'atendees': FieldValue.arrayUnion([userID]),
     });
   } catch (e) {
-    print('There was an error trying to alow the guest in: In the future use an alert box');
+    showErrorMessage(context, content: 'There was an error allowing the guest in.');
   }
 }
 
@@ -33,7 +34,7 @@ class AllowGuestIn extends StatelessWidget {
 
     return InkWell(
       onTap:() {
-        _allowGuestIn(userID, eventID); // allow the guest in
+        _allowGuestIn(context, userID, eventID); // allow the guest in
         Navigator.of(context).pop(); // close the modal bottom sheet to go the scanner screen
       },
       child: Container(

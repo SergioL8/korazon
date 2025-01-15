@@ -3,10 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:korazon/src/cloudresources/signedin_logic.dart';
 import 'dart:convert';
-
 import 'package:korazon/src/utilities/design_variables.dart';
-import 'package:korazon/src/utilities/utils.dart'; // For base64 decoding
-// import 'dart:typed_data'; // For Uint8List
+import 'package:korazon/src/widgets/alertBox.dart'; // For base64 decoding
 
 
 class UserSettings extends StatefulWidget{
@@ -65,9 +63,7 @@ class _UserSettingsState extends State<UserSettings> {
       qrCodeBase64 = userDocument['qrCode'];
 
     } catch (e) {
-      //TODO: Alert box in the future
-      showSnackBar(context, e.toString());
-      //throw Exception('Failed to fetch QR code: $e');
+      showErrorMessage(context, content: e.toString());
     }
     setState(() {
         _isLoading = false;

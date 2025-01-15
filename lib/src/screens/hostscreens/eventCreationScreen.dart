@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
+import 'package:korazon/src/widgets/alertBox.dart';
 import 'package:korazon/src/widgets/pickDateTime.dart';
 import 'package:wheel_chooser/wheel_chooser.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -50,7 +51,7 @@ class EventCreationScreenState extends State<EventCreationScreen> {
   ) async {
 
     if (uid == null) {
-      showSnackBar(context, 'No user');
+      showErrorMessage(context, content: 'There was an error loading your user, please logout and login again');
       return;
     }
 
@@ -60,7 +61,7 @@ class EventCreationScreenState extends State<EventCreationScreen> {
           .get();
     
     if (!userDocument.exists) {
-      showSnackBar(context, 'User not found');
+      showErrorMessage(context, content: 'There was an error loading your user, please logout and login again');
       return;
     }
 
@@ -72,24 +73,23 @@ class EventCreationScreenState extends State<EventCreationScreen> {
 
     // Check mandatory inputs
     if (_titleController.text.isEmpty) {
-      print('Title is empty. Use alert box in the future');
-
+      showErrorMessage(context, title: 'Add a title to post your event.');
       return;
     }
     if (_dateTimeController.text.isEmpty) {
-      print('Date&Time is empty. Use alert box in the future');
+      showErrorMessage(context, title: 'Please select a time and date.');
       return;
     }
     if (_locationController.text.isEmpty) {
-      print('Location is empty. Use alert box in the future');
+      showErrorMessage(context, title: 'Please select a location.');
       return;
     }
     if (_photofile == null) {
-      print('Photo is empty. Use alert box in the future');
+      showErrorMessage(context, title: 'Please add a flyer.');
       return;
     }
     if (_priceController.text.isEmpty) {
-      print('Price is empty. Use alert box in the future');
+      showErrorMessage(context, title: 'Please set a ticket price.');
       return;
     }
 
@@ -113,7 +113,7 @@ class EventCreationScreenState extends State<EventCreationScreen> {
 
     // check for success or failure of the image upload
     if (imageTaskSnapshot.state != TaskState.success) {
-      print('Fail uploading image. Use alert box in the future');
+      showErrorMessage(context, content: 'There was an error uploading the image. Please try again');
     }
 
     try {
@@ -155,7 +155,7 @@ class EventCreationScreenState extends State<EventCreationScreen> {
 
 
     } catch (e) { // catch any errors that occur during the upload
-      print('There was an error uploading the event. In the future use an alert box to show the error');
+      showErrorMessage(context, content: 'There was an error posting your event. Please try again');
     }
 
 
