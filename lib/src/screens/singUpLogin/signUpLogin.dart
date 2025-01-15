@@ -5,6 +5,7 @@ import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/screens/singUpLogin/hostSignUp.dart';
 import 'package:korazon/src/screens/singUpLogin/signUpScreen2.dart';
 import 'package:korazon/src/utilities/utils.dart';
+import 'package:korazon/src/widgets/alertBox.dart';
 
 
 
@@ -114,7 +115,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
     } catch(e) {
       if (e is FirebaseAuthException && e.message != null) { // handle the error
         if (e.code == 'invalid-credential') {
-          showSnackBar(context, 'Invalid email or password. Please try again.');
+          AlertBox(content: 'Invalid email or password. Please try again.');
+          // showSnackBar(context, 'Invalid email or password. Please try again.');
         } else {
           showSnackBar(context, e.message!);
         }
