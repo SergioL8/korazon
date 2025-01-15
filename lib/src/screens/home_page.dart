@@ -46,8 +46,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _retrieveData() async {
-    if (_isLoading)
-      return; // if already loading, return (avoid multiple requests at the same time)
+    if (_isLoading) { return; } // if already loading, return (avoid multiple requests at the same time)
 
     setState(() {
       _isLoading = true;
@@ -56,6 +55,7 @@ class _HomePageState extends State<HomePage> {
     Query query = FirebaseFirestore.instance
         .collection('events')
         .limit(sizeOfData); // create query
+        
     if (_lastDocument != null) {
       query = FirebaseFirestore.instance
           .collection('events')
