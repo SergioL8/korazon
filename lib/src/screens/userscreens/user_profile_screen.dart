@@ -167,8 +167,18 @@ class _UserSettingsState extends State<UserSettings> {
                       fit: BoxFit.contain,
                     ),
             ),
+            const Text(
+              'You can use this QR Code to access all of your events',
+              style: TextStyle(
+                color: secondaryColor,
+                fontSize: 16.0,
+                fontWeight: FontWeight.w300,
+              ),
+            ),
+            const SizedBox(height: 16.0),
 
-            // Display other user info
+            // USER INFO
+
             Text(
               userData['gender']?? 'Undefined Gender', 
               style: const TextStyle(

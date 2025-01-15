@@ -37,12 +37,12 @@ class HostSignUp extends StatelessWidget {
                   size: 100,
                   color: secondaryColor,
                 ),
-                /*Text(
+                Text(
                   'Greek Life',
                   style: TextStyle(
                     color: secondaryColor,
                   ),
-                ),*/
+                ),
           
                 const SizedBox(height: 30,),
           
@@ -115,7 +115,33 @@ class HostSignUp extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 40,),
-                
+                 Container(
+                  color: Colors.white,
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      Text(
+                        '\u00A9  Korazon 2024 all rights reserved',
+                        style: TextStyle(
+                          color: secondaryColor,
+                          fontWeight: FontWeight.w300,
+                          fontSize: 12,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: 8,),
+                      Text(
+                        'From Boulder, Colorado',
+                        style: TextStyle(
+                          color: secondaryColor,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 12,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
