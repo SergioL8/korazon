@@ -85,7 +85,7 @@ class _UserSettingsState extends State<UserSettings> {
   return Scaffold(
     backgroundColor: tertiaryColor,
     appBar: AppBar(
-      backgroundColor: korazonColorLP,
+      backgroundColor: appBarColor,
       title: const Text(
         'Profile',
         style: TextStyle(
@@ -97,7 +97,7 @@ class _UserSettingsState extends State<UserSettings> {
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(2.0),
         child: Container(
-          color: korazonColor,
+          color: dividerColor,
           height: barThickness,
         ),
       ),
@@ -168,7 +168,7 @@ class _UserSettingsState extends State<UserSettings> {
                     ),
             ),
             const Text(
-              'You can use this QR Code to access all of your events',
+              'Use this QR Code to access all your events',
               style: TextStyle(
                 color: secondaryColor,
                 fontSize: 16.0,

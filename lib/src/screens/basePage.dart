@@ -156,7 +156,7 @@ class _BasePage extends State<BasePage> {
   final userNavItems = [
     BottomNavigationBarItem(
       icon: SvgPicture.asset('assets/icons/home-empty.svg', height: 32,),
-      activeIcon: SvgPicture.asset('assets/icons/home-filled.svg', height: 32),
+      activeIcon: SvgPicture.asset('assets/icons/home-filled.svg', height: 32, color: korazonColor,),
       label: 'Home'
       ),
     BottomNavigationBarItem(
@@ -177,7 +177,7 @@ class _BasePage extends State<BasePage> {
                 border: Border(
                   top: BorderSide(
                     width: barThickness,
-                    color: korazonColor, // change to your desired color
+                    color: dividerColor, // change to your desired color
                   ),
                 ),
               ),
@@ -186,10 +186,10 @@ class _BasePage extends State<BasePage> {
                 iconSize: 32.0,
                 showSelectedLabels: false,
                 showUnselectedLabels: false,
-                selectedItemColor: secondaryColor,
+                selectedItemColor: korazonColor,
                 unselectedItemColor: secondaryColor,
                 elevation: navBarElevation,
-                backgroundColor: korazonColorLP,
+                backgroundColor: tertiaryColor,
                 onTap: (selectedPageIndex) {
                   _selectedPage(selectedPageIndex);
                 },

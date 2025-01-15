@@ -173,7 +173,7 @@ class EventCreationScreenState extends State<EventCreationScreen> {
     
     return Scaffold(
       appBar: AppBar(
-            backgroundColor: korazonColorLP,
+            backgroundColor: appBarColor,
             automaticallyImplyLeading: false,
             title: Row(
               children: [

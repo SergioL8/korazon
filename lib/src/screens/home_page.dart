@@ -96,7 +96,7 @@ class _HomePageState extends State<HomePage> {
             snap: true,
             floating: true,
             // or pinned: true if desired
-            backgroundColor: korazonColorLP,
+            backgroundColor: appBarColor,
             automaticallyImplyLeading: false,
             title: Row(
               children: [
@@ -118,7 +118,7 @@ class _HomePageState extends State<HomePage> {
             bottom: PreferredSize(
               preferredSize: const Size.fromHeight(2.0),
               child: Container(
-                color: korazonColor,
+                color: dividerColor,
                 height: barThickness,
               ),
             ),

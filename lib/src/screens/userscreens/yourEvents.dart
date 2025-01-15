@@ -90,7 +90,7 @@ class _YourEventsState extends State<YourEvents> {
     return Scaffold(
       backgroundColor: tertiaryColor,
       appBar: AppBar(
-        backgroundColor: korazonColorLP,
+        backgroundColor: appBarColor,
         title: Text(
           'Your Events',
           style: TextStyle(
@@ -102,7 +102,7 @@ class _YourEventsState extends State<YourEvents> {
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(2.0),
             child: Container(
-              color: korazonColor,
+              color: dividerColor,
               height: barThickness,
             ),
           ),

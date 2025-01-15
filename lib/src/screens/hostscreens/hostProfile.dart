@@ -113,7 +113,7 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
           )
         : Scaffold(
             appBar: AppBar(
-              backgroundColor: korazonColorLP,
+              backgroundColor: appBarColor,
               title: Text(
                 userData['name'] ?? 'No Name',
                 textAlign: TextAlign.center, // Ensures the text stays centered
@@ -161,7 +161,7 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.only(top: 48),
-                    color: korazonColorLP,
+                    color: appBarColor,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 24),
                       child: Column(
