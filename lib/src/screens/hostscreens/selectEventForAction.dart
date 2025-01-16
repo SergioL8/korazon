@@ -81,6 +81,7 @@ class _SelectEventForActionState extends State<SelectEventForAction> {
   @override 
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: tertiaryColor,
       appBar: AppBar(
             backgroundColor: appBarColor,
             automaticallyImplyLeading: false,
@@ -94,8 +95,8 @@ class _SelectEventForActionState extends State<SelectEventForAction> {
             bottom: PreferredSize(
               preferredSize: const Size.fromHeight(2.0),
               child: Container(
-                color: korazonColor,
-                height: 4.0,
+                color: dividerColor,
+                height: barThickness,
               ),
             ),
           ),
