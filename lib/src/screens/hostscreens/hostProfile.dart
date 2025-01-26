@@ -5,6 +5,7 @@ import 'package:korazon/src/screens/hostscreens/editHostProfile.dart';
 import 'package:korazon/src/screens/singUpLogin/signUpLogin.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/utilities/models/userModel.dart';
+import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
 import 'package:korazon/src/widgets/eventCard.dart';
 import 'package:korazon/src/widgets/followButton.dart';
@@ -47,7 +48,7 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
       user = UserModel.fromDocumentSnapshot(userDocument);
 
       if (user == null) {
-        showErrorMessage(context, content: 'There was an error loading the profile. Please try again');
+        showErrorMessage(context, content: 'There was an error loading the profile. Please logout and login.', errorAction: ErrorAction.logout);
         return;
       }
 
@@ -58,7 +59,7 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
       numberOfCreatedEvents = (user!.createdEvents as List<dynamic>?)?.length ?? 0;
       
     } catch (e) {
-      showErrorMessage(context, content: 'There was an error loading the profile. Please try again');
+      showErrorMessage(context, content: 'There was an error loading the profile. Please logout and login.', errorAction: ErrorAction.logout);
     }
 
     setState(() {

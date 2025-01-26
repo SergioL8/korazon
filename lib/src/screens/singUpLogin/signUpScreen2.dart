@@ -1,4 +1,7 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:korazon/src/utilities/utils.dart';
 import 'package:wheel_chooser/wheel_chooser.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:korazon/src/screens/basePage.dart';
@@ -67,9 +70,18 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
       );
 
       if (credentials.user == null) {
+        print('in userr error');
         showErrorMessage(context, content: 'Error creating user. Please try again later');
         return;
       }
+
+      final String? qrCode = await createQRCode(credentials.user!.uid);
+
+      if (qrCode == null) {
+        showErrorMessage(context, content: 'Error creating qrCode. Please try again.');
+        return;
+      }
+
 
       await FirebaseFirestore.instance.collection('users').doc(credentials.user!.uid).set({
         'email': widget.email,
@@ -78,6 +90,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
         'age': int.parse(_ageController.text),  
         'gender': _genderController.text,
         'isHost': false,
+        'qrCode': qrCode,
       });
 
       // Why is this necessary push needed? Because even though the streambuild of "signedin_logic.dart" is listening to the authentication state, we are

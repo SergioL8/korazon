@@ -47,7 +47,7 @@ class _SelectEventForActionState extends State<SelectEventForAction> {
     // Get current user ID and check that it is not null
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) {
-      showErrorMessage(context, content: 'There was an error loading your user. Please logout and login again.');
+      showErrorMessage(context, content: 'There was an error loading your user. Please logout and login again.', errorAction: ErrorAction.logout);
       return;
     }
 
@@ -57,7 +57,7 @@ class _SelectEventForActionState extends State<SelectEventForAction> {
     UserModel? user = UserModel.fromDocumentSnapshot(userDocument);
 
     if (user == null) {
-      showErrorMessage(context, content: 'There was an error loading your user. Please try again.');
+      showErrorMessage(context, content: 'There was an error loading your user. Please logout and login again.', errorAction: ErrorAction.logout);
       return;
     }
     

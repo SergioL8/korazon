@@ -46,9 +46,11 @@ class _ScannerScreenState extends State<ScannerScreen> {
         controller: controller, // the controller is used to start and stop the scanner
 
         onDetect: (BarcodeCapture barcodeCapture) { // function executed when a barcode is detected
-          final String? guestID = barcodeCapture.barcodes.first.rawValue; // get the first barcode detected
+          final String? parts = barcodeCapture.barcodes.first.rawValue; // get the first barcode detected
+          
 
-          if (guestID != null) { 
+          if (parts != null) { 
+            final guestID = parts.split(',')[0];
             // if the barcode is not null, then display the user access to event
             _displayUserAccessToEvent(guestID, widget.eventID); // "code" is the uid given by the scanned QR code
           }
