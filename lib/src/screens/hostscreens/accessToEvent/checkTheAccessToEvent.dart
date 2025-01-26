@@ -83,7 +83,7 @@ class _CheckForAccessToEventState extends State<CheckForAccessToEvent> {
                             crossAxisAlignment: CrossAxisAlignment.start, // Align elements to the left
                             children: [
                               Text(guestUser!.name, style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white)),
-                              Text(' - Age: ${guestUser!.age}', style: const TextStyle(color: Colors.white)),
+                              Text(' - Age: ${guestUser!.age == -1 ? "Unknown" : guestUser!.age}', style: const TextStyle(color: Colors.white)),
                               Text(' - Gender: ${guestUser!.gender}', style: const TextStyle(color: Colors.white)),
                               Text(' - Black listed:', style: const TextStyle(color: Colors.white)),
                             ],

@@ -157,7 +157,7 @@ class _UserSettingsState extends State<UserSettings> {
               child: qrCodeBase64 == ''
                   ? const Text('Error fetching QR Code')
                   : Image.memory(
-                      base64Decode(qrCodeBase64!.split(',')[0]),
+                      base64Decode(qrCodeBase64!.split(',')[1]),
                       fit: BoxFit.contain,
                     ),
             ),
