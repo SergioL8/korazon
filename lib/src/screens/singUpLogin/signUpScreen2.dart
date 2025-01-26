@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:korazon/src/utilities/utils.dart';
 import 'package:wheel_chooser/wheel_chooser.dart';

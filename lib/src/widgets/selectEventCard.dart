@@ -5,7 +5,6 @@ import 'package:korazon/src/utilities/utils.dart';
 import 'package:flutter/material.dart';
 import 'dart:typed_data';
 import 'package:korazon/src/utilities/models/eventModel.dart';
-import 'package:korazon/src/widgets/alertBox.dart';
 
 
 
