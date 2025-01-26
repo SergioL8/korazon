@@ -26,20 +26,12 @@ class EventDetails extends StatelessWidget {
 
     final String eventName = event.title;
     final String eventDescription = event.description;
-    final int eventAge = event.age;
+    final double eventAge = event.age;
     final String eventId = event.documentID;
     final String hostName = event.hostName;
     final String hostId = event.hostId;
     final String hostProfilePicUrl = event.hostProfilePicUrl;
 
-    
-    // final String eventName = document['title'] ?? 'No title';
-    // final String eventDescription = document['description'] ?? '';
-    // final int eventAge = document['age'];
-    // final String eventId = document.id;
-    // final String hostName = document['hostName'] ?? 'no host info';
-    // final String hostId = document['hostId'];
-    // final String hostProfilePicUrl = document['hostProfilePicUrl'];
 
     return Scaffold(
       // AppBar with a slightly transparent background

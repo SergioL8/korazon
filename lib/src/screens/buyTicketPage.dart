@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
+import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
 import 'package:korazon/src/utilities/models/userModel.dart';
 
@@ -21,7 +22,7 @@ void buyTicket(BuildContext context, String eventID) async {
     final UserModel? user = UserModel.fromDocumentSnapshot(snapShot);
 
     if (user == null) {
-      showErrorMessage(context, content: 'Error loading your user. Logout and login.');      
+      showErrorMessage(context, content: 'Error loading your user. Logout and login.', errorAction: ErrorAction.logout);      
     }
 
     if (user!.tickets.contains(eventID)) {

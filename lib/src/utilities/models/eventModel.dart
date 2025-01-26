@@ -40,14 +40,14 @@ class EventModel {
   final String documentID;
   final String title;
   final String description;
-  final int age;
+  final double age;
   final String location;
   final String photoPath;
   final String dateTime;
   final String hostId;
   final String hostName;
   final String hostProfilePicUrl;
-  final int price;
+  final double price;
 
 
   static EventModel? fromDocumentSnapshot(DocumentSnapshot doc) {
@@ -67,7 +67,7 @@ class EventModel {
       hostId: data['hostId'] ?? '',
       hostName: data['hostName'] ?? 'No host name',
       hostProfilePicUrl: data['hostProfilePicUrl'] ?? '',
-      price: data['price'] ?? 0
+      price: data['price'] ?? 0.0,
     );
   }
 }

@@ -52,7 +52,7 @@ class EventCreationScreenState extends State<EventCreationScreen> {
   ) async {
 
     if (uid == null) {
-      showErrorMessage(context, content: 'There was an error loading your user, please logout and login again');
+      showErrorMessage(context, content: 'There was an error loading your user, please logout and login again', errorAction: ErrorAction.logout);
       return;
     }
 
@@ -64,7 +64,7 @@ class EventCreationScreenState extends State<EventCreationScreen> {
     user = UserModel.fromDocumentSnapshot(userDocument);
 
     if (user == null) {
-      showErrorMessage(context, content: 'There was an error loading your user, please logout and login again');
+      showErrorMessage(context, content: 'There was an error loading your user, please logout and login again', errorAction: ErrorAction.logout);
       return;
     }
   
