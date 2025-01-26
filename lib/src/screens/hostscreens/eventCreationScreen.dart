@@ -40,7 +40,7 @@ class EventCreationScreenState extends State<EventCreationScreen> {
 
 
 
-
+ 
 
   /// This function uploads the image to firebase storage and the event to firebase firestore. It uses the function from utils compressImage
   /// 

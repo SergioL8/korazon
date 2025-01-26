@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:korazon/src/widgets/accessToEventWidgets/denyGuestIntoPartyButton.dart';
 
 
 // Colors

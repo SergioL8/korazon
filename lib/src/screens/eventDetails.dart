@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:korazon/src/screens/buyTicketPage.dart';
@@ -8,12 +7,12 @@ import 'package:korazon/src/utilities/design_variables.dart';
 
 class EventDetails extends StatelessWidget {
   const EventDetails({
-    Key? key,
+    super.key,
     required this.document,
     required this.imageData,
     required this.formattedDate,
     required this.formattedTime,
-  }) : super(key: key);
+  });
 
   final DocumentSnapshot document;
   final Uint8List? imageData;

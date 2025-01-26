@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:korazon/src/screens/home_page.dart';
 import 'package:korazon/src/screens/hostscreens/hostProfile.dart';
-import 'package:korazon/src/screens/userscreens/user_profile_screen.dart';
+import 'package:korazon/src/screens/userscreens/socialPage.dart';
 import 'package:korazon/src/screens/userscreens/yourEvents.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/screens/hostscreens/eventCreationScreen.dart';
@@ -23,7 +23,7 @@ class BasePage extends StatefulWidget {
 }
 
 class _BasePage extends State<BasePage> {
-  int selectedPageIndex = 0;
+  int selectedPageIndex = 2;
   String? _uid;
   bool? isHost;
 
@@ -95,7 +95,7 @@ class _BasePage extends State<BasePage> {
       } else if (selectedPageIndex == 2) {
         setState(() {
           // activePage = const SocialPage();
-          activePage = const UserSettings();
+          activePage = const SocialPage();
         });
       }
     } else {
@@ -129,7 +129,7 @@ class _BasePage extends State<BasePage> {
     BottomNavigationBarItem(
       icon: Icon(Icons.home_outlined),
       activeIcon: Icon(Icons.home),
-      label: 'Home',
+      label: 'Home', 
     ),
     BottomNavigationBarItem(
       icon: Icon(Icons.qr_code_scanner_rounded),
@@ -165,8 +165,8 @@ class _BasePage extends State<BasePage> {
       label: 'Your events'
       ),
     BottomNavigationBarItem(
-      icon: Icon(Icons.person_outline_rounded),
-      activeIcon: Icon(Icons.person_rounded),
+      icon: Icon(Icons.people_alt_outlined),
+      activeIcon: Icon(Icons.people_alt),
       label: 'Social'
       ),
   ];
