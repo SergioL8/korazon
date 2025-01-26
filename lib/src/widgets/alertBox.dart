@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
+import 'package:korazon/src/utilities/utils.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:korazon/src/screens/singUpLogin/signUpLogin.dart';
 
 
-void showErrorMessage(BuildContext context, {String title = 'Something went wrong...', String content = ''}) {
+void showErrorMessage(BuildContext context, {String title = 'Something went wrong...', String content = '', errorAction = ErrorAction.none}) {
   showDialog(
     context: context,
     builder: (BuildContext context) => AlertDialog(
@@ -41,11 +44,19 @@ void showErrorMessage(BuildContext context, {String title = 'Something went wron
               borderRadius: BorderRadius.circular(8),
             )),
           ),
-          onPressed: () {
+          onPressed: errorAction == ErrorAction.logout ? () async {
+            await FirebaseAuth.instance.signOut();
+            // if (!mounted) return;
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (context) => const SignUpScreen(),
+              ),
+            );
+          } : () {
             Navigator.of(context).pop();
           },
-          child: const Text(
-            'Close',
+          child: Text(
+            errorAction == ErrorAction.logout ? 'Log Out' : 'Close',
             style: TextStyle(
               color: Colors.white,
               fontSize: 17,
