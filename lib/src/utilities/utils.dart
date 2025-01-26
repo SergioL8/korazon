@@ -1,9 +1,12 @@
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:flutter/material.dart';
 import 'design_variables.dart';
 import 'dart:typed_data';
+import 'dart:ui' as ui;
+import 'dart:convert';
 
 
 // This enum is used to determine if the user is in the scan page or the analytics page
@@ -11,6 +14,11 @@ import 'dart:typed_data';
 enum HostAction {
   scan,
   analytics,
+}
+
+enum ErrorAction {
+  none,
+  logout,
 }
 
 
@@ -128,4 +136,50 @@ Future<Uint8List?> getImage(imagePath) async{
 
     return imageData;
   }
+}
+
+
+
+
+
+Future<String?> createQRCode(String uid) async {
+
+  final timestamp = DateTime.now().millisecondsSinceEpoch.toString();
+  final qrData = '$uid,$timestamp';
+
+  final qrValidationResult = QrValidator.validate( // validate data and produce the qrCode
+    data: qrData,
+    version: QrVersions.auto, // set the version to auto
+    errorCorrectionLevel: QrErrorCorrectLevel.L // set the correction levle to low so the qr is as small as possible
+  );
+
+  if (qrValidationResult.status != QrValidationStatus.valid) { // validate qr code
+    return null;
+  }
+
+  final qrCode = qrValidationResult.qrCode!; // get the actual qrCode
+
+  // Create a QrPainter to render the QR code as an image
+  final painter = QrPainter.withQr(
+    eyeStyle: QrEyeStyle(
+      eyeShape: QrEyeShape.circle, // You can change this to QrEyeShape.circle for rounded eyes
+      color: Color(0xFF000000), // Color of the eyes
+    ),
+    qr: qrCode,
+    gapless: true, // no gaps between squares of the qrcode
+  );
+
+  // Convert the QR code to image data
+  final picData = await painter.toImageData(300, format: ui.ImageByteFormat.png); // format the qrcode as a png with format 
+  
+  final uint8List =  picData?.buffer.asUint8List(); // convert to uint8lsit to store
+
+  // Convert the Uint8List to a base64 string
+  print('code being created');
+  if (uint8List != null) {
+    return 'data:image/png;base64,${base64Encode(uint8List)}';
+  } else {
+    return null;
+  }
+
 }
