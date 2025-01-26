@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:korazon/src/cloudresources/signedin_logic.dart';
 import 'dart:convert';
 import 'package:korazon/src/utilities/design_variables.dart';
+import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/widgets/alertBox.dart'; // For base64 decoding
 import 'package:korazon/src/utilities/models/userModel.dart';
 
@@ -20,6 +21,7 @@ class _UserSettingsState extends State<UserSettings> {
   String? qrCodeBase64;
   bool _isLoading = false;
   UserModel? usermodel;
+  bool _qrCodeLoading = false;
 
 
   // DON'T HAVE TO EDIT THIS
@@ -150,17 +152,48 @@ class _UserSettingsState extends State<UserSettings> {
             ),
 
             // QR Code Container
-            SizedBox(
-              width: double.infinity, // Occupies entire width
-              // Optional: you can set a max height if desired
-              // height: MediaQuery.of(context).size.width * 0.8,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10, top: 40, right: 40, left: 40),
               child: qrCodeBase64 == ''
-                  ? const Text('Error fetching QR Code')
-                  : Image.memory(
-                      base64Decode(qrCodeBase64!.split(',')[1]),
-                      fit: BoxFit.contain,
-                    ),
+                    ? const Text('Error fetching QR Code')
+                    : Image.memory(
+                        base64Decode(qrCodeBase64!.split(',')[1]),
+                        fit: BoxFit.contain,
+                      ),
+              ),
+            const SizedBox(height: 20,),
+            
+            ElevatedButton(
+              style: ButtonStyle(
+                backgroundColor: WidgetStatePropertyAll<Color>(korazonColor),
+                shape: WidgetStatePropertyAll<OutlinedBorder>(RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                )),
+              ),
+              onPressed: () async {
+                if (_qrCodeLoading == true) { return; } // avoid multiple classs
+                _qrCodeLoading = true;
+                final temp = await createQRCode(usermodel!.userID);
+                await FirebaseFirestore.instance.collection('users').doc(usermodel!.userID).update({
+                  'qrCode': temp,
+                });
+                setState(() {
+                  qrCodeBase64 = temp;
+                });
+                _qrCodeLoading = false;
+              },
+              child: Text(
+                'Regenerate QR code',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
             ),
+
+            const SizedBox(height: 20,),
+
             const Text(
               'Use this QR Code to access all your events',
               style: TextStyle(

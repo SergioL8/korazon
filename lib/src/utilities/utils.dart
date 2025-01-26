@@ -170,7 +170,7 @@ Future<String?> createQRCode(String uid) async {
   );
 
   // Convert the QR code to image data
-  final picData = await painter.toImageData(300, format: ui.ImageByteFormat.png); // format the qrcode as a png with format 
+  final picData = await painter.toImageData(500, format: ui.ImageByteFormat.png); // format the qrcode as a png with format 
   
   final uint8List =  picData?.buffer.asUint8List(); // convert to uint8lsit to store
 

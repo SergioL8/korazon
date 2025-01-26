@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/utilities/models/userModel.dart';
 import 'package:korazon/src/utilities/models/eventModel.dart';
+import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
 import 'package:korazon/src/widgets/eventCard.dart';
 
@@ -38,7 +39,7 @@ class _YourEventsState extends State<YourEvents> {
     final String? userId = FirebaseAuth.instance.currentUser?.uid;
 
     if (userId == null) {
-      showErrorMessage(context, content: 'There was an error loading your user. Please logout and login back again.');
+      showErrorMessage(context, content: 'There was an error loading your user. Please logout and login back again.', errorAction: ErrorAction.logout);
       return;
     }
     try {
@@ -51,7 +52,7 @@ class _YourEventsState extends State<YourEvents> {
       final UserModel? user = UserModel.fromDocumentSnapshot(userDoc);
 
       if (user == null) {
-        showErrorMessage(context, content: 'There was an error loading your user. Please logout and login back again.');
+        showErrorMessage(context, content: 'There was an error loading your user. Please logout and login back again.', errorAction: ErrorAction.logout);
         return;
       }
 

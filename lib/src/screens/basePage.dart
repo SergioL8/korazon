@@ -40,7 +40,7 @@ class _BasePage extends State<BasePage> {
     final uid = FirebaseAuth.instance.currentUser?.uid;
 
     if (uid == null) {
-      showErrorMessage(context, content: 'There was an error loading your user. Please logout and login again.');
+      showErrorMessage(context, content: 'There was an error loading your user. Please logout and login again.', errorAction: ErrorAction.logout);
       return;
     }
 
@@ -49,7 +49,7 @@ class _BasePage extends State<BasePage> {
     final UserModel? user = UserModel.fromDocumentSnapshot(userDocuement);
 
     if (user == null) {
-      showErrorMessage(context, content: 'There was an error loading your user. Please logout and login again.');
+      showErrorMessage(context, content: 'There was an error loading your user. Please logout and login again.', errorAction: ErrorAction.logout);
       return;
     }
 
