@@ -4,31 +4,42 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:korazon/src/screens/buyTicketPage.dart';
 import 'package:korazon/src/screens/hostscreens/hostProfile.dart';
+import 'package:korazon/src/utilities/models/eventModel.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 
 class EventDetails extends StatelessWidget {
   const EventDetails({
     Key? key,
-    required this.document,
+    required this.event,
     required this.imageData,
     required this.formattedDate,
     required this.formattedTime,
   }) : super(key: key);
 
-  final DocumentSnapshot document;
+  final EventModel event;
   final Uint8List? imageData;
   final String formattedDate;
   final String formattedTime;
 
   @override
   Widget build(BuildContext context) {
-    final String eventName = document['title'];
-    final String eventDescription = document['description'];
-    final double eventAge = document['age'];
-    final String eventId = document.id;
-    final String hostName = document['hostName'];
-    final String hostId = document['hostId'];
-    final String hostProfilePicUrl = document['hostProfilePicUrl'];
+
+    final String eventName = event.title;
+    final String eventDescription = event.description;
+    final int eventAge = event.age;
+    final String eventId = event.documentID;
+    final String hostName = event.hostName;
+    final String hostId = event.hostId;
+    final String hostProfilePicUrl = event.hostProfilePicUrl;
+
+    
+    // final String eventName = document['title'] ?? 'No title';
+    // final String eventDescription = document['description'] ?? '';
+    // final int eventAge = document['age'];
+    // final String eventId = document.id;
+    // final String hostName = document['hostName'] ?? 'no host info';
+    // final String hostId = document['hostId'];
+    // final String hostProfilePicUrl = document['hostProfilePicUrl'];
 
     return Scaffold(
       // AppBar with a slightly transparent background
@@ -76,7 +87,7 @@ class EventDetails extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
                 child: Hero(
-                  tag: document.id,
+                  tag: event.documentID,
                   child: imageData != null
                       ? Image.memory(imageData!, fit: BoxFit.cover)
                       : Image.asset(
@@ -131,7 +142,7 @@ class EventDetails extends StatelessWidget {
                             ),
                             child: CircleAvatar(
                               backgroundColor: korazonColor,
-                              backgroundImage: hostProfilePicUrl != null
+                              backgroundImage: hostProfilePicUrl != ''
                                   ? NetworkImage(hostProfilePicUrl)
                                   : AssetImage(
                                       'assets/images/no_profile_picture.webp',
@@ -141,7 +152,7 @@ class EventDetails extends StatelessWidget {
                           ),
                               SizedBox(width: 8),
                               Text(
-                                hostName,
+                                hostName, 
                                 style: const TextStyle(
                                   fontSize: 24,
                                   fontWeight: FontWeight.bold,
@@ -166,7 +177,7 @@ class EventDetails extends StatelessWidget {
                         Row(
                           children: [
                             Text(
-                              formattedDate,
+                              formattedDate, // Can't be null because required by the constructor
                               style: const TextStyle(
                                 fontSize: 16,
                                 color: secondaryColor,
@@ -188,7 +199,7 @@ class EventDetails extends StatelessWidget {
                         Row(
                           children: [
                             Text(
-                              'Age: $eventAge+',
+                              eventAge == -1 ? "No age restrictions." : eventAge.toString(),
                               style: const TextStyle(
                                 color: secondaryColor,
                                 fontSize: 16,

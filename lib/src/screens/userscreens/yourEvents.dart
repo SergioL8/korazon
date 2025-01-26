@@ -2,7 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
-import 'package:korazon/src/utilities/utils.dart';
+import 'package:korazon/src/utilities/models/userModel.dart';
+import 'package:korazon/src/utilities/models/eventModel.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
 import 'package:korazon/src/widgets/eventCard.dart';
 
@@ -46,34 +47,37 @@ class _YourEventsState extends State<YourEvents> {
           .collection('users')
           .doc(userId)
           .get();
+      
+      final UserModel? user = UserModel.fromDocumentSnapshot(userDoc);
 
-      if (!userDoc.exists) {
+      if (user == null) {
         showErrorMessage(context, content: 'There was an error loading your user. Please logout and login back again.');
         return;
       }
 
+
       setState(() {
         // Extract the fetched tickets array and turn them into a list 
-        eventUids = List.from(userDoc.data()?['tickets'] ?? []); 
+        eventUids = user.tickets;
       });
 
       // Fetch event details for each event UID
-      // This goes to the list of all events to find if they match any of the ones 
-      // in your tickets list.
-
+      // This goes to the list of all events to find if they match any of the ones in your tickets list.
       for (String uid in eventUids) {
         var eventDoc = await FirebaseFirestore.instance
             .collection('events')
             .doc(uid)
             .get();
+        
+        EventModel? tempEvent = EventModel.fromDocumentSnapshot(eventDoc);
 
-        if (eventDoc.exists) {
+        if (tempEvent != null) {
           setState(() {
             // Add event details to the list
             // Here we are passing the event info as a snapshot which is the default setting
             events.add(eventDoc); 
           }); 
-        } 
+        }
       } 
       
     } catch (e) {

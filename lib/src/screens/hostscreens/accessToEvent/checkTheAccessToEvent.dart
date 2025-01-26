@@ -4,6 +4,7 @@ import 'package:korazon/src/widgets/accessToEventWidgets/allowGuestIntoPartyButt
 import 'package:korazon/src/widgets/accessToEventWidgets/denyGuestIntoPartyButton.dart';
 import 'package:korazon/src/widgets/accessToEventWidgets/tickCrossAccess.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
+import 'package:korazon/src/utilities/models/userModel.dart';
 
 
 
@@ -20,7 +21,9 @@ class CheckForAccessToEvent extends StatefulWidget {
 
 class _CheckForAccessToEventState extends State<CheckForAccessToEvent> {
   
-  Map<String, dynamic> userData = {};
+  UserModel? guestUser;
+
+  bool noUserInfo = false;
 
 
   /// This function wll check if a user has in his list of events the event he is trying to access
@@ -28,16 +31,17 @@ class _CheckForAccessToEventState extends State<CheckForAccessToEvent> {
 
     // Get the user document and the user data
     final userDocument = await FirebaseFirestore.instance.collection('users').doc(widget.guestID).get();
-    userData = userDocument.data() ?? {};
     
-    // check that the user data is not empty
-    if (userData.isEmpty) {
-      showErrorMessage(context, content: 'There was an error loading the user. Please try again');
+    guestUser = UserModel.fromDocumentSnapshot(userDocument);
+    
+    if (guestUser == null) {
+      noUserInfo = true;
+      showErrorMessage(context, content: 'There was an error loading the user information. Please try again');
       return false;
     }
 
     // get the list of events that the user is attending 
-    final List<String> eventsAttending = List<String>.from(userData['tickets'] ?? []);
+    final List<String> eventsAttending = guestUser!.tickets;
 
     // check if the event ID is in the list of events the user is attending and return the result
     return eventsAttending.contains(widget.eventID);
@@ -54,7 +58,7 @@ class _CheckForAccessToEventState extends State<CheckForAccessToEvent> {
           if (snapshot.connectionState == ConnectionState.waiting) { // if checking is still in progress show a loading indicator
             return const CircularProgressIndicator();
           } else {
-            if (snapshot.hasError) { // if there is an error show an error message
+            if (snapshot.hasError || noUserInfo) { // if there is an error show an error message
               return const Text('An error occurred, try again later');
             } else {
               return Scaffold(
@@ -78,9 +82,9 @@ class _CheckForAccessToEventState extends State<CheckForAccessToEvent> {
                           Column( // this column contains the user details
                             crossAxisAlignment: CrossAxisAlignment.start, // Align elements to the left
                             children: [
-                              Text(userData['name'] ?? 'No name', style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white)),
-                              Text(' - Age: ${userData['age'] ?? 'No age'}', style: const TextStyle(color: Colors.white)),
-                              Text(' - Gender: ${userData['gender'] ?? 'No gender'}', style: const TextStyle(color: Colors.white)),
+                              Text(guestUser!.name, style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white)),
+                              Text(' - Age: ${guestUser!.age}', style: const TextStyle(color: Colors.white)),
+                              Text(' - Gender: ${guestUser!.gender}', style: const TextStyle(color: Colors.white)),
                               Text(' - Black listed:', style: const TextStyle(color: Colors.white)),
                             ],
                           ),
@@ -107,7 +111,7 @@ class _CheckForAccessToEventState extends State<CheckForAccessToEvent> {
                       Row( // this row contains the buttons to allow or deny the user access to the event
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly, // Space elements evenly
                         children: [
-                          AllowGuestIn(userData: userData, eventID: widget.eventID), // button to allow guest in
+                          AllowGuestIn(userData: guestUser!, eventID: widget.eventID), // button to allow guest in
 
                           const SizedBox(width: 10),
 

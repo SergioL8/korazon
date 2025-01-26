@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
+import 'package:korazon/src/utilities/models/userModel.dart';
 
 void buyTicket(BuildContext context, String eventID) async {
   if (FirebaseAuth.instance.currentUser == null) {
@@ -17,9 +18,13 @@ void buyTicket(BuildContext context, String eventID) async {
     final userDoc = FirebaseFirestore.instance.collection('users').doc(uid);
     final snapShot = await userDoc.get();
 
-    final tickets = snapShot.data()?['tickets'] ?? [];
+    final UserModel? user = UserModel.fromDocumentSnapshot(snapShot);
 
-    if (tickets.contains(eventID)) {
+    if (user == null) {
+      showErrorMessage(context, content: 'Error loading your user. Logout and login.');      
+    }
+
+    if (user!.tickets.contains(eventID)) {
       showErrorMessage(context, title: 'Not that fast!', content: 'You already have a ticket for this event.');      
     } else {
 

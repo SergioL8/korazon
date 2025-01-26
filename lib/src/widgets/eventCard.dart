@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -7,6 +6,7 @@ import 'package:korazon/src/screens/eventDetails.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/utilities/utils.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:korazon/src/utilities/models/eventModel.dart';
 
 class EventCard extends StatefulWidget {
   const EventCard({super.key, required this.document});
@@ -18,24 +18,38 @@ class EventCard extends StatefulWidget {
 class _EventCardState extends State<EventCard> {
   bool isLikeAnimating = false;
 
+  
+
   @override
   Widget build(BuildContext context) {
 
-    final String dateTimeStr = widget.document['dateTime']; // e.g., "2025-01-15 22:00"
-    DateTime eventDateTime = DateTime.parse(dateTimeStr);
+    EventModel? event = EventModel.fromDocumentSnapshot(widget.document);
 
-    // Format the date and time separately
-    String formattedDate = DateFormat('MMMM d, yyyy').format(eventDateTime); // e.g., "January 15, 2025"
-    String formattedTime = DateFormat('h:mm a').format(eventDateTime); // e.g., "10:00 PM"
+    if (event == null) {
+      return SizedBox();
+    }
+
+    final String dateTimeStr = event.dateTime; // e.g., "2025-01-15 22:00"
+
+    String formattedDate = 'No Date'; // e.g., "January 15, 2025"
+    String formattedTime = 'No time'; // e.g., "10:00 PM"
+
+    if (dateTimeStr != '') {
+      DateTime eventDateTime = DateTime.parse(dateTimeStr);
+
+      // Format the date and time separately
+      formattedDate = DateFormat('MMMM d, yyyy').format(eventDateTime); // e.g., "January 15, 2025"
+      formattedTime = DateFormat('h:mm a').format(eventDateTime); // e.g., "10:00 PM"
+    }
 
     return FutureBuilder<Uint8List?>(
-      future: getImage(widget.document['photoPath']),
+      future: getImage(event.photoPath),
       builder: (context, snapshot) {
         return InkWell(
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) => EventDetails(
-                document: widget.document,
+                event: event,
                 imageData: snapshot.data,
                 formattedDate: formattedDate,
                 formattedTime: formattedTime,
@@ -56,7 +70,7 @@ class _EventCardState extends State<EventCard> {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(16),
                       child: Hero(
-                        tag: widget.document.id,
+                        tag: event.documentID,
                         flightShuttleBuilder: (
                           flightContext,
                           animation,
@@ -111,8 +125,8 @@ class _EventCardState extends State<EventCard> {
                             ),
                             child: CircleAvatar(
                               backgroundColor: korazonColor,
-                              backgroundImage: widget.document['hostProfilePicUrl'] != null
-                                  ? NetworkImage(widget.document['hostProfilePicUrl'])
+                              backgroundImage: event.hostProfilePicUrl != ''
+                                  ? NetworkImage(event.hostProfilePicUrl)
                                   : AssetImage(
                                       'assets/images/no_profile_picture.webp',
                                     ) as ImageProvider,
@@ -121,7 +135,7 @@ class _EventCardState extends State<EventCard> {
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            widget.document['hostName']?? 'No host name',
+                            event.hostName,
                             //widget.document['hostName'],
                             style: TextStyle(
                               fontSize: 18,

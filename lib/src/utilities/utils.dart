@@ -113,7 +113,7 @@ Future<Uint8List> compressImage(Uint8List image, int quality) async {
 /// Output: the image as a Uint8List
 Future<Uint8List?> getImage(imagePath) async{
 
-  if (imagePath == null) {
+  if (imagePath == '') {
 
     return null;
 

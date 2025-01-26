@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:korazon/src/screens/hostscreens/editHostProfile.dart';
 import 'package:korazon/src/screens/singUpLogin/signUpLogin.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
-import 'package:korazon/src/utilities/utils.dart';
+import 'package:korazon/src/utilities/models/userModel.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
 import 'package:korazon/src/widgets/eventCard.dart';
 import 'package:korazon/src/widgets/followButton.dart';
@@ -20,7 +20,7 @@ class HostProfileScreen extends StatefulWidget {
 class _HostProfileScreenState extends State<HostProfileScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   List<String> listOfCreatedEvents = []; // list of the events that the host has created
-  var userData = {};
+  UserModel? user;
   int followers = 0;
   bool isLoading = false;
   bool isFollowing = false;
@@ -43,19 +43,20 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
           .collection('users')
           .doc(widget.uid)
           .get();
+      
+      user = UserModel.fromDocumentSnapshot(userDocument);
 
-      // If the document exists, parse data
-      if (userDocument.exists) {
-        userData = userDocument.data()!;
-
-        // checks the number of followers 
-        followers = userData['followers']?.length ?? 0;
-
-        // checks if the user follows the account
-        isFollowing = (userData['followers']?.contains(FirebaseAuth.instance.currentUser!.uid)) ?? false;
-
-        numberOfCreatedEvents = (userData['createdEvents'] as List<dynamic>?)?.length ?? 0;
+      if (user == null) {
+        showErrorMessage(context, content: 'There was an error loading the profile. Please try again');
+        return;
       }
+
+      followers = user!.followers.length;
+
+      isFollowing = user!.followers.contains(FirebaseAuth.instance.currentUser!.uid);
+
+      numberOfCreatedEvents = (user!.createdEvents as List<dynamic>?)?.length ?? 0;
+      
     } catch (e) {
       showErrorMessage(context, content: 'There was an error loading the profile. Please try again');
     }
@@ -116,7 +117,7 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
             appBar: AppBar(
               backgroundColor: secondaryColor,
               title: Text(
-                userData['name'] ?? 'No Name',
+                user!.name,
                 textAlign: TextAlign.center, // Ensures the text stays centered
                 style: const TextStyle(
                   fontSize: 20,
@@ -182,15 +183,11 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
                                       radius: 48,
                                       backgroundColor: Colors.white,
                                       child: CircleAvatar(
-                                        backgroundColor: Colors.grey,
-                                        backgroundImage: userData['profilePicUrl'] !=
-                                                null
-                                            ? NetworkImage(userData['profilePicUrl'])
-                                                as ImageProvider
-                                            : const AssetImage(
-                                                'assets/images/no_profile_picture.webp',
-                                              ),
                                         radius: 48,
+                                        backgroundColor: Colors.grey,
+                                        backgroundImage: user!.profilePicUrl == ''
+                                          ? const AssetImage('assets/images/no_profile_picture.webp',)
+                                          : NetworkImage(user!.profilePicUrl) as ImageProvider
                                       ),
                                     ),
                                     SizedBox(
@@ -208,7 +205,7 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
                           // Bio
                           
                           Text(
-                            userData['bio'] ?? '',
+                            user!.bio,
                             style: const TextStyle(
                               fontSize: 16,
                               color: secondaryColor,
@@ -235,9 +232,9 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
                                         builder: (context) => EditProfilePage(
-                                          currentName: userData['name'] ?? '',
-                                          currentBio: userData['bio'] ?? '',
-                                          currentImageUrl: userData['profilePicUrl'],
+                                          currentName: user!.name,
+                                          currentBio: user!.bio,
+                                          currentImageUrl: user!.profilePicUrl,
                                         ),
                                       ),
                                     );
@@ -257,7 +254,7 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
                                         await followUser(
                                           FirebaseAuth
                                               .instance.currentUser!.uid,
-                                          userData['uid'],
+                                          user!.userID,
                                         );
 
                                         setState(() {
@@ -275,7 +272,7 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
                                         followUser(
                                           FirebaseAuth
                                               .instance.currentUser!.uid,
-                                          userData['uid'],
+                                          user!.userID,
                                         );
 
                                         setState(() {

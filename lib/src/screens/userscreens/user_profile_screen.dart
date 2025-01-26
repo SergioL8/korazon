@@ -5,6 +5,7 @@ import 'package:korazon/src/cloudresources/signedin_logic.dart';
 import 'dart:convert';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/widgets/alertBox.dart'; // For base64 decoding
+import 'package:korazon/src/utilities/models/userModel.dart';
 
 
 class UserSettings extends StatefulWidget{
@@ -17,8 +18,8 @@ class UserSettings extends StatefulWidget{
 class _UserSettingsState extends State<UserSettings> {
 
   String? qrCodeBase64;
-  var userData = {}; 
   bool _isLoading = false;
+  UserModel? usermodel;
 
 
   // DON'T HAVE TO EDIT THIS
@@ -50,17 +51,13 @@ class _UserSettingsState extends State<UserSettings> {
           .doc(user.uid)
           .get();
 
-      if (!userDocument.exists) {  
-        qrCodeBase64 = null; return;  
-        } // Ensure the user data exists
 
-      if (!userDocument.data()!.containsKey('qrCode')) {  
+      usermodel = UserModel.fromDocumentSnapshot(userDocument);
+
+      if (usermodel == null) { // Ensure the user data exists
         qrCodeBase64 = null; return;  
-         // Ensure the user data contains a QR code
-      } else {
-        userData = userDocument.data()!;
       }
-      qrCodeBase64 = userDocument['qrCode'];
+      qrCodeBase64 = usermodel!.qrCode;
 
     } catch (e) {
       showErrorMessage(context, content: e.toString());
@@ -119,6 +116,7 @@ class _UserSettingsState extends State<UserSettings> {
     ? Center(
        child: CircularProgressIndicator(),
     )
+    : usermodel == null ? Center (child: Text('Error Loading User. Logout and login.'),) 
     : SingleChildScrollView(
       child: Padding(
         // You can adjust horizontal padding to your liking
@@ -132,7 +130,7 @@ class _UserSettingsState extends State<UserSettings> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  userData['name'] ?? '',
+                  usermodel!.name,
                   style: TextStyle(
                     color: secondaryColor,
                     fontSize: 24.0,
@@ -141,7 +139,7 @@ class _UserSettingsState extends State<UserSettings> {
                 ),
                 SizedBox(width: 8.0), // Add spacing between name and last name
                 Text(
-                  userData['lastName'] ?? '',
+                  usermodel!.lastName,
                   style: TextStyle(
                     color: secondaryColor,
                     fontSize: 24.0,
@@ -156,10 +154,10 @@ class _UserSettingsState extends State<UserSettings> {
               width: double.infinity, // Occupies entire width
               // Optional: you can set a max height if desired
               // height: MediaQuery.of(context).size.width * 0.8,
-              child: qrCodeBase64 == null
+              child: qrCodeBase64 == ''
                   ? const Text('Error fetching QR Code')
                   : Image.memory(
-                      base64Decode(qrCodeBase64!.split(',')[1]),
+                      base64Decode(qrCodeBase64!.split(',')[0]),
                       fit: BoxFit.contain,
                     ),
             ),
@@ -176,7 +174,7 @@ class _UserSettingsState extends State<UserSettings> {
             // USER INFO
 
             Text(
-              userData['gender']?? 'Undefined Gender', 
+              usermodel!.gender, 
               style: const TextStyle(
                     color: secondaryColor,
                     fontSize: 24.0,
@@ -184,9 +182,8 @@ class _UserSettingsState extends State<UserSettings> {
                   ),
             ),
             const SizedBox(height: 8.0),
-            Text( userData['age'] != null?
-              userData['age'].toString(): 'Undefined Age',
-              // I am guessing 
+            Text( 
+              usermodel!.age == -1 ? 'Undefined Age' : (usermodel!.age).toString(),
               style: const TextStyle(
                     color: secondaryColor,
                     fontSize: 24.0,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
+import 'package:korazon/src/utilities/models/userModel.dart';
 
 
 /// This function adds the user to the list of atendees of the event
@@ -22,7 +23,7 @@ void _allowGuestIn(BuildContext context, String userID, String eventID) async {
 
 class AllowGuestIn extends StatelessWidget {
   const AllowGuestIn({super.key, required this.userData, required this.eventID});
-  final Map<String, dynamic> userData;
+  final UserModel userData;
   final String eventID;
 
   
@@ -30,7 +31,7 @@ class AllowGuestIn extends StatelessWidget {
   @override
   Widget build(context) {
 
-    final String userID = userData['uid']; // get the user ID from the user data
+    final String userID = userData.userID; // get the user ID from the user data
 
     return InkWell(
       onTap:() {

@@ -5,6 +5,7 @@ import 'package:korazon/src/widgets/alertBox.dart';
 import 'package:korazon/src/widgets/selectEventCard.dart';
 import 'package:flutter/material.dart';
 import 'package:korazon/src/utilities/utils.dart';
+import 'package:korazon/src/utilities/models/userModel.dart';
 
 
 
@@ -52,14 +53,17 @@ class _SelectEventForActionState extends State<SelectEventForAction> {
 
     // Get the user document from Firestore and check that it exists
     final userDocument = await FirebaseFirestore.instance.collection('users').doc(uid).get();
-    if (!userDocument.exists) {
-      showErrorMessage(context, content: 'There was an error loading your events. Please try again.');
+
+    UserModel? user = UserModel.fromDocumentSnapshot(userDocument);
+
+    if (user == null) {
+      showErrorMessage(context, content: 'There was an error loading your user. Please try again.');
       return;
     }
     
     // Get the list of event IDs from the user document
     setState(() {
-      listOfCreatedEvents = List<String>.from(userDocument.data()?['createdEvents'] ?? []);
+      listOfCreatedEvents = user.createdEvents;
       _isLoading = false;
     });
   }

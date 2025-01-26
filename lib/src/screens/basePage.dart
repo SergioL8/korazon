@@ -11,6 +11,7 @@ import 'package:korazon/src/utilities/utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';  
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
+import 'package:korazon/src/utilities/models/userModel.dart';
 
 
 class BasePage extends StatefulWidget {
@@ -44,15 +45,15 @@ class _BasePage extends State<BasePage> {
     }
 
     final userDocuement = await FirebaseFirestore.instance.collection('users').doc(uid).get();
-    if (!userDocuement.exists) {
-      showErrorMessage(context, content: 'There was an error loading your user. Please logout and login again.');      return;
-    }
+    
+    final UserModel? user = UserModel.fromDocumentSnapshot(userDocuement);
 
-    final bool? host = userDocuement.data()?['isHost'];
-    if (host == null) {
+    if (user == null) {
       showErrorMessage(context, content: 'There was an error loading your user. Please logout and login again.');
       return;
     }
+
+    final bool host = user.isHost;
 
     setState(() {
       isHost = host;
@@ -181,9 +182,9 @@ class _BasePage extends State<BasePage> {
                   ),
                 ),
               ),
-              height: 70,
+              // height: 70, // I had to comment this because there was an overflow in the iphone 16 pro
               child: BottomNavigationBar(
-                iconSize: 32.0,
+                iconSize: 32.0, // 32.0
                 showSelectedLabels: false,
                 showUnselectedLabels: false,
                 selectedItemColor: secondaryColor,

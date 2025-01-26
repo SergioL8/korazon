@@ -8,6 +8,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:korazon/src/utilities/utils.dart';
+import 'package:korazon/src/utilities/models/userModel.dart';
 
 
 
@@ -33,7 +34,7 @@ class EventCreationScreenState extends State<EventCreationScreen> {
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
   final TextEditingController _priceController = TextEditingController(text: '0.00'); // set initial value of the price to 0.00
-  var userData = {};
+  UserModel? user;
 
   bool _isLoading = false; // this variable will be used to show a loading spinner when the user clicks the submit button
   Uint8List? _photofile; // this variable will be used to store the image file that the user uploads
@@ -59,14 +60,14 @@ class EventCreationScreenState extends State<EventCreationScreen> {
           .collection('users')
           .doc(uid)
           .get();
-    
-    if (!userDocument.exists) {
+
+    user = UserModel.fromDocumentSnapshot(userDocument);
+
+    if (user == null) {
       showErrorMessage(context, content: 'There was an error loading your user, please logout and login again');
       return;
     }
-
-    userData = userDocument.data()!;
-
+  
 
     // Dismiss the keyboard
     FocusScope.of(context).unfocus();
@@ -129,8 +130,8 @@ class EventCreationScreenState extends State<EventCreationScreen> {
         
         // Host variables
         'hostId': uid,
-        'hostName': userData['name'],
-        'hostProfilePicUrl': userData['profilePicUrl'],
+        'hostName': user!.name,
+        'hostProfilePicUrl': user!.profilePicUrl,
       });
 
 

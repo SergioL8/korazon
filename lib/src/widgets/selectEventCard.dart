@@ -4,7 +4,7 @@ import 'package:korazon/src/screens/hostscreens/hostAnalytics.dart';
 import 'package:korazon/src/utilities/utils.dart';
 import 'package:flutter/material.dart';
 import 'dart:typed_data';
-
+import 'package:korazon/src/utilities/models/eventModel.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
 
 
@@ -33,6 +33,7 @@ class _SelectEventCardState extends State<SelectEventCard> {
   // we use two laoding variables, one for the data and one for the image
   bool _dataLoading = true;
   bool _imageLoading = true;
+  bool _errorLoading = false;
 
 
 
@@ -50,24 +51,24 @@ class _SelectEventCardState extends State<SelectEventCard> {
     
     // get the event document from Firestore and check that it exists
     final eventDocument = await FirebaseFirestore.instance.collection('events').doc(widget.eventID).get();
-    if (!eventDocument.exists) {
-      showErrorMessage(context, content: 'There was an error loading the event. Please try again.');
-      return;
-    }
 
-    // get the event data from the event document and check that it exists
-    final documentData = eventDocument.data() ?? {};
-    if (documentData.isEmpty) {
-      showErrorMessage(context, content: 'There was an error loading the event. Please try again.');
+    EventModel? event = EventModel.fromDocumentSnapshot(eventDocument);
+
+    if (event == null) {
+      setState(() {
+        _dataLoading = false;
+        _imageLoading = false;
+        _errorLoading = true;
+      });
       return;
     }
 
 
     setState(() {
       // get the event name and date from the event data
-      eventTitle = documentData['title'] ?? 'Untitled';
-      eventDateAndTime = documentData['dateTime'] ?? 'Unknown date/time';
-      imagePath = documentData['photoPath'] ?? 'no_path';
+      eventTitle = event.title;
+      eventDateAndTime = event.dateTime;
+      imagePath = event.photoPath;
       
       _dataLoading = false; // data has been loaded so set the loading variable to false
     });
@@ -77,7 +78,7 @@ class _SelectEventCardState extends State<SelectEventCard> {
 
     setState(() {
       imageData = dataSnapShot; // update the image data
-      _imageLoading = false; // image has been loaded so set the loading variable to false
+      _imageLoading = false;
     });
     
   }
@@ -88,7 +89,7 @@ class _SelectEventCardState extends State<SelectEventCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return _errorLoading ? SizedBox() : Card(
       child: _dataLoading // if the data is still loading then the image is still loading so set the card to a loading state
         ? const Center(child: CircularProgressIndicator())
         : ListTile( // if the data has been loaded then show the card with the event details
