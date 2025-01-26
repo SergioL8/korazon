@@ -29,14 +29,14 @@ class _SocialPageState extends State<SocialPage> {
     {
       'photoPath': 'assets/images/starship.jpg',
       'title': 'Find events to find people you may know',
-      'PeopleYouMayKnow': [],
+      'peopleYouMayKnow': [],
       'index': 0,
       // This will stay empty be cause for the hosts we are already downloading all the snaps
     },
     {
       'photoPath': 'assets/images/pary.jpg',
       'title': 'Top Hosts',
-      'PeopleYouMayKnow': [],
+      'peopleYouMayKnow': [],
       'index': 1,
     },
   ];
@@ -128,7 +128,7 @@ class _SocialPageState extends State<SocialPage> {
             setState(() {
               socialList.add({
                 'index': currentIndex,
-                'imagePath': photoPath,
+                'photoPath': photoPath,
                 'title': eventDoc.data()?['eventName'] ?? 'Untitled Event',
                 'peopleYouMayKnow':
                     ticketsSold ?? [], // or [] if it's supposed to be a list
@@ -238,27 +238,29 @@ class _SocialPageState extends State<SocialPage> {
                             return Center(child: Text('No hosts found.'));
                           } else {
                             final hosts = snapshot.data!;
-                            return ListView.builder(
-                              itemCount: hosts.length,
-                              itemBuilder: (context, index) {
-                                final hostData = hosts[index].data()
-                                    as Map<String, dynamic>?;
-
-                                // Extract username and photoPath
-                                final username =
-                                    hostData?['username'] ?? 'Unknown Host';
-                                //final photoPath = hostData?['photoPath'];
-                                return ListTile(
-                                  // leading: CircleAvatar(
-                                  //   backgroundImage: NetworkImage(photoPath),
-                                  // ),
-                                  title: Text(username),
-                                  onTap: () {
-                                    // Add navigation or interaction logic here
-                                    print('Tapped on $username');
-                                  },
-                                );
-                              },
+                            return Expanded(
+                              child: ListView.builder(
+                                itemCount: hosts.length,
+                                itemBuilder: (context, index) {
+                                  final hostData = hosts[index].data()
+                                      as Map<String, dynamic>?;
+                              
+                                  // Extract username and photoPath
+                                  final username =
+                                      hostData?['username'] ?? 'Unknown Host';
+                                  //final photoPath = hostData?['photoPath'];
+                                  return ListTile(
+                                    // leading: CircleAvatar(
+                                    //   backgroundImage: NetworkImage(photoPath),
+                                    // ),
+                                    title: Text(username),
+                                    onTap: () {
+                                      // Add navigation or interaction logic here
+                                      print('Tapped on $username');
+                                    },
+                                  );
+                                },
+                              ),
                             );
                           }
                         },
@@ -333,7 +335,7 @@ class _SocialPageState extends State<SocialPage> {
 
       // We are mapping over the map
       items: socialList.map((data) {
-        final String imagePath = data['photoPath'];
+        final String photoPath = data['photoPath'];
         final int index = data['index']; // Use the pre-defined index
 
         return Builder(
@@ -350,7 +352,7 @@ class _SocialPageState extends State<SocialPage> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
                       image: DecorationImage(
-                        image: AssetImage(imagePath),
+                        image: AssetImage(photoPath),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -365,7 +367,7 @@ class _SocialPageState extends State<SocialPage> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                     image: DecorationImage(
-                      image: AssetImage(imagePath),
+                      image: AssetImage(photoPath),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -379,7 +381,7 @@ class _SocialPageState extends State<SocialPage> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                     image: DecorationImage(
-                      image: AssetImage(imagePath),
+                      image: AssetImage(photoPath),
                       fit: BoxFit.cover,
                     ),
                   ),
