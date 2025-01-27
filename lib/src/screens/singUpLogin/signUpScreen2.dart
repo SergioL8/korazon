@@ -27,7 +27,8 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _genderController = TextEditingController();
-  final TextEditingController _ageController = TextEditingController(text: '18');
+  // final TextEditingController _ageController = TextEditingController(text: '18');
+  final TextEditingController _academicYearController = TextEditingController(text: 'Freshman');
 
   // focus nodes to detect when the text field is in focus
   final FocusNode _nameFocusNode = FocusNode();
@@ -68,7 +69,6 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
       );
 
       if (credentials.user == null) {
-        print('in userr error');
         showErrorMessage(context, content: 'Error creating user. Please try again later');
         return;
       }
@@ -85,7 +85,8 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
         'email': widget.email,
         'name': _nameController.text,
         'lastName': _lastNameController.text,
-        'age': int.parse(_ageController.text),  
+        // 'age': int.parse(_ageController.text),
+        'academicYear': _academicYearController.text, 
         'gender': _genderController.text,
         'isHost': false,
         'qrCode': qrCode,
@@ -95,6 +96,12 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
       // not in the same page that the streambuilder has returned. So we need to push the new page to the navigator stack.
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const BasePage()));
 
+    } on FirebaseAuthException catch(e) {
+      if (e.code == 'email-already-in-use') {
+        showErrorMessage(context, content: 'This email address is already in use. Please log in.');
+      } else {
+        showErrorMessage(context, content: 'Error creating user. Please try again later');
+      }
     } catch (e) {
       showErrorMessage(context, content: 'Error creating user. Please try again later');
     }
@@ -150,7 +157,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
                     controller: _nameController, // set the controller
                     focusNode: _nameFocusNode,
                     decoration: InputDecoration(
-                      labelText: 'Name',
+                      labelText: 'First Name',
                       errorStyle: TextStyle(
                         color: secondaryColor,
                         fontWeight: FontWeight.bold,
@@ -285,29 +292,64 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
                 ),
               ],
             ),
-            const SizedBox(height: 50, width: double.infinity,),
-            Column(
+            const SizedBox(height: 30, width: double.infinity,),
+            // Column(
+            //   children: [
+            //     Text(
+            //       'Age',
+            //       style: TextStyle(
+            //         color: secondaryColor,
+            //         fontSize: 20,
+            //         fontWeight: FontWeight.bold
+            //       ),
+            //     ),
+            //     SizedBox( // necessary to make the wheel chooser take the full height of the column
+            //       height: 45,
+            //       child: WheelChooser.integer(
+            //         onValueChanged: (s) => _ageController.text = s.toString(),
+            //         initValue: 18,
+            //         minValue: 1,
+            //         maxValue: 99,
+            //         horizontal: true,
+            //         selectTextStyle: TextStyle(
+            //           color: korazonColor,
+            //           fontSize: 20,
+            //           fontWeight: FontWeight.bold
+            //         ),
+            //       ),
+            //     ),
+            //   ],
+            // ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween, // Adjust as needed
+              crossAxisAlignment: CrossAxisAlignment.center, // Adjust as needed
               children: [
                 Text(
-                  'Age',
+                  'Academic Year: ',
                   style: TextStyle(
                     color: secondaryColor,
                     fontSize: 20,
                     fontWeight: FontWeight.bold
                   ),
+                  textAlign: TextAlign.start,
                 ),
-                SizedBox( // necessary to make the wheel chooser take the full height of the column
-                  height: 45,
-                  child: WheelChooser.integer(
-                    onValueChanged: (s) => _ageController.text = s.toString(),
-                    initValue: 18,
-                    minValue: 1,
-                    maxValue: 99,
-                    horizontal: true,
-                    selectTextStyle: TextStyle(
-                      color: korazonColor,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold
+                Expanded(
+                  child: SizedBox( // necessary to make the wheel chooser take the full height of the column
+                    height: 100,
+                    child: WheelChooser.choices(
+                      choices: [
+                        WheelChoice(value: 'Freshman', title: 'Freshman'),
+                        WheelChoice(value: 'Sophmore', title: 'Sophmore'),
+                        WheelChoice(value: 'Junior', title: 'Junior'),
+                        WheelChoice(value: 'Senior', title: 'Senior'),
+                      ],
+                      onChoiceChanged: (s) => _academicYearController.text = s.toString(),
+                      horizontal: false,
+                      selectTextStyle: TextStyle(
+                        color: korazonColor,
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold
+                      ),
                     ),
                   ),
                 ),

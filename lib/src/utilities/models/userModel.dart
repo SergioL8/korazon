@@ -14,6 +14,7 @@ class UserModel {
     required this.lastName,
     required this.gender,
     required this.age,
+    required this.academicYear,
     required this.bio,
     required this.qrCode,
     required this.tickets,
@@ -29,6 +30,7 @@ class UserModel {
   final String lastName;
   final String gender;
   final int age;
+  final String academicYear;
   final String bio;
   final String qrCode;
   final List<String> tickets;
@@ -53,6 +55,7 @@ class UserModel {
       lastName: data['lastName'] ?? 'No last name',
       gender: data['gender'] ?? 'Unknown',
       age: data['age'] ?? -1,
+      academicYear: data['academicYear'] ?? 'No academic year',
       bio: data['bio'] ?? '',
       qrCode: data['qrCode'] ?? '',
       tickets: List<String>.from(data['tickets'] ?? []),

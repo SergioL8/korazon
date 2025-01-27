@@ -31,7 +31,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   
   // variable declaration
   bool obscureText = false;
-  bool login = false;
+  bool login = true;
   bool isLoading = false;
 
 
