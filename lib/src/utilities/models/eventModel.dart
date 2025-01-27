@@ -35,6 +35,7 @@ class EventModel {
     required this.hostName,
     required this.hostProfilePicUrl,
     required this.price,
+    required this.ticketsSold
   });
 
   final String documentID;
@@ -48,6 +49,7 @@ class EventModel {
   final String hostName;
   final String hostProfilePicUrl;
   final double price;
+  final List<String> ticketsSold;
 
 
   static EventModel? fromDocumentSnapshot(DocumentSnapshot doc) {
@@ -68,6 +70,7 @@ class EventModel {
       hostName: data['hostName'] ?? 'No host name',
       hostProfilePicUrl: data['hostProfilePicUrl'] ?? '',
       price: data['price'] ?? 0.0,
+      ticketsSold: List<String>.from(data['ticketsSold'] ?? []),
     );
   }
 }

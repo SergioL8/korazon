@@ -7,6 +7,8 @@ import 'package:korazon/src/utilities/models/eventModel.dart';
 import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
 import 'package:korazon/src/widgets/eventCard.dart';
+import 'package:korazon/src/widgets/qrcodeImage.dart';
+
 
 class YourEvents extends StatefulWidget {
   const YourEvents({super.key});
@@ -19,6 +21,9 @@ class _YourEventsState extends State<YourEvents> {
 
   List<String> eventUids = []; // List to store event UIDs
   List<DocumentSnapshot> events = []; // List to store event details as DocumentSnapshots
+  UserModel? usermodel;
+  String? qrCodeBase64;
+  bool _qrCodeLoading = true;
   bool _isLoading = true;
   
 
@@ -27,7 +32,6 @@ class _YourEventsState extends State<YourEvents> {
     super.initState();
     getEvents();
   }
-
 
 
   // Fetch the user's tickets and retrieve event details
@@ -49,17 +53,19 @@ class _YourEventsState extends State<YourEvents> {
           .doc(userId)
           .get();
       
-      final UserModel? user = UserModel.fromDocumentSnapshot(userDoc);
+      usermodel = UserModel.fromDocumentSnapshot(userDoc);
 
-      if (user == null) {
+      if (usermodel == null) {
         showErrorMessage(context, content: 'There was an error loading your user. Please logout and login back again.', errorAction: ErrorAction.logout);
         return;
       }
 
-
       setState(() {
-        // Extract the fetched tickets array and turn them into a list 
-        eventUids = user.tickets;
+        setState(() { // the qrCode widgets needs the user info, so once we have the info we can se the loading state to false
+          _qrCodeLoading = false;
+        });
+        eventUids = usermodel!.tickets;
+        qrCodeBase64 = usermodel!.qrCode;
       });
 
       // Fetch event details for each event UID
@@ -76,68 +82,161 @@ class _YourEventsState extends State<YourEvents> {
           setState(() {
             // Add event details to the list
             // Here we are passing the event info as a snapshot which is the default setting
-            events.add(eventDoc); 
+            events.add(eventDoc);
           }); 
         }
       } 
-      
     } catch (e) {
       showErrorMessage(context, content: e.toString());
+      
     }
     setState(() {
-      _isLoading = false;
-    });
+        _isLoading = false;
+      });
   }
 
 
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(context) {
     return Scaffold(
-      backgroundColor: tertiaryColor,
+      // backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: appBarColor,
         title: Text(
           'Your Events',
           style: TextStyle(
                   color: secondaryColor,
                   fontWeight: primaryFontWeight,
                   fontSize: 32.0,
-                ),
           ),
-          bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(2.0),
-            child: Container(
-              color: dividerColor,
-              height: barThickness,
-            ),
+        ),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(2.0),
+          child: Container(
+            color: dividerColor,
+            height: barThickness,
           ),
+        ),
       ),
-      body: _isLoading 
-      ? const Center(
-        child: CircularProgressIndicator(),
+      body: ListView.builder(
+        itemCount: events.length + 1,
+        itemBuilder: (context, index) {
+          if (index == 0){
+            if (_qrCodeLoading) {
+              return CircularProgressIndicator();
+            } else {
+              return QrCodeImage(user: usermodel!);
+            }
+          } else { 
+            if (_isLoading) {
+              return CircularProgressIndicator();
+            } else {
+              final eventIndex = index -1;
+            return EventCard(document: events[eventIndex]);
+            }
+          }
+        },
       )
-      :eventUids.isEmpty
-          ? const Center(
-            child: Text('You dont have any events yet, lets find some'), // Show a loader while fetching data
-            )
-          : ListView.builder(
-            // Remember the index is what changes in the ListView.builder, 
-            // along the count of itemCount, then we just display each Card
-            // according to the info of that specific index in your list
-
-              itemCount: events.length,
-              itemBuilder: (context, index) {
-              final event = events[index];
-
-                //! Fill with the list of your events
-              // The event card needs to take a document snapshot 
-              return EventCard(
-                document: event,
-              );
-              },
-            ),
     );
   }
 }
+
+
+
+
+  
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       backgroundColor: tertiaryColor,
+//       appBar: AppBar(
+//         backgroundColor: appBarColor,
+//         title: Text(
+//           'Your Events',
+//           style: TextStyle(
+//                   color: secondaryColor,
+//                   fontWeight: primaryFontWeight,
+//                   fontSize: 32.0,
+//                 ),
+//           ),
+//           bottom: PreferredSize(
+//             preferredSize: const Size.fromHeight(2.0),
+//             child: Container(
+//               color: dividerColor,
+//               height: barThickness,
+//             ),
+//           ),
+//       ),
+//       body: _isLoading 
+//       ? const Center(
+//         child: CircularProgressIndicator(),
+//       )
+//       :eventUids.isEmpty
+//       ? const Center(
+//         child: Text('You dont have any events yet, lets find some'), // Show a loader while fetching data
+//       )
+//       : Column(
+//         children: [
+//           // QR Code Container
+//           Padding(
+//             padding: const EdgeInsets.only(bottom: 10, top: 40, right: 40, left: 40),
+//             child: usermodel!.qrCode == ''
+//                   ? const Text('Error fetching QR Code')
+//                   : Image.memory(
+//                       base64Decode(qrCodeBase64!.split(',')[1]),
+//                       fit: BoxFit.contain,
+//                     ),
+//             ),
+//           const SizedBox(height: 20,),
+//           ElevatedButton(
+//             style: ButtonStyle(
+//               backgroundColor: WidgetStatePropertyAll<Color>(korazonColor),
+//               shape: WidgetStatePropertyAll<OutlinedBorder>(RoundedRectangleBorder(
+//                 borderRadius: BorderRadius.circular(8),
+//               )),
+//             ),
+//             onPressed: () async {
+//               if (_qrCodeLoading == true) { return; } // avoid multiple classs
+//               _qrCodeLoading = true;
+//               final temp = await createQRCode(usermodel!.userID);
+//               await FirebaseFirestore.instance.collection('users').doc(usermodel!.userID).update({
+//                 'qrCode': temp,
+//               });
+//               setState(() {
+//                 qrCodeBase64 = temp;
+//               });
+//               _qrCodeLoading = false;
+//             },
+//             child: Text(
+//               'Regenerate QR code',
+//               style: TextStyle(
+//                 color: Colors.white,
+//                 fontSize: 17,
+//                 fontWeight: FontWeight.w800,
+//               ),
+//             ),
+//           ),
+          
+//           ListView.builder(
+//             // Remember the index is what changes in the ListView.builder, 
+//             // along the count of itemCount, then we just display each Card
+//             // according to the info of that specific index in your list
+          
+//               itemCount: events.length,
+//               itemBuilder: (context, index) {
+//               final event = events[index];
+          
+//                 //! Fill with the list of your events
+//               // The event card needs to take a document snapshot 
+//               return EventCard(
+//                 document: event,
+//               );
+//               },
+//             ),
+//         ],
+//       ),
+//     );
+//   }
+// }
 
