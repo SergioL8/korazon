@@ -41,7 +41,7 @@ class EventCreationScreenState extends State<EventCreationScreen> {
 
 
 
-
+ 
 
   /// This function uploads the image to firebase storage and the event to firebase firestore. It uses the function from utils compressImage
   /// 
@@ -173,6 +173,7 @@ class EventCreationScreenState extends State<EventCreationScreen> {
   Widget build(BuildContext context) {
     
     return Scaffold(
+      backgroundColor: tertiaryColor,
       appBar: AppBar(
             backgroundColor: appBarColor,
             automaticallyImplyLeading: false,
@@ -190,8 +191,8 @@ class EventCreationScreenState extends State<EventCreationScreen> {
             bottom: PreferredSize(
               preferredSize: const Size.fromHeight(2.0),
               child: Container(
-                color: korazonColor,
-                height: 4.0,
+                color: dividerColor,
+                height: barThickness,
               ),
             ),
           ),
@@ -230,7 +231,7 @@ class EventCreationScreenState extends State<EventCreationScreen> {
                     }
                   },
                   child: Container(
-                    height: MediaQuery.of(context).size.height * 0.23, // set the container to a height relative to the device
+                    height: MediaQuery.of(context).size.width, // Set height equal to the width of the screen
                     width: double.infinity, // take the full width of the screen
 
                     // if there is no image uploaded, set the container to default style
@@ -314,7 +315,9 @@ class EventCreationScreenState extends State<EventCreationScreen> {
                     },
 
                     child: _dateTimeController.text.isEmpty ? // dynamically change the text of the button
-                    const Text('Select Date&Time') : 
+                    const Text('Select Date&Time',
+                    style: TextStyle(color: secondaryColor),
+                    ) : 
                     Text(_dateTimeController.text),
                   ),
                 ),

@@ -12,7 +12,7 @@ class EventDetails extends StatelessWidget {
     required this.imageData,
     required this.formattedDate,
     required this.formattedTime,
-  }) : super(key: key);
+  });
 
   final EventModel event;
   final Uint8List? imageData;
@@ -25,7 +25,6 @@ class EventDetails extends StatelessWidget {
     final String eventName = event.title;
     final String eventDescription = event.description;
     final double eventAge = event.age;
-    final String eventId = event.documentID;
     final String hostName = event.hostName;
     final String hostId = event.hostId;
     final String hostProfilePicUrl = event.hostProfilePicUrl;
@@ -226,7 +225,7 @@ class EventDetails extends StatelessWidget {
                                 builder: (ctx) => FractionallySizedBox(
                                   heightFactor:
                                       0.35, // Occupies 35% of the screen height
-                                  child: BuyTicketPage(eventID: eventId),
+                                  child: BuyTicketPage(event: event),
                                 ),
                               );
                             },

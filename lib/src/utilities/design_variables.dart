@@ -11,6 +11,8 @@ const secondaryColorLP = Color.fromRGBO(3, 0, 54, 0.8);
 
 const dividerColor = Colors.grey;
 
+const allowGreen = Color.fromARGB(255, 23, 177, 30);
+const denyRed =  Color.fromARGB(255, 177, 23, 23);
 
 // Radius 
 

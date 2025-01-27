@@ -28,6 +28,7 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  carousel_slider: ^5.0.0
   cloud_firestore: ^5.4.4
   cupertino_icons: ^1.0.8
   firebase_app_check: ^0.3.1+5
@@ -71,6 +72,7 @@ flutter:
     - assets/images/pary.jpg
     - assets/images/profilePicture.jpeg
     - assets/images/no_profile_picture.webp
+    - assets/images/topHosts.png
 
     # icons
     - assets/icons/ticket-empty.png

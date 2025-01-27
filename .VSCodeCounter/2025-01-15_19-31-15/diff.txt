@@ -1,0 +1,120 @@
+Date : 2025-01-15 19:31:15
+Directory : c:\Users\mcast\Documents\programming\flutter_projects\korazon
+Total : 59 files,  -5430 codes, 65 comments, 320 blanks, all -5045 lines
+
+Languages
++------------+------------+------------+------------+------------+------------+
+| language   | files      | code       | comment    | blank      | total      |
++------------+------------+------------+------------+------------+------------+
+| Dart       |         44 |      1,899 |        115 |        326 |      2,340 |
+| HTML       |          2 |         83 |          6 |          5 |         94 |
+| YAML       |          1 |          9 |          0 |          2 |         11 |
+| C++        |          2 |          7 |          0 |          0 |          7 |
+| Markdown   |          1 |          2 |          0 |          3 |          5 |
+| Swift      |          1 |          2 |          0 |          0 |          2 |
+| XML        |          2 |          2 |          0 |          0 |          2 |
+| JavaScript |          2 |        -47 |        -56 |        -14 |       -117 |
+| JSON       |          4 |     -7,387 |          0 |         -2 |     -7,389 |
++------------+------------+------------+------------+------------+------------+
+
+Directories
++------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                                               | files      | code       | comment    | blank      | total      |
++------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                                                  |         59 |     -5,430 |         65 |        320 |     -5,045 |
+| . (Files)                                                                                                                          |          4 |         20 |          0 |          5 |         25 |
+| assets                                                                                                                             |          2 |          2 |          0 |          0 |          2 |
+| assets\icons                                                                                                                       |          2 |          2 |          0 |          0 |          2 |
+| functions                                                                                                                          |          4 |     -7,443 |        -56 |        -16 |     -7,515 |
+| lib                                                                                                                                |         44 |      1,899 |        115 |        326 |      2,340 |
+| lib (Files)                                                                                                                        |          1 |          4 |         -1 |          0 |          3 |
+| lib\src                                                                                                                            |         43 |      1,895 |        116 |        326 |      2,337 |
+| lib\src\cloudresources                                                                                                             |          3 |        -41 |         -4 |         -7 |        -52 |
+| lib\src\data                                                                                                                       |          2 |         12 |         -1 |          0 |         11 |
+| lib\src\data\models                                                                                                                |          2 |         12 |         -1 |          0 |         11 |
+| lib\src\screens                                                                                                                    |         25 |      1,554 |        166 |        259 |      1,979 |
+| lib\src\screens (Files)                                                                                                            |         13 |       -604 |        -24 |       -158 |       -786 |
+| lib\src\screens\hostscreens                                                                                                        |          7 |      1,140 |         86 |        236 |      1,462 |
+| lib\src\screens\hostscreens (Files)                                                                                                |          5 |        958 |         74 |        184 |      1,216 |
+| lib\src\screens\hostscreens\accessToEvent                                                                                          |          2 |        182 |         12 |         52 |        246 |
+| lib\src\screens\singUpLogin                                                                                                        |          3 |        754 |         74 |        134 |        962 |
+| lib\src\screens\userscreens                                                                                                        |          2 |        264 |         30 |         47 |        341 |
+| lib\src\utilities                                                                                                                  |          3 |        131 |         24 |         32 |        187 |
+| lib\src\widgets                                                                                                                    |         10 |        239 |        -69 |         42 |        212 |
+| lib\src\widgets (Files)                                                                                                            |          7 |        127 |        -74 |         22 |         75 |
+| lib\src\widgets\accessToEventWidgets                                                                                               |          3 |        112 |          5 |         20 |        137 |
+| linux                                                                                                                              |          1 |          4 |          0 |          0 |          4 |
+| linux\flutter                                                                                                                      |          1 |          4 |          0 |          0 |          4 |
+| macos                                                                                                                              |          1 |          2 |          0 |          0 |          2 |
+| macos\Flutter                                                                                                                      |          1 |          2 |          0 |          0 |          2 |
+| public                                                                                                                             |          1 |         79 |          6 |          5 |         90 |
+| web                                                                                                                                |          1 |          4 |          0 |          0 |          4 |
+| windows                                                                                                                            |          1 |          3 |          0 |          0 |          3 |
+| windows\flutter                                                                                                                    |          1 |          3 |          0 |          0 |          3 |
++------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| filename                                                                                                                           | language   | code       | comment    | blank      | total      |
++------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\README.md                                                            | Markdown   |          2 |          0 |          3 |          5 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\assets\icons\home-empty.svg                                          | XML        |          1 |          0 |          0 |          1 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\assets\icons\home-filled.svg                                         | XML        |          1 |          0 |          0 |          1 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\cors.json                                                            | JSON       |          8 |          0 |          0 |          8 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\firebase.json                                                        | JSON       |          1 |          0 |          0 |          1 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\functions\.eslintrc.js                                               | JavaScript |        -28 |          0 |         -1 |        -29 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\functions\index.js                                                   | JavaScript |        -19 |        -56 |        -13 |        -88 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\functions\package-lock.json                                          | JSON       |     -7,369 |          0 |         -1 |     -7,370 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\functions\package.json                                               | JSON       |        -27 |          0 |         -1 |        -28 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\main.dart                                                        | Dart       |          4 |         -1 |          0 |          3 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\cloudresources\authentication.dart                           | Dart       |          0 |          1 |          1 |          2 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\cloudresources\firestore_methods.dart                        | Dart       |        -40 |         -5 |         -8 |        -53 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\cloudresources\signedin_logic.dart                           | Dart       |         -1 |          0 |          0 |         -1 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\data\models\event.dart                                       | Dart       |          8 |         -1 |          0 |          7 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\data\models\user.dart                                        | Dart       |          4 |          0 |          0 |          4 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\screens\basePage.dart                                        | Dart       |         32 |          0 |          2 |         34 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\screens\buyTicketPage.dart                                   | Dart       |         40 |          2 |          3 |         45 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\screens\eventCreationScreen.dart                             | Dart       |       -210 |        -11 |        -18 |       -239 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\screens\eventDetails.dart                                    | Dart       |        166 |         13 |          2 |        181 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\screens\eventcreation_screen.dart                            | Dart       |       -259 |        -20 |        -43 |       -322 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\screens\home_page.dart                                       | Dart       |         54 |          9 |        -11 |         52 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\screens\hostscreens\accessToEvent\checkTheAccessToEvent.dart | Dart       |        140 |          5 |         32 |        177 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\screens\hostscreens\accessToEvent\scanner.dart               | Dart       |         42 |          7 |         20 |         69 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\screens\hostscreens\editHostProfile.dart                     | Dart       |        206 |         17 |         29 |        252 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\screens\hostscreens\eventCreationScreen.dart                 | Dart       |        346 |         31 |         84 |        461 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\screens\hostscreens\hostAnalytics.dart                       | Dart       |         15 |          0 |          2 |         17 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\screens\hostscreens\hostProfile.dart                         | Dart       |        316 |         12 |         42 |        370 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\screens\hostscreens\selectEventForAction.dart                | Dart       |         75 |         14 |         27 |        116 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\screens\login_screen.dart                                    | Dart       |       -111 |         -3 |        -21 |       -135 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\screens\scanner.dart                                         | Dart       |        -39 |        -10 |        -18 |        -67 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\screens\signup_screen.dart                                   | Dart       |       -161 |          0 |        -28 |       -189 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\screens\singUpLogin\hostSignUp.dart                          | Dart       |        134 |          1 |         18 |        153 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\screens\singUpLogin\signUpLogin.dart                         | Dart       |        324 |         63 |         80 |        467 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\screens\singUpLogin\signUpScreen2.dart                       | Dart       |        296 |         10 |         36 |        342 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\screens\socialPage.dart                                      | Dart       |        -10 |          0 |         -2 |        -12 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\screens\splashScreen.dart                                    | Dart       |        -15 |          0 |         -2 |        -17 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\screens\userAccessToEvent.dart                               | Dart       |        -25 |          0 |         -7 |        -32 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\screens\user_profile_screen.dart                             | Dart       |        -66 |         -4 |        -15 |        -85 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\screens\userscreens\user_profile_screen.dart                 | Dart       |        162 |         17 |         23 |        202 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\screens\userscreens\yourEvents.dart                          | Dart       |        102 |         13 |         24 |        139 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\utilities\design_variables.dart                              | Dart       |         14 |          5 |          8 |         27 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\utilities\korazonSingUPLogo.dart                             | Dart       |         57 |          1 |          3 |         61 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\utilities\utils.dart                                         | Dart       |         60 |         18 |         21 |         99 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\widgets\accessToEventWidgets\allowGuestIntoPartyButton.dart  | Dart       |         45 |          5 |         10 |         60 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\widgets\accessToEventWidgets\denyGuestIntoPartyButton.dart   | Dart       |         31 |          0 |          4 |         35 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\widgets\accessToEventWidgets\tickCrossAccess.dart            | Dart       |         36 |          0 |          6 |         42 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\widgets\alertBox.dart                                        | Dart       |         57 |          0 |          2 |         59 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\widgets\eventCard.dart                                       | Dart       |        169 |         13 |         14 |        196 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\widgets\event_card.dart                                      | Dart       |       -182 |        -98 |        -16 |       -296 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\widgets\followButton.dart                                    | Dart       |         45 |          0 |          3 |         48 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\widgets\pickDateTime.dart                                    | Dart       |         33 |          6 |         10 |         49 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\widgets\postCard.dart                                        | Dart       |        -77 |         -3 |        -26 |       -106 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\widgets\selectEventCard.dart                                 | Dart       |         82 |          8 |         35 |        125 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\linux\flutter\generated_plugin_registrant.cc                         | C++        |          4 |          0 |          0 |          4 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\macos\Flutter\GeneratedPluginRegistrant.swift                        | Swift      |          2 |          0 |          0 |          2 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\public\index.html                                                    | HTML       |         79 |          6 |          5 |         90 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\pubspec.yaml                                                         | YAML       |          9 |          0 |          2 |         11 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\web\index.html                                                       | HTML       |          4 |          0 |          0 |          4 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\windows\flutter\generated_plugin_registrant.cc                       | C++        |          3 |          0 |          0 |          3 |
+| Total                                                                                                                              |            |     -5,430 |         65 |        320 |     -5,045 |
++------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+

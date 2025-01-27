@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/widgets/accessToEventWidgets/allowGuestIntoPartyButton.dart';
 import 'package:korazon/src/widgets/accessToEventWidgets/denyGuestIntoPartyButton.dart';
 import 'package:korazon/src/widgets/accessToEventWidgets/tickCrossAccess.dart';
@@ -62,12 +63,12 @@ class _CheckForAccessToEventState extends State<CheckForAccessToEvent> {
               return const Text('An error occurred, try again later');
             } else {
               return Scaffold(
-                backgroundColor: snapshot.data! ? const Color.fromARGB(255, 23, 177, 30) // set the background color to green
-                : const Color.fromARGB(255, 177, 23, 23), // set the background color to red
+                backgroundColor: snapshot.data! ? allowGreen // set the background color to green
+                : denyRed, // set the background color to red
                 
                 body: Padding(
 
-                  padding: const EdgeInsets.all(20.0), // add padding to the body
+                  padding: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 20), // add padding to the body
 
                   child: Column( // create a column to align the elements vertically
                     children: [
@@ -77,11 +78,22 @@ class _CheckForAccessToEventState extends State<CheckForAccessToEvent> {
 
                       SizedBox(height: MediaQuery.of(context).size.height * 0.04), 
 
+                      Text(
+                        snapshot.data! ? 'User has access to event' : 'User does not have access to event', // show the message depending on the access
+                        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)
+                      ),
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.03),
+
+                      Text('Always remember to check the user\'s ID', style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white)),
+                      
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.03),
+
                       Row( // this row contains the user details and the profile picture
                         children: [
                           Column( // this column contains the user details
                             crossAxisAlignment: CrossAxisAlignment.start, // Align elements to the left
                             children: [
+                              // TODO: Add last name
                               Text(guestUser!.name, style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white)),
                               Text(' - Age: ${guestUser!.age == -1 ? "Unknown" : guestUser!.age}', style: const TextStyle(color: Colors.white)),
                               Text(' - Gender: ${guestUser!.gender}', style: const TextStyle(color: Colors.white)),
@@ -89,22 +101,24 @@ class _CheckForAccessToEventState extends State<CheckForAccessToEvent> {
                             ],
                           ),
 
-                          const Spacer(),
-
-                          Image.asset('assets/images/profilePicture.jpeg', scale: 10,), // add the profile picture
+                          const Spacer(), 
+                          CircleAvatar(
+                            radius: 48,
+                            backgroundColor: Colors.white,
+                            child: CircleAvatar(
+                              backgroundColor: Colors.grey,
+                              backgroundImage: guestUser!.profilePicUrl != ''
+                                  ? NetworkImage(guestUser!.profilePicUrl)
+                                      as ImageProvider
+                                  : const AssetImage(
+                                      'assets/images/no_profile_picture.webp',
+                                    ),
+                              radius: 48,
+                            ),
+                          ),
                         ],
                       ),
 
-                      SizedBox(height: MediaQuery.of(context).size.height * 0.03),
-
-                      Text(
-                        snapshot.data! ? 'User has access to event' : 'User does not have access to event', // show the message depending on the access
-                        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)
-                      ),
-                      
-                      SizedBox(height: MediaQuery.of(context).size.height * 0.03),
-
-                      Text('Always remember to check the user\'s ID', style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white)),
                       
                       SizedBox(height: MediaQuery.of(context).size.height * 0.1),
 

@@ -1,0 +1,193 @@
+Date : 2025-01-15 19:31:15
+Directory : c:\Users\mcast\Documents\programming\flutter_projects\korazon
+Total : 95 files,  8592 codes, 636 comments, 1021 blanks, all 10249 lines
+
+Languages
++------------+------------+------------+------------+------------+------------+
+| language   | files      | code       | comment    | blank      | total      |
++------------+------------+------------+------------+------------+------------+
+| Dart       |         38 |      3,956 |        338 |        699 |      4,993 |
+| JSON       |          9 |      3,184 |          0 |          8 |      3,192 |
+| C++        |         16 |        565 |        127 |        188 |        880 |
+| XML        |         12 |        482 |         53 |         12 |        547 |
+| HTML       |          2 |        102 |         21 |         10 |        133 |
+| Gradle     |          3 |         70 |         12 |         15 |         97 |
+| Swift      |          6 |         68 |          7 |         20 |         95 |
+| Ruby       |          2 |         66 |          3 |         20 |         89 |
+| YAML       |          3 |         47 |         75 |         15 |        137 |
+| Markdown   |          2 |         44 |          0 |         32 |         76 |
+| Properties |          2 |          8 |          0 |          2 |         10 |
++------------+------------+------------+------------+------------+------------+
+
+Directories
++------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                                               | files      | code       | comment    | blank      | total      |
++------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                                                  |         95 |      8,592 |        636 |      1,021 |     10,249 |
+| . (Files)                                                                                                                          |          8 |      2,970 |         75 |         48 |      3,093 |
+| android                                                                                                                            |         13 |        205 |         63 |         27 |        295 |
+| android (Files)                                                                                                                    |          3 |         41 |          2 |          9 |         52 |
+| android\app                                                                                                                        |          9 |        159 |         61 |         17 |        237 |
+| android\app (Files)                                                                                                                |          2 |         86 |         10 |          8 |        104 |
+| android\app\src                                                                                                                    |          7 |         73 |         51 |          9 |        133 |
+| android\app\src\debug                                                                                                              |          1 |          3 |          4 |          1 |          8 |
+| android\app\src\main                                                                                                               |          5 |         67 |         43 |          7 |        117 |
+| android\app\src\main (Files)                                                                                                       |          1 |         41 |         11 |          1 |         53 |
+| android\app\src\main\res                                                                                                           |          4 |         26 |         32 |          6 |         64 |
+| android\app\src\main\res\drawable                                                                                                  |          1 |          4 |          7 |          2 |         13 |
+| android\app\src\main\res\drawable-v21                                                                                              |          1 |          4 |          7 |          2 |         13 |
+| android\app\src\main\res\values                                                                                                    |          1 |          9 |          9 |          1 |         19 |
+| android\app\src\main\res\values-night                                                                                              |          1 |          9 |          9 |          1 |         19 |
+| android\app\src\profile                                                                                                            |          1 |          3 |          4 |          1 |          8 |
+| android\gradle                                                                                                                     |          1 |          5 |          0 |          1 |          6 |
+| android\gradle\wrapper                                                                                                             |          1 |          5 |          0 |          1 |          6 |
+| assets                                                                                                                             |          2 |          2 |          0 |          0 |          2 |
+| assets\icons                                                                                                                       |          2 |          2 |          0 |          0 |          2 |
+| ios                                                                                                                                |          9 |        265 |          6 |         23 |        294 |
+| ios (Files)                                                                                                                        |          1 |         33 |          2 |         10 |         45 |
+| ios\Runner                                                                                                                         |          7 |        225 |          2 |          9 |        236 |
+| ios\Runner (Files)                                                                                                                 |          2 |         13 |          0 |          3 |         16 |
+| ios\RunnerTests                                                                                                                    |          1 |          7 |          2 |          4 |         13 |
+| ios\Runner\Assets.xcassets                                                                                                         |          3 |        148 |          0 |          4 |        152 |
+| ios\Runner\Assets.xcassets\AppIcon.appiconset                                                                                      |          1 |        122 |          0 |          1 |        123 |
+| ios\Runner\Assets.xcassets\LaunchImage.imageset                                                                                    |          2 |         26 |          0 |          3 |         29 |
+| ios\Runner\Base.lproj                                                                                                              |          2 |         64 |          2 |          2 |         68 |
+| lib                                                                                                                                |         37 |      3,942 |        328 |        692 |      4,962 |
+| lib (Files)                                                                                                                        |          2 |         97 |         17 |         12 |        126 |
+| lib\src                                                                                                                            |         35 |      3,845 |        311 |        680 |      4,836 |
+| lib\src\cloudresources                                                                                                             |          3 |        163 |         16 |         40 |        219 |
+| lib\src\data                                                                                                                       |          3 |        133 |         14 |         20 |        167 |
+| lib\src\data\models                                                                                                                |          2 |        114 |          2 |         14 |        130 |
+| lib\src\data\providers                                                                                                             |          1 |         19 |         12 |          6 |         37 |
+| lib\src\screens                                                                                                                    |         16 |      2,798 |        224 |        488 |      3,510 |
+| lib\src\screens (Files)                                                                                                            |          4 |        640 |         34 |         71 |        745 |
+| lib\src\screens\hostscreens                                                                                                        |          7 |      1,140 |         86 |        236 |      1,462 |
+| lib\src\screens\hostscreens (Files)                                                                                                |          5 |        958 |         74 |        184 |      1,216 |
+| lib\src\screens\hostscreens\accessToEvent                                                                                          |          2 |        182 |         12 |         52 |        246 |
+| lib\src\screens\singUpLogin                                                                                                        |          3 |        754 |         74 |        134 |        962 |
+| lib\src\screens\userscreens                                                                                                        |          2 |        264 |         30 |         47 |        341 |
+| lib\src\utilities                                                                                                                  |          3 |        167 |         25 |         38 |        230 |
+| lib\src\widgets                                                                                                                    |         10 |        584 |         32 |         94 |        710 |
+| lib\src\widgets (Files)                                                                                                            |          7 |        472 |         27 |         74 |        573 |
+| lib\src\widgets\accessToEventWidgets                                                                                               |          3 |        112 |          5 |         20 |        137 |
+| linux                                                                                                                              |          5 |        110 |         33 |         44 |        187 |
+| linux (Files)                                                                                                                      |          3 |         94 |         24 |         33 |        151 |
+| linux\flutter                                                                                                                      |          2 |         16 |          9 |         11 |         36 |
+| macos                                                                                                                              |          7 |        493 |          6 |         26 |        525 |
+| macos (Files)                                                                                                                      |          1 |         33 |          1 |         10 |         44 |
+| macos\Flutter                                                                                                                      |          1 |         22 |          3 |          4 |         29 |
+| macos\Runner                                                                                                                       |          4 |        431 |          0 |          8 |        439 |
+| macos\Runner (Files)                                                                                                               |          2 |         20 |          0 |          6 |         26 |
+| macos\RunnerTests                                                                                                                  |          1 |          7 |          2 |          4 |         13 |
+| macos\Runner\Assets.xcassets                                                                                                       |          1 |         68 |          0 |          1 |         69 |
+| macos\Runner\Assets.xcassets\AppIcon.appiconset                                                                                    |          1 |         68 |          0 |          1 |         69 |
+| macos\Runner\Base.lproj                                                                                                            |          1 |        343 |          0 |          1 |        344 |
+| public                                                                                                                             |          1 |         79 |          6 |          5 |         90 |
+| test                                                                                                                               |          1 |         14 |         10 |          7 |         31 |
+| web                                                                                                                                |          2 |         58 |         15 |          6 |         79 |
+| windows                                                                                                                            |         10 |        454 |         94 |        143 |        691 |
+| windows\flutter                                                                                                                    |          2 |         26 |          9 |         11 |         46 |
+| windows\runner                                                                                                                     |          8 |        428 |         85 |        132 |        645 |
++------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| filename                                                                                                                           | language   | code       | comment    | blank      | total      |
++------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\README.md                                                            | Markdown   |         41 |          0 |         30 |         71 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\analysis_options.yaml                                                | YAML       |          3 |         22 |          4 |         29 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\android\app\build.gradle                                             | Gradle     |         32 |         10 |          7 |         49 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\android\app\google-services.json                                     | JSON       |         54 |          0 |          1 |         55 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\android\app\src\debug\AndroidManifest.xml                            | XML        |          3 |          4 |          1 |          8 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\android\app\src\main\AndroidManifest.xml                             | XML        |         41 |         11 |          1 |         53 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\android\app\src\main\res\drawable-v21\launch_background.xml          | XML        |          4 |          7 |          2 |         13 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\android\app\src\main\res\drawable\launch_background.xml              | XML        |          4 |          7 |          2 |         13 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\android\app\src\main\res\values-night\styles.xml                     | XML        |          9 |          9 |          1 |         19 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\android\app\src\main\res\values\styles.xml                           | XML        |          9 |          9 |          1 |         19 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\android\app\src\profile\AndroidManifest.xml                          | XML        |          3 |          4 |          1 |          8 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\android\build.gradle                                                 | Gradle     |         16 |          0 |          3 |         19 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\android\gradle.properties                                            | Properties |          3 |          0 |          1 |          4 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\android\gradle\wrapper\gradle-wrapper.properties                     | Properties |          5 |          0 |          1 |          6 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\android\settings.gradle                                              | Gradle     |         22 |          2 |          5 |         29 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\assets\icons\home-empty.svg                                          | XML        |          1 |          0 |          0 |          1 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\assets\icons\home-filled.svg                                         | XML        |          1 |          0 |          0 |          1 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\cors.json                                                            | JSON       |          8 |          0 |          0 |          8 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\devtools_options.yaml                                                | YAML       |          3 |          0 |          1 |          4 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\firebase.json                                                        | JSON       |         60 |          0 |          1 |         61 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\ios\Podfile                                                          | Ruby       |         33 |          2 |         10 |         45 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\ios\RunnerTests\RunnerTests.swift                                    | Swift      |          7 |          2 |          4 |         13 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\ios\Runner\AppDelegate.swift                                         | Swift      |         12 |          0 |          2 |         14 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\ios\Runner\Assets.xcassets\AppIcon.appiconset\Contents.json          | JSON       |        122 |          0 |          1 |        123 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\ios\Runner\Assets.xcassets\LaunchImage.imageset\Contents.json        | JSON       |         23 |          0 |          1 |         24 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\ios\Runner\Assets.xcassets\LaunchImage.imageset\README.md            | Markdown   |          3 |          0 |          2 |          5 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\ios\Runner\Base.lproj\LaunchScreen.storyboard                        | XML        |         36 |          1 |          1 |         38 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\ios\Runner\Base.lproj\Main.storyboard                                | XML        |         28 |          1 |          1 |         30 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\ios\Runner\Runner-Bridging-Header.h                                  | C++        |          1 |          0 |          1 |          2 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\firebase_options.dart                                            | Dart       |         59 |         12 |          5 |         76 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\main.dart                                                        | Dart       |         38 |          5 |          7 |         50 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\cloudresources\authentication.dart                           | Dart       |         90 |         13 |         23 |        126 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\cloudresources\signedin_logic.dart                           | Dart       |         28 |          2 |          4 |         34 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\cloudresources\storage_methods.dart                          | Dart       |         45 |          1 |         13 |         59 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\data\models\event.dart                                       | Dart       |         52 |          1 |          8 |         61 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\data\models\user.dart                                        | Dart       |         62 |          1 |          6 |         69 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\data\providers\user_provider.dart                            | Dart       |         19 |         12 |          6 |         37 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\screens\basePage.dart                                        | Dart       |        178 |          4 |         23 |        205 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\screens\buyTicketPage.dart                                   | Dart       |        105 |          7 |         18 |        130 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\screens\eventDetails.dart                                    | Dart       |        231 |         13 |         13 |        257 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\screens\home_page.dart                                       | Dart       |        126 |         10 |         17 |        153 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\screens\hostscreens\accessToEvent\checkTheAccessToEvent.dart | Dart       |        140 |          5 |         32 |        177 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\screens\hostscreens\accessToEvent\scanner.dart               | Dart       |         42 |          7 |         20 |         69 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\screens\hostscreens\editHostProfile.dart                     | Dart       |        206 |         17 |         29 |        252 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\screens\hostscreens\eventCreationScreen.dart                 | Dart       |        346 |         31 |         84 |        461 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\screens\hostscreens\hostAnalytics.dart                       | Dart       |         15 |          0 |          2 |         17 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\screens\hostscreens\hostProfile.dart                         | Dart       |        316 |         12 |         42 |        370 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\screens\hostscreens\selectEventForAction.dart                | Dart       |         75 |         14 |         27 |        116 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\screens\singUpLogin\hostSignUp.dart                          | Dart       |        134 |          1 |         18 |        153 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\screens\singUpLogin\signUpLogin.dart                         | Dart       |        324 |         63 |         80 |        467 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\screens\singUpLogin\signUpScreen2.dart                       | Dart       |        296 |         10 |         36 |        342 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\screens\userscreens\user_profile_screen.dart                 | Dart       |        162 |         17 |         23 |        202 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\screens\userscreens\yourEvents.dart                          | Dart       |        102 |         13 |         24 |        139 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\utilities\design_variables.dart                              | Dart       |         22 |          5 |         11 |         38 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\utilities\korazonSingUPLogo.dart                             | Dart       |         57 |          1 |          3 |         61 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\utilities\utils.dart                                         | Dart       |         88 |         19 |         24 |        131 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\widgets\accessToEventWidgets\allowGuestIntoPartyButton.dart  | Dart       |         45 |          5 |         10 |         60 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\widgets\accessToEventWidgets\denyGuestIntoPartyButton.dart   | Dart       |         31 |          0 |          4 |         35 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\widgets\accessToEventWidgets\tickCrossAccess.dart            | Dart       |         36 |          0 |          6 |         42 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\widgets\alertBox.dart                                        | Dart       |         57 |          0 |          2 |         59 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\widgets\eventCard.dart                                       | Dart       |        169 |         13 |         14 |        196 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\widgets\followButton.dart                                    | Dart       |         45 |          0 |          3 |         48 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\widgets\pickDateTime.dart                                    | Dart       |         33 |          6 |         10 |         49 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\widgets\selectEventCard.dart                                 | Dart       |         82 |          8 |         35 |        125 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\widgets\textfield.dart                                       | Dart       |         33 |          0 |          4 |         37 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\lib\src\widgets\togglebutton.dart                                    | Dart       |         53 |          0 |          6 |         59 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\linux\flutter\generated_plugin_registrant.cc                         | C++        |         11 |          4 |          5 |         20 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\linux\flutter\generated_plugin_registrant.h                          | C++        |          5 |          5 |          6 |         16 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\linux\main.cc                                                        | C++        |          5 |          0 |          2 |          7 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\linux\my_application.cc                                              | C++        |         82 |         17 |         26 |        125 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\linux\my_application.h                                               | C++        |          7 |          7 |          5 |         19 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\macos\Flutter\GeneratedPluginRegistrant.swift                        | Swift      |         22 |          3 |          4 |         29 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\macos\Podfile                                                        | Ruby       |         33 |          1 |         10 |         44 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\macos\RunnerTests\RunnerTests.swift                                  | Swift      |          7 |          2 |          4 |         13 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\macos\Runner\AppDelegate.swift                                       | Swift      |          8 |          0 |          2 |         10 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\macos\Runner\Assets.xcassets\AppIcon.appiconset\Contents.json        | JSON       |         68 |          0 |          1 |         69 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\macos\Runner\Base.lproj\MainMenu.xib                                 | XML        |        343 |          0 |          1 |        344 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\macos\Runner\MainFlutterWindow.swift                                 | Swift      |         12 |          0 |          4 |         16 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\package-lock.json                                                    | JSON       |      2,807 |          0 |          1 |      2,808 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\package.json                                                         | JSON       |          7 |          0 |          1 |          8 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\public\index.html                                                    | HTML       |         79 |          6 |          5 |         90 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\pubspec.yaml                                                         | YAML       |         41 |         53 |         10 |        104 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\test\widget_test.dart                                                | Dart       |         14 |         10 |          7 |         31 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\web\index.html                                                       | HTML       |         23 |         15 |          5 |         43 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\web\manifest.json                                                    | JSON       |         35 |          0 |          1 |         36 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\windows\flutter\generated_plugin_registrant.cc                       | C++        |         21 |          4 |          5 |         30 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\windows\flutter\generated_plugin_registrant.h                        | C++        |          5 |          5 |          6 |         16 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\windows\runner\flutter_window.cpp                                    | C++        |         49 |          7 |         16 |         72 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\windows\runner\flutter_window.h                                      | C++        |         20 |          5 |          9 |         34 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\windows\runner\main.cpp                                              | C++        |         30 |          4 |         10 |         44 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\windows\runner\resource.h                                            | C++        |          9 |          6 |          2 |         17 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\windows\runner\utils.cpp                                             | C++        |         54 |          2 |         10 |         66 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\windows\runner\utils.h                                               | C++        |          8 |          6 |          6 |         20 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\windows\runner\win32_window.cpp                                      | C++        |        210 |         24 |         55 |        289 |
+| c:\Users\mcast\Documents\programming\flutter_projects\korazon\windows\runner\win32_window.h                                        | C++        |         48 |         31 |         24 |        103 |
+| Total                                                                                                                              |            |      8,592 |        636 |      1,021 |     10,249 |
++------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+

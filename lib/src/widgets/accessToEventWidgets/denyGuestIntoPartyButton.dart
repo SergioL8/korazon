@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:korazon/src/utilities/design_variables.dart';
 
 
 
@@ -24,7 +25,7 @@ class DenyGuestIn extends StatelessWidget {
             style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Color.fromARGB(255, 199, 3, 3),
+              color: denyRed,
             ),
           ),
         ),
