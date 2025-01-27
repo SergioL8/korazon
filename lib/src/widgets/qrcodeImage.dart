@@ -9,9 +9,10 @@ import 'dart:convert';
 
 
 class QrCodeImage extends StatefulWidget {
-  QrCodeImage({super.key, required this.user});
+  QrCodeImage({super.key, required this.user, required this.onQrCodeUpdated});
 
   final UserModel user;
+  final ValueChanged<String> onQrCodeUpdated;
 
   @override
   State<QrCodeImage> createState() => _QrCodeImageState();
@@ -20,12 +21,17 @@ class QrCodeImage extends StatefulWidget {
 class _QrCodeImageState extends State<QrCodeImage> {
 
   bool _qrCodeLoading = false;
+  late String qrCodeBase64;
 
+  @override
+  void initState() {
+    super.initState();
+    qrCodeBase64 = widget.user.qrCode;
+  }
   
 
   @override
   Widget build(BuildContext context) {
-    String qrCodeBase64 = widget.user.qrCode;
     return Column(
       children: [
         Padding(
@@ -40,6 +46,8 @@ class _QrCodeImageState extends State<QrCodeImage> {
         // const SizedBox(height: 20,),
           ElevatedButton(
             style: ButtonStyle(
+              padding: WidgetStatePropertyAll(EdgeInsets.zero),
+              fixedSize: WidgetStatePropertyAll(Size(200, 20)),
               backgroundColor: WidgetStatePropertyAll<Color>(korazonColor),
               shape: WidgetStatePropertyAll<OutlinedBorder>(RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
@@ -55,14 +63,18 @@ class _QrCodeImageState extends State<QrCodeImage> {
 
               if (temp == null) {
                 showErrorMessage(context, content: "QR code couldn't be generated. Please try again.");
+                return;
               }
+
+              setState(() {
+                qrCodeBase64 = temp;
+              });
+
+              // Notify the parent so it can setState, too
+              widget.onQrCodeUpdated.call(temp);
 
               await FirebaseFirestore.instance.collection('users').doc(widget.user.userID).update({
                 'qrCode': temp,
-              });
-
-              setState(() {
-                qrCodeBase64 = temp!;
               });
 
               _qrCodeLoading = false;
@@ -72,7 +84,7 @@ class _QrCodeImageState extends State<QrCodeImage> {
               'Regenerate QR code',
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 17,
+                fontSize: 14,
                 fontWeight: FontWeight.w800,
               ),
             ),

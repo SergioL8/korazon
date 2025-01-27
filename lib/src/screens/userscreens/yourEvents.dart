@@ -97,6 +97,16 @@ class _YourEventsState extends State<YourEvents> {
 
 
 
+  // When child regenerates the QR code, update the parent’s state here
+  void _updateQrCodeInParent(String newQrCode) {
+    setState(() {
+      qrCodeBase64 = newQrCode;
+    });
+  }
+
+
+
+
   @override
   Widget build(context) {
     return Scaffold(
@@ -125,7 +135,7 @@ class _YourEventsState extends State<YourEvents> {
             if (_qrCodeLoading) {
               return CircularProgressIndicator();
             } else {
-              return QrCodeImage(user: usermodel!);
+              return QrCodeImage(user: usermodel!, onQrCodeUpdated: _updateQrCodeInParent,);
             }
           } else { 
             if (_isLoading) {

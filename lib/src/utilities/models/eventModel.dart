@@ -62,14 +62,14 @@ class EventModel {
       documentID: doc.id,
       title: data['title'] ?? 'No title',
       description: data['description'] ?? 'No description',
-      age: data['age'] ?? -1,
+      age: (data['age'] is num) ? (data['age'] as num).toDouble() : -1.0, // if num convert it to double otherwise it doesn't exists to set it to -1
       location: data['location'] ?? 'No location',
       photoPath: data['photoPath'] ?? '',
       dateTime: data['dateTime'] ?? '',
       hostId: data['hostId'] ?? '',
       hostName: data['hostName'] ?? 'No host name',
       hostProfilePicUrl: data['hostProfilePicUrl'] ?? '',
-      price: data['price'] ?? 0.0,
+      price: (data['price'] is num) ? (data['price'] as num).toDouble() : 0.0,
       ticketsSold: List<String>.from(data['ticketsSold'] ?? []),
     );
   }
