@@ -1,9 +1,12 @@
+import 'dart:typed_data';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:korazon/src/screens/userscreens/user_profile_screen.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
+import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
 
 class SocialPage extends StatefulWidget {
@@ -34,7 +37,7 @@ class _SocialPageState extends State<SocialPage> {
       // This will stay empty be cause for the hosts we are already downloading all the snaps
     },
     {
-      'photoPath': 'assets/images/pary.jpg',
+      'photoPath': 'assets/images/topHosts.png',
       'title': 'Top Hosts',
       'peopleYouMayKnow': [],
       'index': 1,
@@ -65,6 +68,32 @@ class _SocialPageState extends State<SocialPage> {
     }
   }
 
+  Future<List<DocumentSnapshot>> fetchUsersAttending(int mapIndex) async {
+  final List<DocumentSnapshot> attendingUsers = [];
+
+  try {
+    // Access the array "peopleYouMayKnow" from socialList
+    for (String uid in socialList[mapIndex]['peopleYouMayKnow']) {
+      final attendingUserDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .get();
+
+      if (attendingUserDoc.exists) {
+        // Simply add to the local list; no setState here
+        attendingUsers.add(attendingUserDoc);
+      }
+    }
+    return attendingUsers;
+  } catch (e) {
+    // Log the error or show a message
+    print('Error fetching attendees: $e');
+    showErrorMessage(context, content: 'Error fetching attendees: $e');
+    return [];
+  }
+}
+
+
   /// This is the same function as in your events
   Future<void> getEvents() async {
     setState(() {
@@ -79,59 +108,60 @@ class _SocialPageState extends State<SocialPage> {
               'There was an error loading your user. Please logout and login back again.');
       return;
     }
+
     try {
-      // Get the current user's document
-      var userDoc = await FirebaseFirestore.instance
+      // Get the user's doc
+      final userDoc = await FirebaseFirestore.instance
           .collection('users')
           .doc(userId)
           .get();
 
       if (!userDoc.exists) {
         showErrorMessage(context,
-            content:
-                'There was an error loading your user. Please logout and login back again.');
+            content: 'User not found. Please logout and login again.');
         return;
       }
 
+      // Load tickets array
       setState(() {
-        // Extract the fetched tickets array and turn them into a list
         eventUids = List.from(userDoc.data()?['tickets'] ?? []);
       });
 
-      // Fetch event details for each event UID
-      // This goes to the list of all events to find if they match any of the ones
-      // in your tickets list.
-
-      // We start from 2 because the first two elements are for the top hosts and add events
+      // Start from index = 2 because the first two are your default socialList entries
       int currentIndex = 2;
 
       for (String uid in eventUids) {
-        //TODO: Use Model
-        var eventDoc = await FirebaseFirestore.instance
+        final eventDoc = await FirebaseFirestore.instance
             .collection('events')
             .doc(uid)
             .get();
 
         if (eventDoc.exists) {
-          // Adds the entire document snapshot to the list events
           setState(() {
+            // If you still want to keep the entire document for other usage:
             events.add(eventDoc);
           });
 
-          // Extract the photoPath and ticketsSold fields from the event
-          final String? photoPath = eventDoc.data()?['photoPath'];
-          final List<String> ticketsSold = eventDoc.data()?['ticketsSold'];
+          // Safely extract and cast fields
+          final data = eventDoc.data() as Map<String, dynamic>;
+          final String? photoPath = data['photoPath'];
 
-          if (photoPath != null && photoPath.isNotEmpty) {
-            // Adding the image of every event the user has to the map and also
-            // the list of people attending (ticketsSold)
+          // Cast to List<String>
+          final List<dynamic>? dynamicTickets = data['ticketsSold'];
+          final List<String> ticketsSold =
+              dynamicTickets != null ? dynamicTickets.cast<String>() : [];
+
+          // If you do not want to skip entries when ticketsSold is empty, remove that condition
+          if (photoPath != null &&
+              photoPath.isNotEmpty &&
+              ticketsSold.isNotEmpty) {
+            // Add a new entry to socialList
             setState(() {
               socialList.add({
                 'index': currentIndex,
                 'photoPath': photoPath,
-                'title': eventDoc.data()?['eventName'] ?? 'Untitled Event',
-                'peopleYouMayKnow':
-                    ticketsSold ?? [], // or [] if it's supposed to be a list
+                'title': data['title'] ?? 'Untitled Event',
+                'peopleYouMayKnow': ticketsSold,
               });
             });
             currentIndex++;
@@ -141,6 +171,7 @@ class _SocialPageState extends State<SocialPage> {
     } catch (e) {
       showErrorMessage(context, content: e.toString());
     }
+
     setState(() {
       _isLoading = false;
     });
@@ -196,7 +227,7 @@ class _SocialPageState extends State<SocialPage> {
                     //The Text will be the value title of the currently selected page from the carousel
                     style: TextStyle(
                       fontSize: 24,
-                      fontWeight: FontWeight.w900,
+                      fontWeight: FontWeight.w800,
                       color: secondaryColor,
                     ),
                   ),
@@ -216,7 +247,7 @@ class _SocialPageState extends State<SocialPage> {
                         socialList[currentPage]['title'],
                         style: TextStyle(
                           fontSize: 18,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ],
@@ -225,46 +256,94 @@ class _SocialPageState extends State<SocialPage> {
                 currentPage == 0
                     ? SizedBox()
                     // This is if you are in the top hosts card
-                    : FutureBuilder<List<DocumentSnapshot>>(
-                        future: topHosts,
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return Center(child: CircularProgressIndicator());
-                          } else if (snapshot.hasError) {
-                            return Center(child: Text('Error loading hosts.'));
-                          } else if (!snapshot.hasData ||
-                              snapshot.data!.isEmpty) {
-                            return Center(child: Text('No hosts found.'));
-                          } else {
-                            final hosts = snapshot.data!;
-                            return Expanded(
-                              child: ListView.builder(
-                                itemCount: hosts.length,
-                                itemBuilder: (context, index) {
-                                  final hostData = hosts[index].data()
-                                      as Map<String, dynamic>?;
-                              
-                                  // Extract username and photoPath
-                                  final username =
-                                      hostData?['username'] ?? 'Unknown Host';
-                                  //final photoPath = hostData?['photoPath'];
-                                  return ListTile(
-                                    // leading: CircleAvatar(
-                                    //   backgroundImage: NetworkImage(photoPath),
-                                    // ),
-                                    title: Text(username),
-                                    onTap: () {
-                                      // Add navigation or interaction logic here
-                                      print('Tapped on $username');
+                    : currentPage == 1
+                        ? FutureBuilder<List<DocumentSnapshot>>(
+                            future: topHosts,
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Center(
+                                    child: CircularProgressIndicator());
+                              } else if (snapshot.hasError) {
+                                return Center(
+                                    child: Text('Error loading hosts.'));
+                              } else if (!snapshot.hasData ||
+                                  snapshot.data!.isEmpty) {
+                                return Center(child: Text('No hosts found.'));
+                              } else {
+                                final hosts = snapshot.data!;
+                                return Expanded(
+                                  child: ListView.builder(
+                                    itemCount: hosts.length,
+                                    itemBuilder: (context, index) {
+                                      final hostData = hosts[index].data()
+                                          as Map<String, dynamic>?;
+
+                                      // Extract username and photoPath
+                                      final username =
+                                          hostData?['name'] ?? 'Unknown Host';
+                                      //final photoPath = hostData?['photoPath'];
+
+                                      // LIST TILE SHOULD BE A CUSTOM WIDGET
+                                      return ListTile(
+                                        // leading: CircleAvatar(
+                                        //   backgroundImage: NetworkImage(photoPath),
+                                        // ),
+                                        title: Text(username),
+                                        onTap: () {
+                                          // Add navigation or interaction logic here
+                                          print('Tapped on $username');
+                                        },
+                                      );
                                     },
-                                  );
-                                },
-                              ),
-                            );
-                          }
-                        },
-                      ),
+                                  ),
+                                );
+                              }
+                            },
+                          )
+                          // LIST OF PEOPLE ATTENDING THE EVENT YOU ARE GOING TO 
+                        : FutureBuilder<List<DocumentSnapshot>>(
+                            future: fetchUsersAttending(currentPage),
+                            // currentPage will represent the number on the map of the users being retrieved
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Center(
+                                    child: CircularProgressIndicator());
+                              } else if (snapshot.hasError) {
+                                return Center(
+                                    child: Text('Error loading hosts.'));
+                              } else if (!snapshot.hasData ||
+                                  snapshot.data!.isEmpty) {
+                                return Center(child: Text('No users found.'));
+                              } else {
+                                final hosts = snapshot.data!;
+                                return Expanded(
+                                  child: ListView.builder(
+                                    itemCount: hosts.length,
+                                    itemBuilder: (context, index) {
+                                      final hostData = hosts[index].data()
+                                          as Map<String, dynamic>?;
+
+                                      final username = hostData?['name'] ??
+                                          'Unknown user';
+                                      //final photoPath = hostData?['photoPath'];
+                                      return ListTile(
+                                        // leading: CircleAvatar(
+                                        //   backgroundImage: NetworkImage(photoPath),
+                                        // ),
+                                        title: Text(username),
+                                        onTap: () {
+                                          // We will then add navigation here
+                                          print('Tapped on $username');
+                                        },
+                                      );
+                                    },
+                                  ),
+                                );
+                              }
+                            },
+                          ),
               ],
             ),
     );
@@ -319,7 +398,7 @@ class _SocialPageState extends State<SocialPage> {
           viewportFraction:
               0.65, // Porcentage of the page occupied by each selected image
           enlargeFactor: 0.15,
-          initialPage: 0,
+          initialPage: 1,
 
           // index represents the carousel number and reason is the reason for change,
           // reason can be manual, automatic, or programmed
@@ -342,20 +421,17 @@ class _SocialPageState extends State<SocialPage> {
           builder: (BuildContext context) {
             if (index == 0) {
               // Custom behavior for the first page
-              return InkWell(
-                onTap: () {
-                  print("Tapped on $index");
-                },
-                child: AspectRatio(
-                  aspectRatio: 1 / 1,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      image: DecorationImage(
-                        image: AssetImage(photoPath),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
+              return AspectRatio(
+                aspectRatio: 1 / 1,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade200,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(
+                    Icons.add_circle,
+                    color: Colors.grey.shade500,
+                    size: 60,
                   ),
                 ),
               );
@@ -375,17 +451,58 @@ class _SocialPageState extends State<SocialPage> {
               );
             } else {
               // Default behavior for other pages
-              return AspectRatio(
-                aspectRatio: 1 / 1,
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    image: DecorationImage(
-                      image: AssetImage(photoPath),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
+              return FutureBuilder<Uint8List?>(
+                future: getImage(photoPath), // Call the getImage function
+                builder:
+                    (BuildContext context, AsyncSnapshot<Uint8List?> snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    // Show a loading indicator while the image is being fetched
+
+                    return AspectRatio(
+                      aspectRatio: 1 / 1,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.grey.shade200,
+                        ),
+                        child: Center(child: CircularProgressIndicator()),
+                      ),
+                    );
+                  } else if (snapshot.hasError || snapshot.data == null) {
+                    // Show an error placeholder if image fetching fails
+                    // If the image fails to load it makes sense to show a placeholder
+                    // because the people attending the event might be there
+                    return AspectRatio(
+                      aspectRatio: 1 / 1,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.grey.shade200,
+                        ),
+                        child: Icon(
+                          Icons.broken_image,
+                          color: Colors.grey.shade500,
+                          size: 60,
+                        ),
+                      ),
+                    );
+                  } else {
+                    // Display the fetched image
+                    return AspectRatio(
+                      aspectRatio: 1 / 1,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          image: DecorationImage(
+                            image: MemoryImage(
+                                snapshot.data!), // Use the fetched image
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+                },
               );
             }
           },

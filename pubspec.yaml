@@ -71,6 +71,7 @@ flutter:
     - assets/images/pary.jpg
     - assets/images/profilePicture.jpeg
     - assets/images/no_profile_picture.webp
+    - assets/images/topHosts.png
 
     # icons
     - assets/icons/ticket-empty.png

@@ -24,7 +24,6 @@ class EventDetails extends StatelessWidget {
     final String eventName = document['title'];
     final String eventDescription = document['description'];
     final double eventAge = document['age'];
-    final String eventId = document.id;
     final String hostName = document['hostName'];
     final String hostId = document['hostId'];
     final String hostProfilePicUrl = document['hostProfilePicUrl'];
@@ -224,7 +223,7 @@ class EventDetails extends StatelessWidget {
                                 builder: (ctx) => FractionallySizedBox(
                                   heightFactor:
                                       0.35, // Occupies 35% of the screen height
-                                  child: BuyTicketPage(eventID: eventId),
+                                  child: BuyTicketPage(eventSnap: document),
                                 ),
                               );
                             },

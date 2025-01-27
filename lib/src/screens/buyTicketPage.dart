@@ -4,7 +4,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
 
-void buyTicket(BuildContext context, String eventID) async {
+void buyTicket(BuildContext context, DocumentSnapshot eventSnap) async {
+
+  // We might not need the entire document snapshot but we might aswell right now 
+
   if (FirebaseAuth.instance.currentUser == null) {
     return;
   }
@@ -14,18 +17,29 @@ void buyTicket(BuildContext context, String eventID) async {
   try {
 
     // Reference the user's document
-    final userDoc = FirebaseFirestore.instance.collection('users').doc(uid);
-    final snapShot = await userDoc.get();
+    final userReference = FirebaseFirestore.instance.collection('users').doc(uid);
+    final userDoc = await userReference.get();
 
-    final tickets = snapShot.data()?['tickets'] ?? [];
+    final tickets = userDoc.data()?['tickets'] ?? [];
 
+    final eventID = eventSnap.id;
+
+    // Check if user already has the event
     if (tickets.contains(eventID)) {
       showErrorMessage(context, title: 'Not that fast!', content: 'You already have a ticket for this event.');      
     } else {
+      
+      final eventReference = FirebaseFirestore.instance.collection('events').doc(eventID);
+
+      // We are updating the list of tickets sold of the event with the users id
+      // This is what is going to be used for the social page to see who is attending the event
+      eventReference.set({
+        'ticketsSold': FieldValue.arrayUnion([userDoc.id])
+      }, SetOptions(merge: true));
 
       // Use set() with merge to either create or update the 'tickets' field as an array
       // FieldValue.arrayUnion will append to the array if it exists or create one if it doesn't
-      await userDoc.set({
+      await userReference.set({
         'tickets': FieldValue.arrayUnion([eventID])
       }, SetOptions(merge: true));
 
@@ -44,8 +58,8 @@ void buyTicket(BuildContext context, String eventID) async {
 }
 
 class BuyTicketPage extends StatelessWidget {
-  const BuyTicketPage({super.key, required this.eventID}); 
-  final String eventID;
+  const BuyTicketPage({super.key, required this.eventSnap}); 
+  final DocumentSnapshot eventSnap;
 
   @override
    Widget build(BuildContext context) {
@@ -97,7 +111,7 @@ class BuyTicketPage extends StatelessWidget {
                 ),
               ),
               onPressed: () {
-                buyTicket(context, eventID); // Implement your purchase logic
+                buyTicket(context, eventSnap); // Implement your purchase logic
               },
               child: const Text(
                 'Confirm Purchase',
