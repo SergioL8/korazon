@@ -8,6 +8,7 @@ import 'package:korazon/src/screens/userscreens/user_profile_screen.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
+import 'package:korazon/src/widgets/profileListTile.dart';
 
 class SocialPage extends StatefulWidget {
   const SocialPage({super.key});
@@ -24,7 +25,7 @@ class _SocialPageState extends State<SocialPage> {
       []; // List to store event details as DocumentSnapshots
   List<String> eventImages = [];
 
-  int currentPage = 0;
+  int currentPage = 1; //Make sure to match wit initial page of the carousel
 
   // This List will be updated with the info from the different events the user is attending to
   // This 2 first elements are the defaults, top hosts and Add events
@@ -69,30 +70,26 @@ class _SocialPageState extends State<SocialPage> {
   }
 
   Future<List<DocumentSnapshot>> fetchUsersAttending(int mapIndex) async {
-  final List<DocumentSnapshot> attendingUsers = [];
+    final List<DocumentSnapshot> attendingUsers = [];
 
-  try {
-    // Access the array "peopleYouMayKnow" from socialList
-    for (String uid in socialList[mapIndex]['peopleYouMayKnow']) {
-      final attendingUserDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(uid)
-          .get();
+    try {
+      // Access the array "peopleYouMayKnow" from socialList
+      for (String uid in socialList[mapIndex]['peopleYouMayKnow']) {
+        final attendingUserDoc =
+            await FirebaseFirestore.instance.collection('users').doc(uid).get();
 
-      if (attendingUserDoc.exists) {
-        // Simply add to the local list; no setState here
-        attendingUsers.add(attendingUserDoc);
+        if (attendingUserDoc.exists) {
+          // Simply add to the local list; no setState here
+          attendingUsers.add(attendingUserDoc);
+        }
       }
+      return attendingUsers;
+    } catch (e) {
+      // Log the error or show a message
+      showErrorMessage(context, content: 'Error fetching attendees: $e');
+      return [];
     }
-    return attendingUsers;
-  } catch (e) {
-    // Log the error or show a message
-    print('Error fetching attendees: $e');
-    showErrorMessage(context, content: 'Error fetching attendees: $e');
-    return [];
   }
-}
-
 
   /// This is the same function as in your events
   Future<void> getEvents() async {
@@ -147,21 +144,21 @@ class _SocialPageState extends State<SocialPage> {
           final String? photoPath = data['photoPath'];
 
           // Cast to List<String>
-          final List<dynamic>? dynamicTickets = data['ticketsSold'];
-          final List<String> ticketsSold =
+          final List<dynamic>? dynamicTickets = data['soldTickets'];
+          final List<String> soldTickets=
               dynamicTickets != null ? dynamicTickets.cast<String>() : [];
 
           // If you do not want to skip entries when ticketsSold is empty, remove that condition
           if (photoPath != null &&
               photoPath.isNotEmpty &&
-              ticketsSold.isNotEmpty) {
+              soldTickets.isNotEmpty) {
             // Add a new entry to socialList
             setState(() {
               socialList.add({
                 'index': currentIndex,
                 'photoPath': photoPath,
                 'title': data['title'] ?? 'Untitled Event',
-                'peopleYouMayKnow': ticketsSold,
+                'peopleYouMayKnow': soldTickets,
               });
             });
             currentIndex++;
@@ -179,6 +176,8 @@ class _SocialPageState extends State<SocialPage> {
 
   @override
   Widget build(BuildContext context) {
+    final String currentEventTitle = socialList[currentPage]['title'];
+
     return Scaffold(
       backgroundColor: tertiaryColor,
       appBar: AppBar(
@@ -209,143 +208,109 @@ class _SocialPageState extends State<SocialPage> {
         ],
       ),
       body: _isLoading
-          ? Center(
-              child: CircularProgressIndicator(
-                color: secondaryColor,
+    ? Center(
+        child: CircularProgressIndicator(
+          color: secondaryColor,
+        ),
+      )
+    : Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Title
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Text(
+              (currentPage == 0 || currentPage == 1)
+                  ? currentEventTitle
+                  : 'People you may know from "$currentEventTitle"',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
               ),
-            )
-          : Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Title
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: Text(
-                    'Party People',
-                    //The Text will be the value title of the currently selected page from the carousel
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w800,
-                      color: secondaryColor,
-                    ),
-                  ),
-                ),
-                //Now we need to add the ListView.builder for the profile
-
-                // Carousel
-                _buildImageCarousel(),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Text(
-                        socialList[currentPage]['title'],
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                currentPage == 0
-                    ? SizedBox()
-                    // This is if you are in the top hosts card
-                    : currentPage == 1
-                        ? FutureBuilder<List<DocumentSnapshot>>(
-                            future: topHosts,
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return Center(
-                                    child: CircularProgressIndicator());
-                              } else if (snapshot.hasError) {
-                                return Center(
-                                    child: Text('Error loading hosts.'));
-                              } else if (!snapshot.hasData ||
-                                  snapshot.data!.isEmpty) {
-                                return Center(child: Text('No hosts found.'));
-                              } else {
-                                final hosts = snapshot.data!;
-                                return Expanded(
-                                  child: ListView.builder(
-                                    itemCount: hosts.length,
-                                    itemBuilder: (context, index) {
-                                      final hostData = hosts[index].data()
-                                          as Map<String, dynamic>?;
-
-                                      // Extract username and photoPath
-                                      final username =
-                                          hostData?['name'] ?? 'Unknown Host';
-                                      //final photoPath = hostData?['photoPath'];
-
-                                      // LIST TILE SHOULD BE A CUSTOM WIDGET
-                                      return ListTile(
-                                        // leading: CircleAvatar(
-                                        //   backgroundImage: NetworkImage(photoPath),
-                                        // ),
-                                        title: Text(username),
-                                        onTap: () {
-                                          // Add navigation or interaction logic here
-                                          print('Tapped on $username');
-                                        },
-                                      );
-                                    },
-                                  ),
-                                );
-                              }
-                            },
-                          )
-                          // LIST OF PEOPLE ATTENDING THE EVENT YOU ARE GOING TO 
-                        : FutureBuilder<List<DocumentSnapshot>>(
-                            future: fetchUsersAttending(currentPage),
-                            // currentPage will represent the number on the map of the users being retrieved
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return Center(
-                                    child: CircularProgressIndicator());
-                              } else if (snapshot.hasError) {
-                                return Center(
-                                    child: Text('Error loading hosts.'));
-                              } else if (!snapshot.hasData ||
-                                  snapshot.data!.isEmpty) {
-                                return Center(child: Text('No users found.'));
-                              } else {
-                                final hosts = snapshot.data!;
-                                return Expanded(
-                                  child: ListView.builder(
-                                    itemCount: hosts.length,
-                                    itemBuilder: (context, index) {
-                                      final hostData = hosts[index].data()
-                                          as Map<String, dynamic>?;
-
-                                      final username = hostData?['name'] ??
-                                          'Unknown user';
-                                      //final photoPath = hostData?['photoPath'];
-                                      return ListTile(
-                                        // leading: CircleAvatar(
-                                        //   backgroundImage: NetworkImage(photoPath),
-                                        // ),
-                                        title: Text(username),
-                                        onTap: () {
-                                          // We will then add navigation here
-                                          print('Tapped on $username');
-                                        },
-                                      );
-                                    },
-                                  ),
-                                );
-                              }
-                            },
-                          ),
-              ],
             ),
+          ),
+
+          // Carousel
+          _buildImageCarousel(),
+
+          const SizedBox(height: 20),
+
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: currentPage == 0
+                  ? const SizedBox()
+                  : currentPage == 1
+                      ? FutureBuilder<List<DocumentSnapshot>>(
+                          future: topHosts,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const Center(
+                                  child: CircularProgressIndicator());
+                            } else if (snapshot.hasError) {
+                              return const Center(
+                                  child: Text('Error loading hosts.'));
+                            } else if (!snapshot.hasData ||
+                                snapshot.data!.isEmpty) {
+                              return const Center(
+                                  child: Text('No hosts found.'));
+                            } else {
+                              final hosts = snapshot.data!;
+                              return ListView.builder(
+                                itemCount: hosts.length,
+                                itemBuilder: (context, index) {
+                                  final hostData =
+                                      hosts[index].data() as Map<String, dynamic>?;
+                                  final username =
+                                      hostData?['name'] ?? 'Unknown Host';
+
+                                  // Custom ListTile Widget
+                                  return UserListTile(
+                                    doc: hosts[index],
+                                    onTap: () => print('Tapped on $username'),
+                                  );
+                                },
+                              );
+                            }
+                          },
+                        )
+                      : FutureBuilder<List<DocumentSnapshot>>(
+                          future: fetchUsersAttending(currentPage),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  color: secondaryColor,
+                                ),
+                              );
+                            } else if (snapshot.hasError) {
+                              return const Center(
+                                  child: Text('Error loading users.'));
+                            } else if (!snapshot.hasData ||
+                                snapshot.data!.isEmpty) {
+                              return const Center(
+                                  child: Text('No users found.'));
+                            } else {
+                              final userDocs = snapshot.data!;
+                              return ListView.builder(
+                                itemCount: userDocs.length,
+                                itemBuilder: (context, index) {
+                                  final userDoc = userDocs[index];
+                                  return UserListTile(
+                                    doc: userDoc,
+                                    onTap: () {},
+                                  );
+                                },
+                              );
+                            }
+                          },
+                        ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -406,7 +371,6 @@ class _SocialPageState extends State<SocialPage> {
           onPageChanged: (index, reason) {
             setState(() {
               currentPage = index;
-              print(index);
             });
           }
           //padEnds: false,
@@ -465,7 +429,12 @@ class _SocialPageState extends State<SocialPage> {
                           borderRadius: BorderRadius.circular(10),
                           color: Colors.grey.shade200,
                         ),
-                        child: Center(child: CircularProgressIndicator()),
+                        child: Center(
+                          child: Center(
+                              child: Center(
+                            child: Icon(Icons.account_balance),
+                          )),
+                        ),
                       ),
                     );
                   } else if (snapshot.hasError || snapshot.data == null) {
