@@ -29,7 +29,7 @@ class UserModel {
   final String name;
   final String lastName;
   final String gender;
-  final int age;
+  final double age;
   final String academicYear;
   final String bio;
   final String qrCode;
@@ -54,7 +54,7 @@ class UserModel {
       name: data['name'] ?? 'No name',
       lastName: data['lastName'] ?? 'No last name',
       gender: data['gender'] ?? 'Unknown',
-      age: data['age'] ?? -1,
+      age: (data['age'] is num) ? (data['age'] as num).toDouble() : -1.0,
       academicYear: data['academicYear'] ?? 'No academic year',
       bio: data['bio'] ?? '',
       qrCode: data['qrCode'] ?? '',

@@ -18,10 +18,11 @@ class UserSettings extends StatefulWidget{
 
 class _UserSettingsState extends State<UserSettings> {
 
-  String? qrCodeBase64;
+  
   bool _isLoading = false;
   UserModel? usermodel;
   bool _qrCodeLoading = false;
+  String? qrCodeBase64;
 
 
   // DON'T HAVE TO EDIT THIS
@@ -159,10 +160,9 @@ class _UserSettingsState extends State<UserSettings> {
                     : Image.memory(
                         base64Decode(qrCodeBase64!.split(',')[1]),
                         fit: BoxFit.contain,
-                      ),
-              ),
+                    ),
+            ),
             const SizedBox(height: 20,),
-            
             ElevatedButton(
               style: ButtonStyle(
                 backgroundColor: WidgetStatePropertyAll<Color>(korazonColor),
