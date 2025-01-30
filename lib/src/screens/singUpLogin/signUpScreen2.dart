@@ -85,7 +85,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
         'email': widget.email,
         'name': _nameController.text,
         'lastName': _lastNameController.text,
-        // 'age': int.parse(_ageController.text),
+        // 'age': double.parse(_ageController.text),
         'academicYear': _academicYearController.text, 
         'gender': _genderController.text,
         'isHost': false,

@@ -162,8 +162,8 @@ Future<String?> createQRCode(String uid) async {
   // Create a QrPainter to render the QR code as an image
   final painter = QrPainter.withQr(
     eyeStyle: QrEyeStyle(
-      eyeShape: QrEyeShape.circle, // You can change this to QrEyeShape.circle for rounded eyes
-      color: Color(0xFF000000), // Color of the eyes
+      eyeShape: QrEyeShape.square, // You can change this to QrEyeShape.circle for rounded eyes
+      color: korazonColor, // Color of the eyes
     ),
     qr: qrCode,
     gapless: true, // no gaps between squares of the qrcode
