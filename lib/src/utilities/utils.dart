@@ -175,7 +175,6 @@ Future<String?> createQRCode(String uid) async {
   final uint8List =  picData?.buffer.asUint8List(); // convert to uint8lsit to store
 
   // Convert the Uint8List to a base64 string
-  print('code being created');
   if (uint8List != null) {
     return 'data:image/png;base64,${base64Encode(uint8List)}';
   } else {
