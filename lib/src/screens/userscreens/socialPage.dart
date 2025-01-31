@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:korazon/src/screens/userscreens/user_profile_screen.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
+import 'package:korazon/src/utilities/models/eventModel.dart';
+import 'package:korazon/src/utilities/models/userModel.dart';
 import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
 import 'package:korazon/src/widgets/profileListTile.dart';
@@ -37,12 +39,7 @@ class _SocialPageState extends State<SocialPage> {
       'index': 0,
       // This will stay empty be cause for the hosts we are already downloading all the snaps
     },
-    {
-      'photoPath': 'assets/images/topHosts.png',
-      'title': 'Top Hosts',
-      'peopleYouMayKnow': [],
-      'index': 1,
-    },
+    // IF ANYTHING IS ADDED REMEMBER TO CHANGE THE CURRENT INDEX IN "getEvents()"
   ];
   // We want to add tickets sold to the map
 
@@ -50,25 +47,29 @@ class _SocialPageState extends State<SocialPage> {
   void initState() {
     super.initState();
     getEvents();
-    topHosts = fetchTopHostSnapshots();
+    //topHosts = fetchTopHostSnapshots();
   }
 
-  Future<List<DocumentSnapshot>> fetchTopHostSnapshots() async {
-    try {
-      // Query Firestore for all users where 'isHost' is true
-      final topHostsSnaps = await FirebaseFirestore.instance
-          .collection('users')
-          .where('isHost', isEqualTo: true)
-          .get();
+  // UNNECESSSARY RIGHT NOW 
 
-      // Return the list of document snapshots
-      return topHostsSnaps.docs; // List<DocumentSnapshot>
-    } catch (e) {
-      print('Error fetching hosts: $e');
-      return []; // Return an empty list if an error occurs
-    }
-  }
+  // Future<List<DocumentSnapshot>> fetchTopHostSnapshots() async {
+  //   try {
+  //     // Query Firestore for all users where 'isHost' is true
+  //     final topHostsSnaps = await FirebaseFirestore.instance
+  //         .collection('users')
+  //         .where('isHost', isEqualTo: true)
+  //         .get();
 
+  //     // Return the list of document snapshots
+  //     return topHostsSnaps.docs; // List<DocumentSnapshot>
+  //   } catch (e) {
+  //     print('Error fetching hosts: $e');
+  //     return []; // Return an empty list if an error occurs
+  //   }
+  // }
+
+
+//! Needs model 
   Future<List<DocumentSnapshot>> fetchUsersAttending(int mapIndex) async {
     final List<DocumentSnapshot> attendingUsers = [];
 
@@ -92,7 +93,8 @@ class _SocialPageState extends State<SocialPage> {
   }
 
   /// This is the same function as in your events
-  Future<void> getEvents() async {
+  /// Needs model 
+  Future<void> getEvents() async { 
     setState(() {
       _isLoading = true;
     });
@@ -113,45 +115,47 @@ class _SocialPageState extends State<SocialPage> {
           .doc(userId)
           .get();
 
-      if (!userDoc.exists) {
-        showErrorMessage(context,
-            content: 'User not found. Please logout and login again.');
+      final UserModel? user = UserModel.fromDocumentSnapshot(userDoc);
+
+      if (user == null) {
+        showErrorMessage(context, content: 'There was an error loading your user. Please logout and login back again.', errorAction: ErrorAction.logout);
         return;
       }
 
       // Load tickets array
       setState(() {
-        eventUids = List.from(userDoc.data()?['tickets'] ?? []);
+        eventUids = user.tickets;
       });
 
       // Start from index = 2 because the first two are your default socialList entries
-      int currentIndex = 2;
+      int currentIndex = 1;
 
       for (String uid in eventUids) {
         final eventDoc = await FirebaseFirestore.instance
             .collection('events')
             .doc(uid)
             .get();
+        
+        EventModel? tempEvent = EventModel.fromDocumentSnapshot(eventDoc);
 
-        if (eventDoc.exists) {
+        if (tempEvent != null) {
           setState(() {
             // If you still want to keep the entire document for other usage:
             events.add(eventDoc);
           });
 
           // Safely extract and cast fields
-          final data = eventDoc.data() as Map<String, dynamic>;
-          final String? photoPath = data['photoPath'];
+          //final data = eventDoc.data() as Map<String, dynamic>;
+          //final String? photoPath = data['photoPath'];
+
+          final String photoPath = tempEvent.photoPath;
 
           // Cast to List<String>
           final List<dynamic>? dynamicTickets = data['soldTickets'];
-          final List<String> soldTickets=
-              dynamicTickets != null ? dynamicTickets.cast<String>() : [];
+          final List<String> soldTickets = dynamicTickets != null ? dynamicTickets.cast<String>() : [];
 
           // If you do not want to skip entries when ticketsSold is empty, remove that condition
-          if (photoPath != null &&
-              photoPath.isNotEmpty &&
-              soldTickets.isNotEmpty) {
+          if (photoPath != '' && photoPath.isNotEmpty && soldTickets.isNotEmpty) {
             // Add a new entry to socialList
             setState(() {
               socialList.add({
@@ -363,7 +367,8 @@ class _SocialPageState extends State<SocialPage> {
           viewportFraction:
               0.65, // Porcentage of the page occupied by each selected image
           enlargeFactor: 0.15,
-          initialPage: 1,
+          initialPage: 0,
+          // This should change to the first event you have 
 
           // index represents the carousel number and reason is the reason for change,
           // reason can be manual, automatic, or programmed
