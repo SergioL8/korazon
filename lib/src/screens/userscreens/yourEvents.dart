@@ -66,7 +66,7 @@ class _YourEventsState extends State<YourEvents> {
       // This goes to the list of all events to find if they match any of the ones in your tickets list.
       for (String uid in eventUids) {
         var eventDoc = await FirebaseFirestore.instance
-            .collection('events')
+            .collection('events') 
             .doc(uid)
             .get();
         

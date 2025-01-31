@@ -27,7 +27,7 @@ class _SocialPageState extends State<SocialPage> {
       []; // List to store event details as DocumentSnapshots
   List<String> eventImages = [];
 
-  int currentPage = 1; //Make sure to match wit initial page of the carousel
+  int currentPage = 0; //Make sure to match wit initial page of the carousel
 
   // This List will be updated with the info from the different events the user is attending to
   // This 2 first elements are the defaults, top hosts and Add events
@@ -76,10 +76,12 @@ class _SocialPageState extends State<SocialPage> {
     try {
       // Access the array "peopleYouMayKnow" from socialList
       for (String uid in socialList[mapIndex]['peopleYouMayKnow']) {
-        final attendingUserDoc =
-            await FirebaseFirestore.instance.collection('users').doc(uid).get();
 
-        if (attendingUserDoc.exists) {
+        final attendingUserDoc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+
+        final UserModel? attendingUser = UserModel.fromDocumentSnapshot(attendingUserDoc);
+
+        if (attendingUser != null) {
           // Simply add to the local list; no setState here
           attendingUsers.add(attendingUserDoc);
         }
@@ -87,7 +89,9 @@ class _SocialPageState extends State<SocialPage> {
       return attendingUsers;
     } catch (e) {
       // Log the error or show a message
+      if (mounted ) {
       showErrorMessage(context, content: 'Error fetching attendees: $e');
+      }
       return [];
     }
   }
@@ -148,21 +152,21 @@ class _SocialPageState extends State<SocialPage> {
           //final data = eventDoc.data() as Map<String, dynamic>;
           //final String? photoPath = data['photoPath'];
 
-          final String photoPath = tempEvent.photoPath;
 
           // Cast to List<String>
-          final List<dynamic>? dynamicTickets = data['soldTickets'];
-          final List<String> soldTickets = dynamicTickets != null ? dynamicTickets.cast<String>() : [];
+          //final List<dynamic>? dynamicTickets = data['soldTickets'];
+          //final List<String> soldTickets = tempEvent.ticketsSold;
+          //final List<String> soldTickets = dynamicTickets != null ? dynamicTickets.cast<String>() : [];
 
           // If you do not want to skip entries when ticketsSold is empty, remove that condition
-          if (photoPath != '' && photoPath.isNotEmpty && soldTickets.isNotEmpty) {
+          if (tempEvent.photoPath != '') {
             // Add a new entry to socialList
             setState(() {
               socialList.add({
                 'index': currentIndex,
-                'photoPath': photoPath,
-                'title': data['title'] ?? 'Untitled Event',
-                'peopleYouMayKnow': soldTickets,
+                'photoPath': tempEvent.photoPath,
+                'title': tempEvent.title,
+                'peopleYouMayKnow': tempEvent.ticketsSold,
               });
             });
             currentIndex++;
@@ -180,6 +184,7 @@ class _SocialPageState extends State<SocialPage> {
 
   @override
   Widget build(BuildContext context) {
+
     final String currentEventTitle = socialList[currentPage]['title'];
 
     return Scaffold(
@@ -244,41 +249,44 @@ class _SocialPageState extends State<SocialPage> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: currentPage == 0
                   ? const SizedBox()
-                  : currentPage == 1
-                      ? FutureBuilder<List<DocumentSnapshot>>(
-                          future: topHosts,
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const Center(
-                                  child: CircularProgressIndicator());
-                            } else if (snapshot.hasError) {
-                              return const Center(
-                                  child: Text('Error loading hosts.'));
-                            } else if (!snapshot.hasData ||
-                                snapshot.data!.isEmpty) {
-                              return const Center(
-                                  child: Text('No hosts found.'));
-                            } else {
-                              final hosts = snapshot.data!;
-                              return ListView.builder(
-                                itemCount: hosts.length,
-                                itemBuilder: (context, index) {
-                                  final hostData =
-                                      hosts[index].data() as Map<String, dynamic>?;
-                                  final username =
-                                      hostData?['name'] ?? 'Unknown Host';
 
-                                  // Custom ListTile Widget
-                                  return UserListTile(
-                                    doc: hosts[index],
-                                    onTap: () => print('Tapped on $username'),
-                                  );
-                                },
-                              );
-                            }
-                          },
-                        )
+                  // THIS ALSO ONLY MADE SENSE FOR TOP HOSTS
+
+                  // : currentPage == 1
+                  //     ? FutureBuilder<List<DocumentSnapshot>>(
+                  //         future: topHosts,
+                  //         builder: (context, snapshot) {
+                  //           if (snapshot.connectionState ==
+                  //               ConnectionState.waiting) {
+                  //             return const Center(
+                  //                 child: CircularProgressIndicator());
+                  //           } else if (snapshot.hasError) {
+                  //             return const Center(
+                  //                 child: Text('Error loading hosts.'));
+                  //           } else if (!snapshot.hasData ||
+                  //               snapshot.data!.isEmpty) {
+                  //             return const Center(
+                  //                 child: Text('No hosts found.'));
+                  //           } else {
+                  //             final hosts = snapshot.data!;
+                  //             return ListView.builder(
+                  //               itemCount: hosts.length,
+                  //               itemBuilder: (context, index) {
+                  //                 final hostData =
+                  //                     hosts[index].data() as Map<String, dynamic>?;
+                  //                 final username =
+                  //                     hostData?['name'] ?? 'Unknown Host';
+
+                  //                 // Custom ListTile Widget
+                  //                 return UserListTile(
+                  //                   doc: hosts[index],
+                  //                   onTap: () => print('Tapped on $username'),
+                  //                 );
+                  //               },
+                  //             );
+                  //           }
+                  //         },
+                  //       )
                       : FutureBuilder<List<DocumentSnapshot>>(
                           future: fetchUsersAttending(currentPage),
                           builder: (context, snapshot) {
@@ -362,7 +370,7 @@ class _SocialPageState extends State<SocialPage> {
       options: CarouselOptions(
           height: 300,
           enableInfiniteScroll:
-              true, // Stops the scroll from being an infinite scroll
+              false, // Stops the scroll from being an infinite scroll
           enlargeCenterPage: true,
           viewportFraction:
               0.65, // Porcentage of the page occupied by each selected image
@@ -405,20 +413,24 @@ class _SocialPageState extends State<SocialPage> {
                 ),
               );
             }
-            if (index == 1) {
-              return AspectRatio(
-                aspectRatio: 1 / 1,
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    image: DecorationImage(
-                      image: AssetImage(photoPath),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-              );
-            } else {
+
+            // THIS ONLY MADE SENSE FOR TOP HOSTS
+
+            // if (index == 1) {
+            //   return AspectRatio(
+            //     aspectRatio: 1 / 1,
+            //     child: Container(
+            //       decoration: BoxDecoration(
+            //         borderRadius: BorderRadius.circular(10),
+            //         image: DecorationImage(
+            //           image: AssetImage(photoPath),
+            //           fit: BoxFit.cover,
+            //         ),
+            //       ),
+            //     ),
+            //   );
+            // } 
+            else {
               // Default behavior for other pages
               return FutureBuilder<Uint8List?>(
                 future: getImage(photoPath), // Call the getImage function
