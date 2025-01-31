@@ -142,7 +142,7 @@ class _YourEventsState extends State<YourEvents> {
               return CircularProgressIndicator();
             } else {
               final eventIndex = index -1;
-            return EventCard(document: events[eventIndex]);
+            return EventCard(document: events[eventIndex], parentPage: ParentPage.yourEvents,);
             }
           }
         },

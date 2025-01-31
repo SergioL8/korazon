@@ -325,7 +325,7 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
                         itemCount: eventDocs.length,
                         itemBuilder: (context, index) {
                           final doc = eventDocs[index];
-                          return EventCard(document: doc);
+                          return EventCard(document: doc, parentPage: ParentPage.hostProfile,);
                         },
                       );
                     },
