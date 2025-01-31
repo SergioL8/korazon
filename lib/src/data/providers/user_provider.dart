@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:korazon/src/data/models/user.dart';
 import 'package:korazon/src/cloudresources/authentication.dart';
+import 'package:korazon/src/utilities/models/userModel.dart';
 
 //Functions refreshUser () & getUser
   class UserProvider with ChangeNotifier {
-    User? _user; //user is a  private nullable variable that will hold the current user's data
+    UserModel? _user; //user is a  private nullable variable that will hold the current user's data
 
     final AuthMethods _authMethods = AuthMethods(); //AuthMethods is a class that contains methods to get user details
 
-    User? get getUser => _user; 
+    UserModel? get getUser => _user; 
     //the function user will return _user when called outside of the class, besides _user being a private variable
     //it is a function that returns _user as a nullable User object 
 
     Future<void> refreshUser() async{
       print('Refreshing user data in user provider...');
 
-      User? user = await _authMethods.getUserDetails(); 
+      UserModel? user = await _authMethods.getUserDetails(); 
       //getUserDetails is defined in auth_method file 
       if (user != null) {
-        print('User data fetched in provider: ${user.username}');
+        print('User data fetched in provider: ${user.name}');
         _user = user;
         notifyListeners(); 
       // notify listeners that the user has been updated

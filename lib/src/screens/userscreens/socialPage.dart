@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:korazon/src/screens/userscreens/user_profile_screen.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
+import 'package:korazon/src/utilities/models/eventModel.dart';
+import 'package:korazon/src/utilities/models/userModel.dart';
 import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
 import 'package:korazon/src/widgets/profileListTile.dart';
@@ -25,7 +27,7 @@ class _SocialPageState extends State<SocialPage> {
       []; // List to store event details as DocumentSnapshots
   List<String> eventImages = [];
 
-  int currentPage = 1; //Make sure to match wit initial page of the carousel
+  int currentPage = 0; //Make sure to match wit initial page of the carousel
 
   // This List will be updated with the info from the different events the user is attending to
   // This 2 first elements are the defaults, top hosts and Add events
@@ -37,12 +39,7 @@ class _SocialPageState extends State<SocialPage> {
       'index': 0,
       // This will stay empty be cause for the hosts we are already downloading all the snaps
     },
-    {
-      'photoPath': 'assets/images/topHosts.png',
-      'title': 'Top Hosts',
-      'peopleYouMayKnow': [],
-      'index': 1,
-    },
+    // IF ANYTHING IS ADDED REMEMBER TO CHANGE THE CURRENT INDEX IN "getEvents()"
   ];
   // We want to add tickets sold to the map
 
@@ -50,35 +47,41 @@ class _SocialPageState extends State<SocialPage> {
   void initState() {
     super.initState();
     getEvents();
-    topHosts = fetchTopHostSnapshots();
+    //topHosts = fetchTopHostSnapshots();
   }
 
-  Future<List<DocumentSnapshot>> fetchTopHostSnapshots() async {
-    try {
-      // Query Firestore for all users where 'isHost' is true
-      final topHostsSnaps = await FirebaseFirestore.instance
-          .collection('users')
-          .where('isHost', isEqualTo: true)
-          .get();
+  // UNNECESSSARY RIGHT NOW 
 
-      // Return the list of document snapshots
-      return topHostsSnaps.docs; // List<DocumentSnapshot>
-    } catch (e) {
-      print('Error fetching hosts: $e');
-      return []; // Return an empty list if an error occurs
-    }
-  }
+  // Future<List<DocumentSnapshot>> fetchTopHostSnapshots() async {
+  //   try {
+  //     // Query Firestore for all users where 'isHost' is true
+  //     final topHostsSnaps = await FirebaseFirestore.instance
+  //         .collection('users')
+  //         .where('isHost', isEqualTo: true)
+  //         .get();
 
+  //     // Return the list of document snapshots
+  //     return topHostsSnaps.docs; // List<DocumentSnapshot>
+  //   } catch (e) {
+  //     print('Error fetching hosts: $e');
+  //     return []; // Return an empty list if an error occurs
+  //   }
+  // }
+
+
+//! Needs model 
   Future<List<DocumentSnapshot>> fetchUsersAttending(int mapIndex) async {
     final List<DocumentSnapshot> attendingUsers = [];
 
     try {
       // Access the array "peopleYouMayKnow" from socialList
       for (String uid in socialList[mapIndex]['peopleYouMayKnow']) {
-        final attendingUserDoc =
-            await FirebaseFirestore.instance.collection('users').doc(uid).get();
 
-        if (attendingUserDoc.exists) {
+        final attendingUserDoc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+
+        final UserModel? attendingUser = UserModel.fromDocumentSnapshot(attendingUserDoc);
+
+        if (attendingUser != null) {
           // Simply add to the local list; no setState here
           attendingUsers.add(attendingUserDoc);
         }
@@ -86,13 +89,16 @@ class _SocialPageState extends State<SocialPage> {
       return attendingUsers;
     } catch (e) {
       // Log the error or show a message
+      if (mounted ) {
       showErrorMessage(context, content: 'Error fetching attendees: $e');
+      }
       return [];
     }
   }
 
   /// This is the same function as in your events
-  Future<void> getEvents() async {
+  /// Needs model 
+  Future<void> getEvents() async { 
     setState(() {
       _isLoading = true;
     });
@@ -113,52 +119,54 @@ class _SocialPageState extends State<SocialPage> {
           .doc(userId)
           .get();
 
-      if (!userDoc.exists) {
-        showErrorMessage(context,
-            content: 'User not found. Please logout and login again.');
+      final UserModel? user = UserModel.fromDocumentSnapshot(userDoc);
+
+      if (user == null) {
+        showErrorMessage(context, content: 'There was an error loading your user. Please logout and login back again.', errorAction: ErrorAction.logout);
         return;
       }
 
       // Load tickets array
       setState(() {
-        eventUids = List.from(userDoc.data()?['tickets'] ?? []);
+        eventUids = user.tickets;
       });
 
       // Start from index = 2 because the first two are your default socialList entries
-      int currentIndex = 2;
+      int currentIndex = 1;
 
       for (String uid in eventUids) {
         final eventDoc = await FirebaseFirestore.instance
             .collection('events')
             .doc(uid)
             .get();
+        
+        EventModel? tempEvent = EventModel.fromDocumentSnapshot(eventDoc);
 
-        if (eventDoc.exists) {
+        if (tempEvent != null) {
           setState(() {
             // If you still want to keep the entire document for other usage:
             events.add(eventDoc);
           });
 
           // Safely extract and cast fields
-          final data = eventDoc.data() as Map<String, dynamic>;
-          final String? photoPath = data['photoPath'];
+          //final data = eventDoc.data() as Map<String, dynamic>;
+          //final String? photoPath = data['photoPath'];
+
 
           // Cast to List<String>
-          final List<dynamic>? dynamicTickets = data['soldTickets'];
-          final List<String> soldTickets=
-              dynamicTickets != null ? dynamicTickets.cast<String>() : [];
+          //final List<dynamic>? dynamicTickets = data['soldTickets'];
+          //final List<String> soldTickets = tempEvent.ticketsSold;
+          //final List<String> soldTickets = dynamicTickets != null ? dynamicTickets.cast<String>() : [];
 
           // If you do not want to skip entries when ticketsSold is empty, remove that condition
-          if (photoPath != null &&
-              photoPath.isNotEmpty &&
-              soldTickets.isNotEmpty) {
+          if (tempEvent.photoPath != '') {
             // Add a new entry to socialList
             setState(() {
               socialList.add({
                 'index': currentIndex,
-                'photoPath': photoPath,
-                'title': data['title'] ?? 'Untitled Event',
-                'peopleYouMayKnow': soldTickets,
+                'photoPath': tempEvent.photoPath,
+                'title': tempEvent.title,
+                'peopleYouMayKnow': tempEvent.ticketsSold,
               });
             });
             currentIndex++;
@@ -176,6 +184,7 @@ class _SocialPageState extends State<SocialPage> {
 
   @override
   Widget build(BuildContext context) {
+
     final String currentEventTitle = socialList[currentPage]['title'];
 
     return Scaffold(
@@ -240,41 +249,44 @@ class _SocialPageState extends State<SocialPage> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: currentPage == 0
                   ? const SizedBox()
-                  : currentPage == 1
-                      ? FutureBuilder<List<DocumentSnapshot>>(
-                          future: topHosts,
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const Center(
-                                  child: CircularProgressIndicator());
-                            } else if (snapshot.hasError) {
-                              return const Center(
-                                  child: Text('Error loading hosts.'));
-                            } else if (!snapshot.hasData ||
-                                snapshot.data!.isEmpty) {
-                              return const Center(
-                                  child: Text('No hosts found.'));
-                            } else {
-                              final hosts = snapshot.data!;
-                              return ListView.builder(
-                                itemCount: hosts.length,
-                                itemBuilder: (context, index) {
-                                  final hostData =
-                                      hosts[index].data() as Map<String, dynamic>?;
-                                  final username =
-                                      hostData?['name'] ?? 'Unknown Host';
 
-                                  // Custom ListTile Widget
-                                  return UserListTile(
-                                    doc: hosts[index],
-                                    onTap: () => print('Tapped on $username'),
-                                  );
-                                },
-                              );
-                            }
-                          },
-                        )
+                  // THIS ALSO ONLY MADE SENSE FOR TOP HOSTS
+
+                  // : currentPage == 1
+                  //     ? FutureBuilder<List<DocumentSnapshot>>(
+                  //         future: topHosts,
+                  //         builder: (context, snapshot) {
+                  //           if (snapshot.connectionState ==
+                  //               ConnectionState.waiting) {
+                  //             return const Center(
+                  //                 child: CircularProgressIndicator());
+                  //           } else if (snapshot.hasError) {
+                  //             return const Center(
+                  //                 child: Text('Error loading hosts.'));
+                  //           } else if (!snapshot.hasData ||
+                  //               snapshot.data!.isEmpty) {
+                  //             return const Center(
+                  //                 child: Text('No hosts found.'));
+                  //           } else {
+                  //             final hosts = snapshot.data!;
+                  //             return ListView.builder(
+                  //               itemCount: hosts.length,
+                  //               itemBuilder: (context, index) {
+                  //                 final hostData =
+                  //                     hosts[index].data() as Map<String, dynamic>?;
+                  //                 final username =
+                  //                     hostData?['name'] ?? 'Unknown Host';
+
+                  //                 // Custom ListTile Widget
+                  //                 return UserListTile(
+                  //                   doc: hosts[index],
+                  //                   onTap: () => print('Tapped on $username'),
+                  //                 );
+                  //               },
+                  //             );
+                  //           }
+                  //         },
+                  //       )
                       : FutureBuilder<List<DocumentSnapshot>>(
                           future: fetchUsersAttending(currentPage),
                           builder: (context, snapshot) {
@@ -358,12 +370,13 @@ class _SocialPageState extends State<SocialPage> {
       options: CarouselOptions(
           height: 300,
           enableInfiniteScroll:
-              true, // Stops the scroll from being an infinite scroll
+              false, // Stops the scroll from being an infinite scroll
           enlargeCenterPage: true,
           viewportFraction:
               0.65, // Porcentage of the page occupied by each selected image
           enlargeFactor: 0.15,
-          initialPage: 1,
+          initialPage: 0,
+          // This should change to the first event you have 
 
           // index represents the carousel number and reason is the reason for change,
           // reason can be manual, automatic, or programmed
@@ -400,20 +413,24 @@ class _SocialPageState extends State<SocialPage> {
                 ),
               );
             }
-            if (index == 1) {
-              return AspectRatio(
-                aspectRatio: 1 / 1,
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    image: DecorationImage(
-                      image: AssetImage(photoPath),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-              );
-            } else {
+
+            // THIS ONLY MADE SENSE FOR TOP HOSTS
+
+            // if (index == 1) {
+            //   return AspectRatio(
+            //     aspectRatio: 1 / 1,
+            //     child: Container(
+            //       decoration: BoxDecoration(
+            //         borderRadius: BorderRadius.circular(10),
+            //         image: DecorationImage(
+            //           image: AssetImage(photoPath),
+            //           fit: BoxFit.cover,
+            //         ),
+            //       ),
+            //     ),
+            //   );
+            // } 
+            else {
               // Default behavior for other pages
               return FutureBuilder<Uint8List?>(
                 future: getImage(photoPath), // Call the getImage function

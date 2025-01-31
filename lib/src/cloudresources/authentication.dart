@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:korazon/src/data/models/user.dart' as model;
+import 'package:korazon/src/utilities/models/userModel.dart';
 
 //Functions: getUserDetails, signUpUser, loginUser
 class AuthMethods{
@@ -11,7 +11,7 @@ class AuthMethods{
   static const String invalidEmail = "The email address is invalid";
   static const String weakPassword = "Password should be at least 6 characters long";
 
-  Future<model.User?> getUserDetails() async{
+  Future<UserModel?> getUserDetails() async{
     // await _auth.signOut();
 
     User? currentUser = _auth.currentUser;
@@ -28,7 +28,7 @@ class AuthMethods{
     //this function gives us the info of the authenticated user
 
     //TODO: this function is trying to fetch required details that are not there
-    return model.User.fromSnap(snap);
+    return UserModel.fromDocumentSnapshot(snap);
 
     } catch (e){
       print("Error fetching user details in getuserdetails: $e");
@@ -36,7 +36,7 @@ class AuthMethods{
     }
   }
 
-  Future<String> signUpUser({  //constructor function that it is called to authenticate the user
+  /*Future<String> signUpUser({  //constructor function that it is called to authenticate the user
     required String email,
     required String password,
     required String username,
@@ -85,7 +85,7 @@ class AuthMethods{
           return "Authentication error: ${err.message}";
       }
     }
-  }
+  }*/
 
     //logging in user
 
