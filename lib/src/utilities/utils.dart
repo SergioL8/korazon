@@ -29,6 +29,7 @@ enum ParentPage {
   ownProfile,
   userProfile,
   hostProfile,
+  blacklistPage,
   other,
 }
 

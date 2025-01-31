@@ -16,16 +16,18 @@ void showConfirmationMessage(BuildContext context, {required String message}) {
             size: MediaQuery.of(context).size.height * 0.035,
           ),
           const SizedBox(width: 12,),
-          Text(
-            message,
-            overflow: TextOverflow.clip,
-            style: const TextStyle(
-              fontSize: 18,
-              color: secondaryColor,
-              fontWeight: FontWeight.w700,
+          Expanded(
+            child: Text(
+              message,
+              overflow: TextOverflow.clip,
+              style: const TextStyle(
+                fontSize: 18,
+                color: secondaryColor,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
-          Spacer(),
+          SizedBox(width: 8,)
           // InkWell(
           //   onTap: () => Navigator.of(context).pop(), 
           //   child: Container(
