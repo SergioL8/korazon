@@ -6,6 +6,7 @@ import 'package:korazon/src/utilities/models/eventModel.dart';
 import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
 import 'package:korazon/src/utilities/models/userModel.dart';
+import 'package:korazon/src/widgets/confirmationMessage.dart';
 
 void buyTicket(BuildContext context, EventModel event) async {
   // We might not need the entire document snapshot but we might aswell right now
@@ -52,7 +53,8 @@ void buyTicket(BuildContext context, EventModel event) async {
         }, SetOptions(merge: true));
 
         // Show a snackbar to confirm the ticket purchase
-        showSnackBar(context, 'Ticket purchased successfully');
+        showConfirmationMessage(context, message: 'Ticket purchased successfully.');
+        // showSnackBar(context, 'Ticket purchased successfully');
       
     }
   } catch (e) {

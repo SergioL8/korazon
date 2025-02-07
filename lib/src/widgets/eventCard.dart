@@ -9,8 +9,9 @@ import 'package:transparent_image/transparent_image.dart';
 import 'package:korazon/src/utilities/models/eventModel.dart';
 
 class EventCard extends StatefulWidget {
-  const EventCard({super.key, required this.document});
+  const EventCard({super.key, required this.document, required this.parentPage});
   final DocumentSnapshot document;
+  final ParentPage parentPage;
 
   @override
   State<EventCard> createState() => _EventCardState();
@@ -53,6 +54,8 @@ class _EventCardState extends State<EventCard> {
                 imageData: snapshot.data,
                 formattedDate: formattedDate,
                 formattedTime: formattedTime,
+                page: widget.parentPage
+                
               ),
             ),
           ),

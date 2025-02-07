@@ -22,6 +22,18 @@ enum ErrorAction {
 }
 
 
+// Used to let certain pages like event details where they have been called
+enum ParentPage {
+  homePage,
+  yourEvents,
+  ownProfile,
+  userProfile,
+  hostProfile,
+  blacklistPage,
+  other,
+}
+
+
 // for picking up image from galleryc
 
 pickImage(ImageSource source) async { //To instanciate this: Uint8List image = await pickImage(ImageSource.gallery);
