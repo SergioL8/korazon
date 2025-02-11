@@ -21,6 +21,9 @@ class UserModel {
     required this.createdEvents,
     required this.profilePicUrl,
     required this.followers,
+    required this.profilePicturesPath,
+    required this.instaAcc,
+    required this.snapAcc,
   });
 
   final String userID;
@@ -37,6 +40,9 @@ class UserModel {
   final List<String> createdEvents;
   final String profilePicUrl;
   final List<String> followers;
+  final List<String> profilePicturesPath;
+  final String instaAcc;
+  final String snapAcc;
 
 
   static UserModel? fromDocumentSnapshot(DocumentSnapshot doc) {
@@ -62,6 +68,9 @@ class UserModel {
       createdEvents: List<String>.from(data['createdEvents'] ?? []),
       profilePicUrl: data['profilePicUrl'] ?? '',
       followers: List<String>.from(data['followers'] ?? []),
+      profilePicturesPath: List<String>.from(data['profilePicturesPath'] ?? []),
+      instaAcc: data['instaAcc'] ?? '',
+      snapAcc: data['snapAcc'] ?? '',
     );
   }
 }

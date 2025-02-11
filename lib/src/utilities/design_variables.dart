@@ -14,6 +14,11 @@ const dividerColor = Colors.grey;
 const allowGreen = Color.fromARGB(255, 23, 177, 30);
 const denyRed =  Color.fromARGB(255, 177, 23, 23);
 
+
+// Colors balck mode
+const backgroundColorBM = Color.fromARGB(255, 23, 23, 23);
+const korazonColorBM = Color.fromARGB(255, 226, 130, 229);
+
 // Radius 
 
 // border radius of the event cards is 16
@@ -25,6 +30,37 @@ const titleTextStyle = TextStyle(
   color: secondaryColor,
   fontFamily: primaryFont
 );
+
+
+const whiteTitle = TextStyle(
+  fontSize: 30,
+  fontWeight: FontWeight.w800,
+  color: tertiaryColor,
+  fontFamily: primaryFont
+);
+
+const whiteSubtitle = TextStyle(
+  fontSize: 23,
+  fontWeight: FontWeight.w700,
+  color: tertiaryColor,
+  fontFamily: primaryFont
+);
+
+const buttonBlackText = TextStyle(
+  fontSize: 16,
+  fontWeight: FontWeight.w500,
+  color: secondaryColor,
+  fontFamily: primaryFont
+);
+
+const whiteBody = TextStyle(
+  fontSize: 14,
+  fontWeight: FontWeight.w500,
+  color: Colors.white,
+  fontFamily: primaryFont
+);
+
+
 
 const double barThickness = 0.5;
 

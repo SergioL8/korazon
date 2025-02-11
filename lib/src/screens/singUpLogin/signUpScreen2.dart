@@ -67,8 +67,9 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
         email: widget.email,
         password: widget.password
       );
-
+      print(credentials.user);
       if (credentials.user == null) {
+        print('here');
         showErrorMessage(context, content: 'Error creating user. Please try again later');
         return;
       }
@@ -99,6 +100,8 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
     } on FirebaseAuthException catch(e) {
       if (e.code == 'email-already-in-use') {
         showErrorMessage(context, content: 'This email address is already in use. Please log in.');
+      } else if (e.code == 'invalid-email') {
+        showErrorMessage(context, content: 'This email address is invalid. Please try again.');
       } else {
         showErrorMessage(context, content: 'Error creating user. Please try again later');
       }
