@@ -95,7 +95,6 @@ class _BasePage extends State<BasePage> {
         });
       } else if (selectedPageIndex == 2) {
         setState(() {
-          // activePage = const SocialPage();
           activePage = const SocialPage();
         });
       }
