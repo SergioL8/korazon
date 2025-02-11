@@ -1,40 +1,58 @@
-# korazon
-
-Note: check for release fingerprint of android (this is related with google login method of firebase) we currently have only configured the test version
-Note: Make all paddings proportional to the size of the screen
-
-flutter run -d chrome --web-renderer html
-
-flutter build web --web-renderer html --release
+# Korazon
 
 
-Next steps:
+# Development Plan
+## Rules
+1. For now own we develop a section with the idea of being the final version that will be released.
+2. Once a section is finished, it cannot be modified until the next iteration no matter what. The only exception is if it's impossible to continue.
+3. A section is completed once it has gone through the following stages:
+    a. Planning
+    b. Development
+    c. Testing
+    d. Revision meeting
+  Note that the the section won't get to the revision meeting if it's not ready to be released to the public.
+4. Changes needed for future versions will be stored in this document. Each change must have: section, what has to be changed, why it has to be changed, and an overview of how it will be done (new widgets, new design variables, etc).
 
-### - Mario:
-1. Add information of user to the data base. Special the host true/false
-2. Change the bottom bar so that it's different for host and for user
-3. Create events
-4. Update the create account {
-                                name and last name
-                                phone (for users) / email (for hosts)
-                                password
-                                age
-                                gender
-                                isHost
-                             }
+## Sections (In order)
+- Login/Sing up: Finalize this for both users and hosts. Think about the necessary inputs and screens.
+
+- Home Page
+
+- Event Creation: including being able to create personalized tickets.
+
+- Event Details: Styled and with almost all the functionality of paying. (We should at least have a plan on how we are going to implement the payments, meaning knowing what APIs we will be using)
+
+- Your events
+
+- Scan people: Important to store all needed for the analytics page because we won't be able to modify this once we start with the analytics page
+
+- Analytics: Both single event page and all events page
+
+- Black lists: Functionality, pages, everything has to be final
+
+- Host profile: Settings, (preview of changing payment methods), edit profile, password recovery, email confirmation, follow functionality, notification. ABSOLUTELY EVERYTHING
+
+- Users profile: Settings, edit profile, password recovery, email confirmation, follow functionality, notification. ABSOLUTELY EVERYTHING
+
+- Social
+
+- Payments
+
+- Security: Security rules and more security measures we have to investigate about.
+
+- Testing: final round of testing in multiple devices and various deplyments
+
+- Final deployment and wine wednesday
+
+
+## Changes for next iteration
 
 
 
-### - Sergio:
-1. Fix iOS
-2. Dynamically select the bottom navigation bar
-3. Upload image to Storage
-4. Create the home page where you can see events
 
 
 
-### - Jona:
-1. Style the users account super very mega ultra beautiful don't finish until it's super ultra beautiful
+
 
 
 
@@ -66,5 +84,7 @@ One of the most important features about this app is that it most be super easy 
 The project will be finished when all the MVP features have been impmlemented. This includes not having bugs, ad having a styled, smooth application.
 
 Note that the MVP will most likely change during the development of the app. This is ok and encourgaed.
+
+
 
 
