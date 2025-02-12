@@ -1,4 +1,68 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+
+// -------------- Final Design Variables ------------
+
+// Colors:
+const backgroundColorBM = Color.fromARGB(255, 13, 13, 13);
+
+
+const mainGradient = SweepGradient(
+  colors: [
+    Color.fromARGB(255, 189, 21, 97),
+    Color.fromARGB(255, 210, 15, 132),
+    Color.fromRGBO(255, 58, 176, 1),
+    Color.fromARGB(255, 193, 74, 182),
+    Color.fromARGB(255, 132, 90, 189),
+    Color.fromARGB(255, 91, 122, 223),
+    Color.fromARGB(255, 103, 132, 224),
+    Color.fromARGB(255, 91, 122, 223),
+    Color.fromARGB(255, 132, 90, 189),
+    Color.fromARGB(255, 235, 0, 94),
+    Color.fromARGB(255, 170, 0, 94),
+    Color.fromARGB(255, 137, 0, 105),
+    Color.fromARGB(255, 111, 0, 104),
+    Color.fromARGB(255, 126, 0, 97),
+    Color.fromARGB(255, 159, 4, 113),
+    Color.fromARGB(255, 189, 21, 97),
+  ],
+  stops: [
+    0.05,0.1, 0.23, 0.28, 0.32, 0.34, 0.37, 0.39, 0.42, 0.60, 0.73, 0.83, 0.93, 0.95, 0.98, 0.99],
+);
+
+
+
+// Text Styles:
+var whiteLogo = GoogleFonts.josefinSans(
+    fontSize: 50,
+    fontWeight: FontWeight.w800,
+    color: Colors.white
+);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// -------------Old Design Variables (don't use for new development)---------------
 
 
 // Colors
@@ -16,8 +80,8 @@ const denyRed =  Color.fromARGB(255, 177, 23, 23);
 
 
 // Colors balck mode
-const backgroundColorBM = Color.fromARGB(255, 23, 23, 23);
 const korazonColorBM = Color.fromARGB(255, 226, 130, 229);
+
 
 // Radius 
 
@@ -59,6 +123,9 @@ const whiteBody = TextStyle(
   color: Colors.white,
   fontFamily: primaryFont
 );
+
+
+
 
 
 

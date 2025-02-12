@@ -54,8 +54,6 @@ class _EventCardState extends State<EventCard> {
                 imageData: snapshot.data,
                 formattedDate: formattedDate,
                 formattedTime: formattedTime,
-                page: widget.parentPage
-                
               ),
             ),
           ),

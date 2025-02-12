@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:korazon/src/cloudresources/signedin_logic.dart';
+import 'package:korazon/src/screens/singUpLogin/signedin_logic.dart';
 import 'dart:convert';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/utilities/utils.dart';

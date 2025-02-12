@@ -4,7 +4,6 @@ import 'package:korazon/src/screens/buyTicketPage.dart';
 import 'package:korazon/src/screens/hostscreens/hostProfile.dart';
 import 'package:korazon/src/utilities/models/eventModel.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
-import 'package:korazon/src/utilities/utils.dart';
 
 class EventDetails extends StatelessWidget {
   const EventDetails({
@@ -13,15 +12,12 @@ class EventDetails extends StatelessWidget {
     required this.imageData,
     required this.formattedDate,
     required this.formattedTime,
-    required this.page
-    
   });
 
   final EventModel event;
   final Uint8List? imageData;
   final String formattedDate;
   final String formattedTime;
-  final ParentPage page;
 
   @override
   Widget build(BuildContext context) {
@@ -201,48 +197,48 @@ class EventDetails extends StatelessWidget {
                             ),
                           ],
                         ),
+
                         const SizedBox(height: 20),
-                        page == ParentPage.hostProfile || page == ParentPage.other || page == ParentPage.homePage ?
-                          Center( // Center "Buy Ticket" button
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: korazonColor,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 40,
-                                  vertical: 16,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(24),
-                                ),
+                        // Center "Buy Ticket" button
+                        Center(
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: korazonColor,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 40,
+                                vertical: 16,
                               ),
-                              onPressed: () {
-                                showModalBottomSheet(
-                                  useSafeArea: true,
-                                  isScrollControlled: true,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.vertical(
-                                      top: Radius.circular(24),
-                                    ),
-                                  ),
-                                  context: context,
-                                  builder: (ctx) => FractionallySizedBox(
-                                    heightFactor:
-                                        0.35, // Occupies 35% of the screen height
-                                    child: BuyTicketPage(event: event),
-                                  ),
-                                );
-                              },
-                              child: const Text(
-                                'Buy Now',
-                                style: TextStyle(
-                                    fontSize: 24, 
-                                    color: secondaryColor,
-                                    fontWeight: FontWeight.w800
-                                    ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(24),
                               ),
                             ),
-                          )
-                        : const SizedBox(height: 0,)
+                            onPressed: () {
+                              showModalBottomSheet(
+                                useSafeArea: true,
+                                isScrollControlled: true,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.vertical(
+                                    top: Radius.circular(24),
+                                  ),
+                                ),
+                                context: context,
+                                builder: (ctx) => FractionallySizedBox(
+                                  heightFactor:
+                                      0.35, // Occupies 35% of the screen height
+                                  child: BuyTicketPage(event: event),
+                                ),
+                              );
+                            },
+                            child: const Text(
+                              'Buy Now',
+                              style: TextStyle(
+                                  fontSize: 24, 
+                                  color: secondaryColor,
+                                  fontWeight: FontWeight.w800
+                                  ),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),

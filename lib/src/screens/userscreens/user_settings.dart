@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:korazon/src/cloudresources/signedin_logic.dart';
+import 'package:korazon/src/screens/singUpLogin/signedin_logic.dart';
 
 
 class UserSettings extends StatelessWidget {

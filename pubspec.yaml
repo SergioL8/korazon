@@ -51,6 +51,7 @@ dependencies:
   shimmer: ^3.0.0
   font_awesome_flutter: ^10.8.0
   timelines: ^0.1.0
+  google_fonts: ^6.2.1
 
 dev_dependencies:
   flutter_lints: ^5.0.0

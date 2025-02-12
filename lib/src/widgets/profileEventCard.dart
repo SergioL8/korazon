@@ -53,7 +53,6 @@ class _ProfileEventCardState extends State<ProfileEventCard> {
                 imageData: snapshot.data,
                 formattedDate: formattedDate,
                 formattedTime: formattedTime,
-                page: ParentPage.userProfile,
               ),
             ),
           ),

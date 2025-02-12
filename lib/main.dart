@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'src/cloudresources/signedin_logic.dart';
+import 'src/screens/singUpLogin/signedin_logic.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 
 void main() async {
