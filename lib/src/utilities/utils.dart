@@ -31,6 +31,8 @@ enum ParentPage {
   hostProfile,
   blacklistPage,
   other,
+  login,
+  signup
 }
 
 

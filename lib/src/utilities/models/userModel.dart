@@ -8,6 +8,7 @@ class UserModel {
 
   UserModel({
     required this.userID,
+    required this.username,
     required this.email,
     required this.isHost,
     required this.name,
@@ -28,6 +29,7 @@ class UserModel {
 
   final String userID;
   final String email;
+  final String username;
   final bool isHost;
   final String name;
   final String lastName;
@@ -56,6 +58,7 @@ class UserModel {
     return UserModel(
       userID: doc.id,
       email: data['email'] ?? '',
+      username: data['username'] ?? 'No username',
       isHost: data['isHost'] ?? false,
       name: data['name'] ?? 'No name',
       lastName: data['lastName'] ?? 'No last name',

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:korazon/src/screens/hostscreens/editHostProfile.dart';
+import 'package:korazon/src/screens/singUpLogin/landing_page.dart';
 import 'package:korazon/src/screens/singUpLogin/loginSignupPage.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/utilities/models/userModel.dart';
@@ -134,7 +135,7 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
                       if (!mounted) return;
                       Navigator.of(context).pushReplacement(
                         MaterialPageRoute(
-                          builder: (context) => const SignUpScreen(),
+                          builder: (context) => const LandingPage(),
                         ),
                       );
                     },

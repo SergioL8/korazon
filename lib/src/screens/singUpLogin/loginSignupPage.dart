@@ -1,21 +1,31 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
-import 'package:korazon/src/screens/basePage.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
-import 'package:korazon/src/screens/singUpLogin/hostSignUp.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:korazon/src/screens/singUpLogin/signUpScreen2.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
+import 'package:korazon/src/screens/basePage.dart';
+import 'package:korazon/src/widgets/gradient_border_button.dart';
 
 
 
-class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({super.key});
+class LoginSignupPage extends StatefulWidget {
+  const LoginSignupPage({super.key, required this.parentPage});
+
+  final ParentPage parentPage;
 
   @override
-  State<SignUpScreen> createState() => _SignUpScreenState();
+  State<LoginSignupPage> createState() => _LoginSignupPageState();
 }
 
-class _SignUpScreenState extends State<SignUpScreen> {
+
+
+class _LoginSignupPageState extends State<LoginSignupPage> {
+
 
   // text field controllers
   final TextEditingController _emailController = TextEditingController();
@@ -31,8 +41,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
   
   // variable declaration
   bool obscureText = false;
-  bool login = true;
   bool isLoading = false;
+
+
 
 
 
@@ -50,15 +61,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
 
 
-  // dispose the controllers and nodes to avoid memory leaks
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _emailFocusNode.dispose();
-    _passwordController.dispose();
-    _passwordFocusNode.dispose();
-    super.dispose();
-  }
+
 
 
 
@@ -68,7 +71,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   /// No input (but the email and password controllers are being used)
   /// 
   /// No output (the result is the navigation to the next screen)
-  void _submitForm() async {
+  void _submitSignUpForm() async {
 
     // Even though emial and password are validated when changed, there is the change that the user clicks sinup without having changed any field. So we need to validate
     if (!_emailFormKey.currentState!.validate() || !_passwordFormKey.currentState!.validate()) {
@@ -82,6 +85,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
       }),
     );
   }
+
+
+
+
 
 
 
@@ -133,334 +140,294 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
 
 
+
+
+
+  // dispose the controllers and nodes to avoid memory leaks
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _emailFocusNode.dispose();
+    _passwordController.dispose();
+    _passwordFocusNode.dispose();
+    super.dispose();
+  }
+
+
   @override
   Widget build(BuildContext context) {
+
+    final gradientAlignment = Alignment(-0.65, -0.715);
+    double iconSize = MediaQuery.of(context).size.width * 0.11;
+    
+    // Convert gradientAlignment into pixel coordinates
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
+    double gradientCenterX = screenWidth * (0.5 + gradientAlignment.x * 0.5); // Convert alignment to pixel coordinates
+    double gradientCenterY = screenHeight * (0.5 + gradientAlignment.y * 0.5); // Convert alignment to pixel coordinates
+
+    bool login = widget.parentPage == ParentPage.login;
+
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 32 ), // add padding to the screen
-      child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center, // center the elements
-          children: [              
-            SizedBox(height: MediaQuery.of(context).size.height * 0.12), // set the height of the column to 10% of the screen height to avoid elements under the camera
-        
-            // This is the logo of the app. For the moment commented because we don't have a design for it
-            // Icon(
-            //   Icons.account_balance, // Greek temple-like icon
-            //   size: 100,
-            //   color: secondaryColor,
-            // ),
-            // Text(
-            //   'Greek Life',
-            //   style: TextStyle(
-            //     color: secondaryColor,
-            //   ),
-            // ),
-        
-            // const SizedBox(height: 30,),
-        
-
-            Text(
-              'Welcome to',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 40, 
-                fontWeight: FontWeight.w400,
-                color: secondaryColor
-              ),
-            ),
-            Text(
-              'Korazon',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 40, 
-                fontWeight: primaryFontWeight,
-                color: secondaryColor
-              ),
-            ),
-            
-
-            const SizedBox(height: 10,),
-        
-
-            Text(
-              'different beats, one rhythm',
-              style: TextStyle(
-                color: secondaryColor,
-              ),
-            ),
-        
-
-            const SizedBox(height: 45,),
-
-
-            // This is another design option to clarify login or sign up state
-            // Row(
-            //   children: [
-            //     Text(
-            //       login ? ' Login'
-            //       : ' Sing Up',
-            //       style: TextStyle(
-            //         fontSize: 20,
-            //         fontWeight: primaryFontWeight,
-            //         color: secondaryColor,
-            //       ),
-            //     ),
-            //     Text(
-            //       ' to continue',
-            //       style: TextStyle(
-            //         fontSize: 20,
-            //         fontWeight: FontWeight.w400,
-            //         color: secondaryColor,
-            //       ),
-            //     ),
-            //   ],
-            // ),
-
-            // const SizedBox(height: 25,),
-        
-
-            Form(
-              key: _emailFormKey, // key to control the email validation
-              child: TextFormField(
-                autocorrect: false, // Disable auto-correction
-                controller: _emailController, // set the controller
-                focusNode: _emailFocusNode, // set the focus node
-
-                validator: (value) { // validate the email
-                  if (value == null || !RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(value)) { // has the form (text)@(text).(text) and no spaces
-                    return 'Please enter a valid email address';
-                  }
-                  return null; // if everything ok
-                },
-
-                onChanged: (value) { // validate email for every change
-                  _emailFormKey.currentState!.validate();
-                },
-
-                decoration: InputDecoration(
-
-                  labelText: 'Email Address',
-
-                  labelStyle: TextStyle( // style for the label
-                    color: _emailFocusNode.hasFocus ? korazonColor : secondaryColor,
-                    fontSize: _emailFocusNode.hasFocus ? 18 : 15,
-                    fontWeight: _emailFocusNode.hasFocus ? FontWeight.bold : FontWeight.normal,
-                  ),
-
-                  errorStyle: TextStyle( // style for the error message
-                    color: secondaryColor,
-                    fontWeight: FontWeight.bold,
-                  ),
-
-                  floatingLabelBehavior: FloatingLabelBehavior.always, // Always show label at the top left
-
-                  // border styles
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15), // rounded corners
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15), // Rounded corners
-                    borderSide: BorderSide(color: secondaryColor), // Color when not focused
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15), // Rounded corners
-                    borderSide: BorderSide(color: korazonColor, width: 2), // Color when focused
-                  ),
-                  errorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                    borderSide: BorderSide(color: secondaryColor), // Same as enabledBorder
-                  ),
-                  focusedErrorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                    borderSide: BorderSide(color: korazonColor, width: 2), // Same as focusedBorder
-                  ),
+      backgroundColor: backgroundColorBM,
+      resizeToAvoidBottomInset: false,
+      body: Stack(
+        children: [
+          // Background gradient
+          Hero(
+            tag: 'gradientTag',
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: SweepGradient(
+                  colors: mainGradient.colors,
+                  stops: mainGradient.stops,
+                  center: gradientAlignment,
                 ),
               ),
             ),
-                
+          ),
 
-            const SizedBox(height: 20,),
-        
 
-            Form(
-              key: _passwordFormKey, // key to control the password validation
-              child: TextFormField( 
-                autocorrect: false, // Disable auto-correction
-                controller: _passwordController, // set the controller
-                focusNode: _passwordFocusNode, // set the focus node
-                obscureText: obscureText, // hide the password
+          // Absolute Positioning of Icon (Perfectly Matches Gradient Center)
+          Positioned(
+            left: gradientCenterX - (iconSize/2), // Offset by half the icon size (50/2)
+            top: gradientCenterY - (iconSize/2),  // Offset by half the icon size (50/2)
+            child: Hero(
+              tag: 'korazonIconTag',
+              child: Icon(
+                FaIcon(FontAwesomeIcons.solidHeart).icon, 
+                size: iconSize,
+                color: Colors.white
+              ),
+            ),
+          ),
 
-                validator: (val) { // validate the password
-                  if (val != null && val.contains(' ')) { // check password has no spaces
-                    return 'Password cannot contain spaces.';
-                  }
-                  if (val == null || val.length < 6) { // check password is at least 6 characters long
-                    return 'Password must be at least 6 characters long.';
-                  }
-                  return null;
-                },
 
-                onChanged: (value) { // validate password for every change
-                  _passwordFormKey.currentState!.validate();
-                },
+          // Text Positioned Next to Icon (Without Affecting Its Position)
+          Positioned(
+            left: gradientCenterX + MediaQuery.of(context).size.width * 0.077, // Space text right of the icon
+            top: gradientCenterY - (iconSize),  // Align with the icon
+            child: Hero(
+              tag: 'korazonLogoTag',
+              child: Material(
+                type: MaterialType.transparency,
+                child: Text(
+                  "Korazon",
+                  style: GoogleFonts.josefinSans(
+                    fontSize: MediaQuery.of(context).size.width * 0.155,
+                    fontWeight: FontWeight.w800,
+                    color: Colors.white
+                  )
+                ),
+              ),
+            ),
+          ),
 
-                decoration: InputDecoration(
 
-                  // icon to hide and show password
-                  suffixIcon: InkWell (
-                    highlightColor: Colors.transparent, // Remove highlight color
-                    splashColor: Colors.transparent, // Remove splash color
-                    onTap: () {
-                      setState(() {
-                        obscureText = !obscureText; // change the state of the password visibility
-                      });
-                    },
-                    child: Icon( // icon to show or hide the password
-                      obscureText ? Icons.visibility_off : Icons.visibility,
-                      color: _passwordFocusNode.hasFocus ? korazonColor : secondaryColor,
+          // Fixed Modal Bottom Sheet with Rounded Top Borders
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Hero(
+              tag: 'modalBottomSheet',
+              child: Material(
+                type: MaterialType.transparency,
+                child: Container(
+                  width: double.infinity,
+                  height: screenHeight  * 0.78, // Adjust modal height as needed
+                  decoration: BoxDecoration(
+                    color: backgroundColorBM, // Solid background color
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(60),  // Adjust the radius as needed
+                      topRight: Radius.circular(60),
                     ),
                   ),
-
-                  labelText: 'Password',
-                  labelStyle: TextStyle(
-                    color: _passwordFocusNode.hasFocus ? korazonColor : secondaryColor,
-                    fontSize: _passwordFocusNode.hasFocus ? 18 : 15,
-                    fontWeight: _passwordFocusNode.hasFocus ? FontWeight.bold : FontWeight.normal,
-                  ),
-                  floatingLabelBehavior: FloatingLabelBehavior.always, // Always show label at the top left
-
-                  errorStyle: TextStyle( // style for the error message
-                    color: secondaryColor,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  
-                  // border styles
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15), // rounded corners
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15), // Rounded corners
-                    borderSide: BorderSide(color: secondaryColor), // Color when not focused
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15), // Rounded corners
-                    borderSide: BorderSide(color: korazonColor, width: 2), // Color when focused
-                  ),
-                  errorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                    borderSide: BorderSide(color: secondaryColor), // Same as enabledBorder
-                  ),
-                  focusedErrorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(15),
-                    borderSide: BorderSide(color: korazonColor, width: 2), // Same as focusedBorder
-                  ),
-                ),
-              ),
-            ),
-            
-
-            const SizedBox(height: 20,),
-        
-
-            InkWell(
-              onTap: login ? _login : _submitForm, // call the function to submit the form
-              child: Container(
-                height: 60,
-                width: double.infinity, 
-                padding: EdgeInsets.all(10), // add padding to the container
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15), // rounded corners
-                  color: korazonColor,
-                ),
-                child: Center(
-                  child: Text(
-                    login ? 'Login' : 'Sign up', // change the text depending on the login or sign up state
-                  style: TextStyle(
-                    fontWeight: primaryFontWeight,
-                    color: secondaryColor,
-                    fontSize: 20,
-                  ),
-                ),
-                )
-              ),
-            ),
-        
-
-            const SizedBox(height: 30,),
-        
-
-            Row(
-              children: [
-                login ? const Text('Don\'t have an account? ') // change the text depending on the login or sign up state
-                : const Text('Already have an account? '),
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      login = !login; // switch the login or sign up state
-                    });
-                  },
-                  child: Text(
-                    login ? 'Sign up' // change the text depending on the login or sign up state
-                    : 'Login',
-                    style: TextStyle(
-                      fontWeight: primaryFontWeight,
-                      color: korazonColor
-                    ),),
-                ),
-              ],
-            ),
-            
-
-            const SizedBox(height: 15,),
-        
-        
-            login ? Text('') // if in login state, then don't show anything
-            : Row( // if in sign up state, show the host sign up option
-              children: [
-                Text('Are you a host? '),
-                GestureDetector(
-                  onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) {return const HostSignUp();})), // navigate to the host sign up screen
-                  child: const Text(
-                    'Host sign up',
-                    style: TextStyle(
-                      fontWeight: primaryFontWeight,
-                      color: korazonColor
-                    ),),
-                ),
-              ],
-            ),
-            const SizedBox(height: 90,),
-            Container(
-              color: Colors.white,
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  Text(
-                    '\u00A9  Korazon 2024 all rights reserved',
-                    style: TextStyle(
-                      color: secondaryColor,
-                      fontWeight: FontWeight.w300,
-                      fontSize: 12,
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      left: MediaQuery.of(context).size.width * 0.11,
+                      right: MediaQuery.of(context).size.width * 0.11,
+                      top: MediaQuery.of(context).size.height * 0.025,
+                      bottom: MediaQuery.of(context).size.height * 0.055,
                     ),
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(height: 8,),
-                  Text(
-                    'Boulder, CO',
-                    style: TextStyle(
-                      color: secondaryColor,
-                      fontWeight: FontWeight.w500,
-                      fontSize: 12,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              IconButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                icon: Icon(
+                                  Icons.arrow_back_ios_new_rounded,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              Spacer(),
+                              Text(
+                                widget.parentPage == ParentPage.login ? "Login" : "Sign Up",
+                                style: whiteTitle,
+                              ),
+                              Spacer(),
+                              SizedBox(width: 48), // compensate the size of the icon
+                            ],
+                          ),
+                          SizedBox(height: 50),
+                          Form(
+                            key: _emailFormKey, // key to control the email validation
+                            child: TextFormField(
+                              autocorrect: false, // Disable auto-correction
+                              controller: _emailController, // set the controller
+                              focusNode: _emailFocusNode, // set the focus node
+                              cursorColor: Colors.white,
+                      
+                      
+                              validator: (value) { // validate the email
+                                if (value == null || !RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(value)) { // has the form (text)@(text).(text) and no spaces
+                                  return 'Please enter a valid email address';
+                                }
+                                return null; // if everything ok
+                              },
+                      
+                              onChanged: (value) { // validate email for every change
+                                _emailFormKey.currentState!.validate();
+                              },
+                      
+                              style: whiteBody,
+                      
+                              decoration: InputDecoration(
+                                filled: true,
+                                fillColor: Colors.white.withOpacity(0.15),
+                                prefixIcon: Icon(
+                                  Icons.email_outlined,
+                                  color: Colors.white,
+                                ),
+                                hintText: 'example@colorad.edu',
+                                hintStyle: whiteBody,
+                                errorStyle: whiteBody.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 12
+                                ),
+                                // border styles
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15), // rounded corners
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15), // Rounded corners
+                                  borderSide: BorderSide(color: Colors.white), // Color when not focused
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15), // Rounded corners
+                                  borderSide: BorderSide(color: Colors.white, width: 2), // Color when focused
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                  borderSide: BorderSide(color: Colors.white), // Same as enabledBorder
+                                ),
+                                focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                  borderSide: BorderSide(color: Colors.white, width: 2), // Same as focusedBorder
+                                ),
+                              ),
+                            ),
+                          ),
+                      
+                          SizedBox(height: 25),
+                      
+                          Form(
+                            key: _passwordFormKey, // key to control the email validation
+                            child: TextFormField(
+                              autocorrect: false, // Disable auto-correction
+                              controller: _passwordController, // set the controller
+                              focusNode: _passwordFocusNode, // set the focus node
+                              cursorColor: Colors.white,
+                              obscureText: obscureText, // hide the password
+                      
+                      
+                              validator: (val) { // validate the password
+                                if (val != null && val.contains(' ')) { // check password has no spaces
+                                  return 'Password cannot contain spaces.';
+                                }
+                                if (val == null || val.length < 6) { // check password is at least 6 characters long
+                                  return 'Password must be at least 6 characters long.';
+                                }
+                                return null;
+                              },
+                      
+                              onChanged: (value) { // validate password for every change
+                                _passwordFormKey.currentState!.validate();
+                              },
+                      
+                              style: whiteBody,
+                      
+                              decoration: InputDecoration(
+                                // icon to hide and show password
+                                suffixIcon: InkWell (
+                                  highlightColor: Colors.transparent, // Remove highlight color
+                                  splashColor: Colors.transparent, // Remove splash color
+                                  onTap: () {
+                                    setState(() {
+                                      obscureText = !obscureText; // change the state of the password visibility
+                                    });
+                                  },
+                                  child: Icon( // icon to show or hide the password
+                                    obscureText ? Icons.visibility_off : Icons.visibility,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                      
+                                filled: true,
+                                fillColor: Colors.white.withOpacity(0.15),
+                                hintText: 'Password',
+                                hintStyle: whiteBody,
+                                errorStyle: whiteBody.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 12
+                                ),
+                                // border styles
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15), // rounded corners
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15), // Rounded corners
+                                  borderSide: BorderSide(color: Colors.white), // Color when not focused
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15), // Rounded corners
+                                  borderSide: BorderSide(color: Colors.white, width: 2), // Color when focused
+                                ),
+                                errorBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                  borderSide: BorderSide(color: Colors.white), // Same as enabledBorder
+                                ),
+                                focusedErrorBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                  borderSide: BorderSide(color: Colors.white, width: 2), // Same as focusedBorder
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: MediaQuery.of(context).size.height * 0.15),                    
+                          GradientBorderButton(
+                            onTap: login ? _login : _submitSignUpForm, // call the function to submit the form
+                            text: login ? 'Login' : 'Continue', // change the text depending on the login or sign up state
+                          ),
+                          SizedBox(height: MediaQuery.of(context).size.height * 0.04), 
+                          Text(
+                            "Boulder, CO",
+                            style: whiteBody,
+                          ),
+                          SizedBox(height: MediaQuery.of(context).viewInsets.bottom,)
+                        ],
+                      ),
                     ),
-                    textAlign: TextAlign.center,
-                  ),
-                ],
+                  )
+                ),
               ),
             ),
-          ],
-        ),
-      ),
+          ),
+        ],
+      )
     );
   }
 }

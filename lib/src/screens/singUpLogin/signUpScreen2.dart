@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:korazon/src/screens/singUpLogin/verify_email_page.dart';
 import 'package:korazon/src/utilities/utils.dart';
+import 'package:korazon/src/widgets/gradient_border_button.dart';
 import 'package:wheel_chooser/wheel_chooser.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:korazon/src/screens/basePage.dart';
@@ -29,10 +31,12 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
   final TextEditingController _genderController = TextEditingController();
   // final TextEditingController _ageController = TextEditingController(text: '18');
   final TextEditingController _academicYearController = TextEditingController(text: 'Freshman');
+  final TextEditingController _usernameController = TextEditingController();
 
   // focus nodes to detect when the text field is in focus
   final FocusNode _nameFocusNode = FocusNode();
   final FocusNode _lastNameFocusNode = FocusNode();
+  final FocusNode _usernameFocusNode = FocusNode();
 
   // variable declaration
   bool _siningUpLoading = false;
@@ -49,7 +53,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
     _siningUpLoading = true; // update the variable but don't call setState becayse I don't want the UI to update if there are empty fields
 
     // check for empty fields
-    if (_nameController.text.isEmpty || _lastNameController.text.isEmpty) {
+    if (_nameController.text.isEmpty || _lastNameController.text.isEmpty || _usernameController.text.isEmpty) {
       showErrorMessage(context, title: 'Please fill all fields');
       _siningUpLoading = false;
       return;
@@ -84,6 +88,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
 
       await FirebaseFirestore.instance.collection('users').doc(credentials.user!.uid).set({
         'email': widget.email,
+        'username': _usernameController.text,
         'name': _nameController.text,
         'lastName': _lastNameController.text,
         // 'age': double.parse(_ageController.text),
@@ -95,7 +100,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
 
       // Why is this necessary push needed? Because even though the streambuild of "signedin_logic.dart" is listening to the authentication state, we are
       // not in the same page that the streambuilder has returned. So we need to push the new page to the navigator stack.
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const BasePage()));
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => const VerifyEmailPage()));
 
     } on FirebaseAuthException catch(e) {
       if (e.code == 'email-already-in-use') {
@@ -133,8 +138,21 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
   @override
   Widget build(context) {
     return Scaffold(
-      appBar: AppBar(backgroundColor: Colors.white,),
-      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: backgroundColorBM,
+        automaticallyImplyLeading: false,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back_ios,
+            color: Colors.white,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+
+    ),
+      backgroundColor: backgroundColorBM,
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 32 ),
         child: Column(
@@ -143,14 +161,43 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
             Text(
               'Last Step',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 40, 
-                fontWeight: FontWeight.w400,
-                color: secondaryColor
-              ),
+              style: whiteTitle
             ),
 
             const SizedBox(height: 30, width: double.infinity,),
+
+            TextFormField( 
+              autocorrect: false, // Disable auto-correction
+              controller: _usernameController, // set the controller
+              focusNode: _usernameFocusNode,
+              style: whiteBody,
+              cursorColor: Colors.white,
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.white.withOpacity(0.15),
+                labelText: 'Username',
+                errorStyle: whiteBody.copyWith(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 12
+                ),
+                labelStyle: whiteBody,
+                floatingLabelBehavior: FloatingLabelBehavior.always, // Always show label at the top left
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15), // rounded corners
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15), // Rounded corners
+                  borderSide: BorderSide(color: Colors.white), // Color when not focused
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15), // Rounded corners
+                  borderSide: BorderSide(color: Colors.white, width: 2), // Color when focused
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 25, width: double.infinity,),
+
             
             Row(
               children: [
@@ -159,28 +206,25 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
                     autocorrect: false, // Disable auto-correction
                     controller: _nameController, // set the controller
                     focusNode: _nameFocusNode,
+                    style: whiteBody,
+                    cursorColor: Colors.white,
                     decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white.withOpacity(0.15),
                       labelText: 'First Name',
-                      errorStyle: TextStyle(
-                        color: secondaryColor,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      labelStyle: TextStyle(
-                        color: _nameFocusNode.hasFocus ? korazonColor : secondaryColor,
-                        fontSize: _nameFocusNode.hasFocus ? 18 : 15,
-                        fontWeight: _nameFocusNode.hasFocus ? FontWeight.bold : FontWeight.normal,
-                      ),
+                      errorStyle: whiteBody,
+                      labelStyle: whiteBody,
                       floatingLabelBehavior: FloatingLabelBehavior.always, // Always show label at the top left
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(15), // rounded corners
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(15), // Rounded corners
-                        borderSide: BorderSide(color: secondaryColor), // Color when not focused
+                        borderSide: BorderSide(color: Colors.white), // Color when not focused
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(15), // Rounded corners
-                        borderSide: BorderSide(color: korazonColor, width: 2), // Color when focused
+                        borderSide: BorderSide(color: Colors.white, width: 2), // Color when focused
                       ),
                     ),
                   ),
@@ -193,35 +237,35 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
                     autocorrect: false, // Disable auto-correction
                     controller: _lastNameController, // set the controller
                     focusNode: _lastNameFocusNode,
+                    style: whiteBody,
+                    cursorColor: Colors.white,
                     decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white.withOpacity(0.15),
                       labelText: 'Last Name',
-                      errorStyle: TextStyle(
-                        color: secondaryColor,
-                        fontWeight: FontWeight.bold,
+                      errorStyle: whiteBody.copyWith(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 12
                       ),
-                      labelStyle: TextStyle(
-                        color: _lastNameFocusNode.hasFocus ? korazonColor : secondaryColor,
-                        fontSize: _lastNameFocusNode.hasFocus ? 18 : 15,
-                        fontWeight: _lastNameFocusNode.hasFocus ? FontWeight.bold : FontWeight.normal,
-                      ),
+                      labelStyle: whiteBody,
                       floatingLabelBehavior: FloatingLabelBehavior.always, // Always show label at the top left
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(15), // rounded corners
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(15), // Rounded corners
-                        borderSide: BorderSide(color: secondaryColor), // Color when not focused
+                        borderSide: BorderSide(color: Colors.white), // Color when not focused
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(15), // Rounded corners
-                        borderSide: BorderSide(color: korazonColor, width: 2), // Color when focused
+                        borderSide: BorderSide(color: Colors.white, width: 2), // Color when focused
                       ),
                     ),
                   ),
                 )
               ],
             ),
-            const SizedBox(height: 50, width: double.infinity,),
+            const SizedBox(height: 25, width: double.infinity,),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -329,8 +373,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
               children: [
                 Text(
                   'Academic Year: ',
-                  style: TextStyle(
-                    color: secondaryColor,
+                  style: whiteBody.copyWith(
                     fontSize: 20,
                     fontWeight: FontWeight.bold
                   ),
@@ -350,7 +393,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
                       horizontal: false,
                       selectTextStyle: TextStyle(
                         color: korazonColor,
-                        fontSize: 15,
+                        fontSize: 12,
                         fontWeight: FontWeight.bold
                       ),
                     ),
@@ -359,37 +402,43 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
               ],
             ),
             const SizedBox(height: 50, width: double.infinity,),
-            InkWell( // make the container clickable
+
+            GradientBorderButton(
               onTap: signUpUser,
-              child: Container(
-                height: 75, // set the container to a height relative to the device
-                width: double.infinity, // take the full width of the screen
-                padding: EdgeInsets.all(10), // add padding to the container
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15), // rounded corners
-                  color: korazonColor, // this color will have to be updated to the korazon color
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    const Text(
-                      'Start Korazon',
-                      style: TextStyle(
-                        fontWeight: primaryFontWeight,
-                        color: secondaryColor,
-                        fontSize: 20,
-                      ),
-                    ),
-                    _siningUpLoading ?
-                      const CircularProgressIndicator() :
-                      const Icon(
-                        Icons.arrow_forward_ios,
-                        color: secondaryColor,
-                      ),
-                  ],
-                )
-              ),
+              text: 'Start Korazon',
             ),
+
+            // InkWell( // make the container clickable
+            //   onTap: signUpUser,
+            //   child: Container(
+            //     height: 75, // set the container to a height relative to the device
+            //     width: double.infinity, // take the full width of the screen
+            //     padding: EdgeInsets.all(10), // add padding to the container
+            //     decoration: BoxDecoration(
+            //       borderRadius: BorderRadius.circular(15), // rounded corners
+            //       color: korazonColor, // this color will have to be updated to the korazon color
+            //     ),
+            //     child: Row(
+            //       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            //       children: [
+            //         const Text(
+            //           'Start Korazon',
+            //           style: TextStyle(
+            //             fontWeight: primaryFontWeight,
+            //             color: secondaryColor,
+            //             fontSize: 20,
+            //           ),
+            //         ),
+            //         _siningUpLoading ?
+            //           const CircularProgressIndicator() :
+            //           const Icon(
+            //             Icons.arrow_forward_ios,
+            //             color: secondaryColor,
+            //           ),
+            //       ],
+            //     )
+            //   ),
+            // ),
           ],
         ),
       ),
