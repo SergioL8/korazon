@@ -5,41 +5,75 @@ import 'package:google_fonts/google_fonts.dart';
 // -------------- Final Design Variables ------------
 
 // Colors:
-const backgroundColorBM = Color.fromARGB(255, 13, 13, 13);
+const backgroundColorBM = Color.fromARGB(255, 19, 19, 19);
 
+const korazonColor = Color.fromRGBO(219, 0, 131, 1);
 
 const mainGradient = SweepGradient(
   colors: [
-    Color.fromARGB(255, 189, 21, 97),
-    Color.fromARGB(255, 210, 15, 132),
+    Color.fromRGBO(219, 0, 131, 1),
     Color.fromRGBO(255, 58, 176, 1),
-    Color.fromARGB(255, 193, 74, 182),
+    Color.fromARGB(255, 103, 132, 224),
+    Color.fromRGBO(255, 18, 129, 1),
+    Color.fromARGB(255, 162, 0, 138),
+    Color.fromRGBO(219, 0, 131, 1),
+
+  ],
+  stops: [
+    0.05, 0.20, 0.35, 0.6, 0.95, 0.99],
+);
+
+
+
+const borderGradient = SweepGradient(
+  colors: [
+    Color.fromARGB(255, 213, 11, 102),
+    Color.fromARGB(255, 159, 4, 113),
+    Color.fromARGB(255, 170, 0, 94),
+    Color.fromARGB(255, 235, 0, 94),
     Color.fromARGB(255, 132, 90, 189),
-    Color.fromARGB(255, 91, 122, 223),
     Color.fromARGB(255, 103, 132, 224),
     Color.fromARGB(255, 91, 122, 223),
     Color.fromARGB(255, 132, 90, 189),
-    Color.fromARGB(255, 235, 0, 94),
-    Color.fromARGB(255, 170, 0, 94),
-    Color.fromARGB(255, 137, 0, 105),
-    Color.fromARGB(255, 111, 0, 104),
-    Color.fromARGB(255, 126, 0, 97),
-    Color.fromARGB(255, 159, 4, 113),
-    Color.fromARGB(255, 189, 21, 97),
+    Color.fromARGB(255, 193, 74, 182),
+    Color.fromRGBO(255, 58, 176, 1),
+    Color.fromARGB(255, 210, 15, 132),
+    Color.fromARGB(255, 213, 11, 102),
   ],
   stops: [
-    0.05,0.1, 0.23, 0.28, 0.32, 0.34, 0.37, 0.39, 0.42, 0.60, 0.73, 0.83, 0.93, 0.95, 0.98, 0.99],
+    0.05, 0.1, 0.23, 0.40, 0.50, 0.52, 0.60, 0.65, 0.80, 0.85, 0.95, 0.99
+  ],
+);
+
+const linearGradient = LinearGradient(
+  begin: Alignment.bottomLeft,
+  end: Alignment.topRight,
+  colors: [
+    Color.fromARGB(255, 255, 0, 204),
+    Color.fromARGB(255, 203, 29, 29),
+  ],
 );
 
 
 
 // Text Styles:
-var whiteLogo = GoogleFonts.josefinSans(
-    fontSize: 50,
-    fontWeight: FontWeight.w800,
+var whiteSubtitle = GoogleFonts.josefinSans(
+    fontSize: 23,
+    fontWeight: FontWeight.w600,
     color: Colors.white
 );
 
+var whiteBody = GoogleFonts.josefinSans(
+    fontSize: 16,
+    fontWeight: FontWeight.w500,
+    color: Colors.white
+);
+
+var whiteTitle = GoogleFonts.josefinSans(
+    fontSize: 34,
+    fontWeight: FontWeight.w800,
+    color: Colors.white
+);
 
 
 
@@ -66,7 +100,7 @@ var whiteLogo = GoogleFonts.josefinSans(
 
 
 // Colors
-const korazonColor = Color.fromRGBO(250, 177, 177, 1);
+const korazonColorOld = Color.fromRGBO(250, 177, 177, 1);
 const secondaryColor = Color.fromARGB(255, 3, 0, 54);
 const tertiaryColor = Colors.white;
 
@@ -96,31 +130,11 @@ const titleTextStyle = TextStyle(
 );
 
 
-const whiteTitle = TextStyle(
-  fontSize: 30,
-  fontWeight: FontWeight.w800,
-  color: tertiaryColor,
-  fontFamily: primaryFont
-);
-
-const whiteSubtitle = TextStyle(
-  fontSize: 23,
-  fontWeight: FontWeight.w700,
-  color: tertiaryColor,
-  fontFamily: primaryFont
-);
 
 const buttonBlackText = TextStyle(
   fontSize: 16,
   fontWeight: FontWeight.w500,
   color: secondaryColor,
-  fontFamily: primaryFont
-);
-
-const whiteBody = TextStyle(
-  fontSize: 14,
-  fontWeight: FontWeight.w500,
-  color: Colors.white,
   fontFamily: primaryFont
 );
 

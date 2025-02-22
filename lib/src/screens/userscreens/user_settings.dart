@@ -17,7 +17,7 @@ class UserSettings extends StatelessWidget {
           onPressed: () => Navigator.of(context).pop(), 
           icon: Icon(Icons.arrow_back_ios_new, color: Colors.white,)),
         backgroundColor: backgroundColorBM,
-        title: const Text(
+        title: Text(
           'User Settings',
           style: whiteTitle,
         ),

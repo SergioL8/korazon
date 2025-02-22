@@ -77,6 +77,7 @@ flutter:
     - assets/images/profilePicture.jpeg
     - assets/images/no_profile_picture.webp
     - assets/images/topHosts.png
+    - assets/images/addImagePlaceHolder.jpeg
 
     # icons
     - assets/icons/ticket-empty.png
