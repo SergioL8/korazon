@@ -108,12 +108,31 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
               const SizedBox(height: 16),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Text(
-                  'We have sent  you  a  verification  email,  please  check  the  inbox of $userEmail and  click  the verification link.',
-                  style: TextStyle(
-                    color: tertiaryColor,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
+                child: RichText(
+                  text: TextSpan(
+                    // Base style for the entire text
+                    style: TextStyle(
+                      color: tertiaryColor,
+                      fontSize: 16,
+                      fontWeight:
+                          FontWeight.w500, // Regular weight for most text
+                    ),
+                    children: [
+                      TextSpan(
+                        text:
+                            'We have sent you a verification email, please check the inbox of ',
+                      ),
+                      TextSpan(
+                        text: userEmail, // The text you want to highlight
+                        style: TextStyle(
+                          fontWeight:
+                              FontWeight.w700, // Bolder weight for userEmail
+                        ),
+                      ),
+                      TextSpan(
+                        text: ' and click the verification link.',
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -149,8 +168,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                 ),
               ),
               SizedBox(height: 16),
-                            Spacer(),
-
+              Spacer(),
               GestureDetector(
                 // TODO: make this a pop if you come from the landing page
 
@@ -159,7 +177,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                   'Return to landing page',
                   style: TextStyle(
                     color: tertiaryColor,
-                    fontSize: 18,
+                    fontSize: 16,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
