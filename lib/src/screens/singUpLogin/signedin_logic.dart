@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:korazon/src/screens/basePage.dart';
 import 'package:korazon/src/screens/singUpLogin/landing_page.dart';
-import 'package:korazon/src/screens/singUpLogin/loginSignupPage.dart';
+import 'package:korazon/src/screens/singUpLogin/verify_email_page.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
-
 
 class isSignedLogic extends StatelessWidget {
   const isSignedLogic({super.key});
@@ -12,17 +11,24 @@ class isSignedLogic extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: FirebaseAuth.instance.authStateChanges(), // This line records whenver the authentication state changes (users sings in or out)
+      stream: FirebaseAuth.instance
+          .authStateChanges(), // This line records whenver the authentication state changes (users sings in or out)
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) { // From the snapshot, we can identify if the the user is signed in, in the process of signing in or signed out
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          // From the snapshot, we can identify if the the user is signed in, in the process of signing in or signed out
           return const Center(
             child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(secondaryColor),
+              valueColor: AlwaysStoppedAnimation<Color>(korazonColor),
             ),
           );
         }
         if (snapshot.hasData) {
-          return const BasePage(); // Base page is the widget where all the different pages of the app are displayed
+          final user = snapshot.data as User;
+          if (user.emailVerified) {
+            return const BasePage(); // Base page is the widget where all the different pages of the app are displayed
+          } else {
+            return VerifyEmailPage(userEmail: user.email);
+          }
         } else {
           return const LandingPage(); // This is the widget where the user can sign in
         }

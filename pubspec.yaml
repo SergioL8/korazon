@@ -82,6 +82,7 @@ flutter:
     # icons
     - assets/icons/ticket-empty.png
     - assets/icons/ticket-filled.png
+    - assets/icons/love-letter.png
 
     - assets/icons/home-empty.svg
     - assets/icons/home-filled.svg
