@@ -27,7 +27,6 @@ class VerifyEmailPage extends StatelessWidget {
               },
               child: Text('Temp Skip Verification'),
             )
-
           ],
         ),
       ),
