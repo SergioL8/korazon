@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:korazon/src/screens/basePage.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/widgets/gradient_border_button.dart';
 import 'dart:typed_data';
-
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:korazon/src/widgets/alertBox.dart';
+import 'package:korazon/src/utilities/models/userModel.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 
 
@@ -18,13 +23,30 @@ class FinishUserSetup extends StatefulWidget {
 
 class _FinishUserSetupState extends State<FinishUserSetup> {
 
+
+  final _instaGramController = TextEditingController();
+  final _bioController = TextEditingController();
+  final FocusNode _instaGramFocusNode = FocusNode();
+  final FocusNode _bioFocusNode = FocusNode();
+  Uint8List? _imageController;
+  UserModel? user;
+  bool infoAdded = false;
+  final uid = FirebaseAuth.instance.currentUser?.uid;
+  bool _isLoading = false;
+
+
+
+
   Widget addSmallPicWidget() {
     return InkWell(
       onTap: () async {
         Uint8List? memoryImage = await selectImage(context);
-        setState(() {
-          _imageController = memoryImage;
-        });
+        if (memoryImage != null) {
+          setState(() {
+            _imageController = memoryImage;
+            infoAdded = true;
+          });
+        }
       },
       splashColor: Colors.transparent,
       highlightColor: Colors.transparent,
@@ -50,13 +72,108 @@ class _FinishUserSetupState extends State<FinishUserSetup> {
 
 
 
-  final _instaGramController = TextEditingController();
-  final _bioController = TextEditingController();
-  final FocusNode _instaGramFocusNode = FocusNode();
-  final FocusNode _bioFocusNode = FocusNode();
-  Uint8List? _imageController;
 
-  bool infoAdded = false;
+  void skipPage() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const BasePage()
+      )
+    );
+  }
+
+  
+
+  void submitProfileCompletion() async {
+
+    String? refPath;
+    
+    if (uid == null) {
+      showErrorMessage(context, content: 'There was an error loading your user, please logout and login again', errorAction: ErrorAction.logout);
+      return;
+    }
+    
+    var userDocument = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+
+    user = UserModel.fromDocumentSnapshot(userDocument);
+    
+    if (user == null) {
+      showErrorMessage(context, content: 'There was an error loading your user, please logout and login again', errorAction: ErrorAction.logout);
+      return;
+    }
+
+    // Dismiss the keyboard
+    FocusScope.of(context).unfocus();
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    if (_imageController != null) {
+      // compress the image (compressImage is a helper function that can be found under the utils folder)
+      _imageController = await compressImage(_imageController!, 50);
+
+      // specify the path and name of the image
+      Reference storageRef = FirebaseStorage.instance.ref(); // create storage reference (basically the root of the storage bucket on the cloud)
+      Reference fileRef = storageRef.child('images/usersPictures/$uid/${uid}_profilePic1_${DateTime.now()}.png');
+
+      // save the image to firebase storage
+      UploadTask imageUploadTask = fileRef.putData(_imageController!); // here uploadtask is a variable that stores information about how the upload is going
+
+      // This line will wait the execution of the function until the upload has completed (success or failure).
+      TaskSnapshot imageTaskSnapshot = await imageUploadTask;
+
+      // check for success or failure of the image upload
+      if (imageTaskSnapshot.state != TaskState.success) {
+        showErrorMessage(context, content: 'There was an error uploading the image. Please try again');
+      } else {
+        refPath = fileRef.fullPath;
+      }
+    }
+
+    // Trim the text from the controllers
+    String instagram = _instaGramController.text.trim();
+    String bio = _bioController.text.trim();
+
+    // Add to the updateData map any fields that have been filled
+    Map<String, dynamic> updateData = {};
+    if (refPath != null) {
+      updateData['profilePicturesPath'] = FieldValue.arrayUnion([refPath]);
+    }
+    if (instagram.isNotEmpty) {
+      updateData['instaAcc'] = instagram;
+    }
+    if (bio.isNotEmpty) {
+      updateData['bio'] = bio;
+    }
+    
+    // upload the data to the database if any data has been added
+    if (updateData.isNotEmpty) {
+      try {
+        await FirebaseFirestore.instance.collection('users').doc(uid).update(updateData);
+      } catch (e) {
+        showErrorMessage(context, content: 'There was an error saving your profile. Please try again');
+      }
+    }
+
+
+    // clear controllers
+    _bioController.clear();
+    _instaGramController.clear();
+    _imageController = null;
+
+    setState(() {
+      _isLoading = false;
+    });
+
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const BasePage()
+      )
+    );
+  }
+
+
+
 
 
 
@@ -82,25 +199,6 @@ class _FinishUserSetupState extends State<FinishUserSetup> {
                 SizedBox(
                   child: addSmallPicWidget(),
                 ),
-                // Expanded(
-                //   child: 
-                  // Padding(
-                    // padding: const EdgeInsets.only(left: 0, right: 0),
-                    // child: addSmallPicWidget(),
-                    // GridView.count(
-                    //   crossAxisCount: 2,  // 2 columns
-                    //   mainAxisSpacing: 20,
-                    //   crossAxisSpacing: 20,
-                    //   childAspectRatio: 3 / 4, // 3:4 proportion
-                    //   children: [
-                    //     addSmallPicWidget(),
-                    //     addSmallPicWidget(),
-                    //     addSmallPicWidget(),
-                    //     addSmallPicWidget(),
-                    //   ],
-                    // ),
-                  // ),
-                // ),
                 SizedBox(height: 30),
                 Row(
                   children: [
@@ -187,9 +285,7 @@ class _FinishUserSetupState extends State<FinishUserSetup> {
                 SizedBox(height: 20),
 
                 GradientBorderButton(
-                  onTap: () {
-                    print('Tapped');
-                  },
+                  onTap: infoAdded ? submitProfileCompletion : skipPage,
                   text: infoAdded ? 'Save' : 'Skip',
                 ),
               ],

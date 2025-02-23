@@ -2,6 +2,7 @@ import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:korazon/src/screens/singUpLogin/reset_password_page.dart';
 import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -186,6 +187,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
               ),
             ),
           ),
+
 
 
           // Absolute Positioning of Icon (Perfectly Matches Gradient Center)
@@ -407,6 +409,23 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                               ),
                             ),
                           ),
+                          if (login) 
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => const ResetPasswordPage()));
+                                } ,
+                                child: Text(
+                                  'Forgot Password?',
+                                  style: whiteBody.copyWith(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700
+                                  ),
+                                ),
+                              ),
+                            ),
+
                           SizedBox(height: MediaQuery.of(context).size.height * 0.15),                    
                           GradientBorderButton(
                             onTap: login ? _login : _submitSignUpForm, // call the function to submit the form
