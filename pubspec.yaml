@@ -39,19 +39,19 @@ dependencies:
     sdk: flutter
   flutter_image_compress: ^2.3.0
   flutter_svg: ^2.0.17
+  font_awesome_flutter: ^10.8.0
+  google_fonts: ^6.2.1
   image_picker: ^1.1.2
   intl: ^0.20.1
   mobile_scanner: ^6.0.1
   provider: ^6.1.2
+  qr_flutter: ^4.1.0
+  shimmer: ^3.0.0
+  timelines: ^0.1.0
   transparent_image: ^2.0.0
   url_launcher: ^6.3.1
   uuid: ^4.5.1
   wheel_chooser: ^1.1.2
-  qr_flutter: ^4.1.0
-  shimmer: ^3.0.0
-  font_awesome_flutter: ^10.8.0
-  timelines: ^0.1.0
-  google_fonts: ^6.2.1
 
 dev_dependencies:
   flutter_lints: ^5.0.0
@@ -82,6 +82,7 @@ flutter:
     # icons
     - assets/icons/ticket-empty.png
     - assets/icons/ticket-filled.png
+    - assets/icons/love-letter.png
 
     - assets/icons/home-empty.svg
     - assets/icons/home-filled.svg

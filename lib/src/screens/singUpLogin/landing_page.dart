@@ -6,14 +6,9 @@ import 'package:korazon/src/widgets/gradient_border_button.dart';
 import 'package:korazon/src/screens/singUpLogin/loginSignupPage.dart';
 import 'package:korazon/src/utilities/utils.dart';
 
-
-
-
-
 class LandingPage extends StatelessWidget {
 
   const LandingPage({super.key});
-
 
   @override
   Widget build(BuildContext context) {

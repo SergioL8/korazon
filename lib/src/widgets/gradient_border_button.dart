@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 
-
-
 final iconGradient = LinearGradient(
   begin: Alignment.centerLeft,
   end: Alignment.centerRight,
@@ -45,12 +43,18 @@ class GradientBorderButton extends StatelessWidget {
           Row(
             children: [
               SizedBox(width: 25),
-              Text(
-                text,
-                style: whiteSubtitle,
-                overflow: TextOverflow.ellipsis,
-              ),
-              Spacer(),
+              Expanded(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        text,
+                        style: whiteSubtitle,
+                      ),
+                    ),
+                  ),
+                ),
               ShaderMask(
                 shaderCallback: (Rect bounds) {
                   return iconGradient.createShader(bounds);
@@ -68,6 +72,3 @@ class GradientBorderButton extends StatelessWidget {
     );
   }
 }
-
-
-
