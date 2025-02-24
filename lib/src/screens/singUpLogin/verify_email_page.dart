@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:korazon/src/screens/singUpLogin/landing_page.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/screens/singUpLogin/finish_user_setup.dart';
+import 'package:korazon/src/widgets/alertBox.dart';
 import 'package:korazon/src/widgets/gradient_border_button.dart';
 
 class VerifyEmailPage extends StatefulWidget {
@@ -33,6 +34,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       await FirebaseAuth.instance.currentUser?.sendEmailVerification();
     } catch (e) {
       debugPrint(e.toString());
+      showErrorMessage(context, title: 'Error sending verification email');
     }
   }
 
@@ -80,7 +82,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
           padding: EdgeInsets.only(
             left: screenWidth * 0.11,
             right: screenWidth * 0.11,
-            top: screenHeight * 0.075,
+            top: screenHeight * 0.11,
             bottom: screenHeight * 0.07,
           ),
           child: Column(
@@ -107,35 +109,40 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
               ),
               const SizedBox(height: 16),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: RichText(
-                  text: TextSpan(
-                    // Base style for the entire text
-                    style: TextStyle(
-                      color: tertiaryColor,
-                      fontSize: 16,
-                      fontWeight:
-                          FontWeight.w500, // Regular weight for most text
-                    ),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment:
+                        CrossAxisAlignment.start, // Aligns text to the start
                     children: [
-                      TextSpan(
-                        text:
-                            'We have sent you a verification email, please check the inbox of ',
-                      ),
-                      TextSpan(
-                        text: userEmail, // The text you want to highlight
+                      Text(
+                        'We have sent you a verification email, please check the inbox of:',
                         style: TextStyle(
-                          fontWeight:
-                              FontWeight.w700, // Bolder weight for userEmail
+                          color: tertiaryColor,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
                         ),
+                        textAlign: TextAlign.justify,
                       ),
-                      TextSpan(
-                        text: ' and click the verification link.',
+                      Text(
+                        userEmail!, //user email must exist, otherwise it would have thrown an error before.
+                        style: TextStyle(
+                          color: tertiaryColor,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w900, // Bold for emphasis
+                        ),
+                        textAlign: TextAlign.center, // Centers the email
+                      ),
+                      Text(
+                        'and click the verification link.',
+                        style: TextStyle(
+                          color: tertiaryColor,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        textAlign: TextAlign.justify,
                       ),
                     ],
-                  ),
-                ),
-              ),
+                  )),
               SizedBox(height: screenHeight * 0.05),
               GradientBorderButton(
                 text: 'I have verified my email',
