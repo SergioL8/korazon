@@ -34,8 +34,7 @@ class LandingPage extends StatelessWidget {
             tag: 'gradientTag',
             child: Container(
               decoration: BoxDecoration(
-                gradient: 
-                SweepGradient(
+                gradient: SweepGradient(
                   colors: mainGradient.colors,
                   stops: mainGradient.stops,
                   center: gradientAlignment,

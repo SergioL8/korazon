@@ -191,6 +191,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
               ),
             ],
           ),
+
         ),
       ),
     );

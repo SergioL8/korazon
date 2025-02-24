@@ -84,6 +84,7 @@ Future<Uint8List?> selectImage(BuildContext context) async {
               child: Text('Take Photo'),
               onPressed: () async {
                 Uint8List file = await pickImage(ImageSource.camera); //pickimage is a function from utils.
+                debugPrintStack(label: 'Stack trace before popping with camera image');
                 Navigator.of(context).pop(file); // Pop with the file (basically return the file but while closing the dialog)
                 
               },
