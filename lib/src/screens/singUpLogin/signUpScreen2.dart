@@ -4,7 +4,6 @@ import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/widgets/gradient_border_button.dart';
 import 'package:wheel_chooser/wheel_chooser.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:korazon/src/screens/basePage.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
