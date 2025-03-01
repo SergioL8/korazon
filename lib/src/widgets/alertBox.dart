@@ -3,10 +3,9 @@ import 'package:korazon/src/screens/singUpLogin/landing_page.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/utilities/utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:korazon/src/screens/singUpLogin/loginSignupPage.dart';
 
 
-void showErrorMessage(BuildContext context, {String title = 'Something went wrong...', String content = '', errorAction = ErrorAction.none}) {
+void showErrorMessage(BuildContext context, {String title = 'Something went wrong...', String content = '', errorAction = ErrorAction.none, }) {
   showDialog(
     context: context,
     builder: (BuildContext context) => AlertDialog(
