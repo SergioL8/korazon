@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:korazon/src/screens/singUpLogin/hostSignUpExperience/initialMessagePage.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:korazon/src/widgets/gradient_border_button.dart';
@@ -129,7 +130,12 @@ class LandingPage extends StatelessWidget {
                         ),
                         Spacer(),
                         GradientBorderButton(
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => InitialMessagePage()), // Replace with your destination page
+                            );
+                          },
                           text: "Create Host Acc.",
                         ),
                         SizedBox(height: 25),

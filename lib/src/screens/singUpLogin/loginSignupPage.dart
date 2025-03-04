@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:korazon/src/screens/singUpLogin/hostSignUpExperience/hostRequiredDetails.dart';
 import 'package:korazon/src/screens/singUpLogin/verify_email_page.dart';
 import 'package:korazon/src/screens/singUpLogin/reset_password_page.dart';
 import 'package:korazon/src/utilities/utils.dart';
@@ -52,13 +53,20 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
         !_passwordFormKey.currentState!.validate()) {
       return;
     }
-
     Navigator.of(context).push(
       MaterialPageRoute(builder: (context) {
-        return SignUpScreen2(
-          email: _emailController.text,
-          password: _passwordController.text,
-        );
+        if (widget.parentPage == ParentPage.createHostAcc) {
+          return HostRequiredDetails(
+            email: _emailController.text,
+            password: _passwordController.text,
+          );
+        } else {
+          return SignUpScreen2(
+            email: _emailController.text,
+            password: _passwordController.text,
+          );
+        }
+        
       }),
     );
   }
@@ -229,206 +237,218 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                       bottom: screenHeight * 0.055,
                     ),
                     child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(minHeight: screenHeight * 0.70),
+                        child: IntrinsicHeight(
+                          child: Column(
                             children: [
-                              IconButton(
-                                onPressed: () => Navigator.of(context).pop(),
-                                icon: const Icon(
-                                  Icons.arrow_back_ios_new_rounded,
-                                  color: Colors.white,
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  IconButton(
+                                    onPressed: () => Navigator.of(context).pop(),
+                                    icon: const Icon(
+                                      Icons.arrow_back_ios_new_rounded,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  Text(
+                                    widget.parentPage == ParentPage.login
+                                        ? "Login"
+                                        : widget.parentPage == ParentPage.signup
+                                          ? "Sign Up"
+                                          : 'Crendentials',
+                                    style: widget.parentPage == ParentPage.createHostAcc
+                                      ? whiteSubtitle
+                                      : whiteTitle,
+                                  ),
+                                  const Spacer(),
+                                  const SizedBox(width: 48),
+                                ],
+                              ),
+                              const SizedBox(height: 50),
+                          
+                              // Email form
+                              Form(
+                                key: _emailFormKey,
+                                child: TextFormField(
+                                  autocorrect: false,
+                                  controller: _emailController,
+                                  focusNode: _emailFocusNode,
+                                  cursorColor: Colors.white,
+                                  validator: (value) {
+                                    if (value == null ||
+                                        !RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$')
+                                            .hasMatch(value)) {
+                                      return 'Please enter a valid email address';
+                                    }
+                                    return null;
+                                  },
+                                  onChanged: (_) =>
+                                      _emailFormKey.currentState!.validate(),
+                                  style: whiteBody,
+                                  decoration: InputDecoration(
+                                    filled: true,
+                                    fillColor: Colors.white.withOpacity(0.15),
+                                    prefixIcon: const Icon(
+                                      Icons.email_outlined,
+                                      color: Colors.white,
+                                    ),
+                                    hintText: widget.parentPage == ParentPage.createHostAcc
+                                      ? 'Frat\'s Email'
+                                      :  'example@colorad.edu',
+                                    hintStyle: whiteBody,
+                                    errorStyle: whiteBody.copyWith(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 12,
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                      borderSide: const BorderSide(
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                      borderSide: const BorderSide(
+                                        color: Colors.white,
+                                        width: 2,
+                                      ),
+                                    ),
+                                    errorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                      borderSide: const BorderSide(
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    focusedErrorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                      borderSide: const BorderSide(
+                                        color: Colors.white,
+                                        width: 2,
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
-                              const Spacer(),
-                              Text(
-                                widget.parentPage == ParentPage.login
-                                    ? "Login"
-                                    : "Sign Up",
-                                style: whiteTitle,
+                              const SizedBox(height: 25),
+                          
+                              // Password form
+                              Form(
+                                key: _passwordFormKey,
+                                child: TextFormField(
+                                  autocorrect: false,
+                                  controller: _passwordController,
+                                  focusNode: _passwordFocusNode,
+                                  cursorColor: Colors.white,
+                                  obscureText: obscureText,
+                                  validator: (val) {
+                                    if (val != null && val.contains(' ')) {
+                                      return 'Password cannot contain spaces.';
+                                    }
+                                    if (val == null || val.length < 6) {
+                                      return 'Password must be at least 6 characters long.';
+                                    }
+                                    return null;
+                                  },
+                                  onChanged: (_) =>
+                                      _passwordFormKey.currentState!.validate(),
+                                  style: whiteBody,
+                                  decoration: InputDecoration(
+                                    suffixIcon: InkWell(
+                                      highlightColor: Colors.transparent,
+                                      splashColor: Colors.transparent,
+                                      onTap: () =>
+                                          setState(() => obscureText = !obscureText),
+                                      child: Icon(
+                                        obscureText
+                                            ? Icons.visibility_off
+                                            : Icons.visibility,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    filled: true,
+                                    fillColor: Colors.white.withOpacity(0.15),
+                                    hintText: 'Password',
+                                    hintStyle: whiteBody,
+                                    errorStyle: whiteBody.copyWith(
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 12,
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                      borderSide: const BorderSide(
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                      borderSide: const BorderSide(
+                                        color: Colors.white,
+                                        width: 2,
+                                      ),
+                                    ),
+                                    errorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                      borderSide: const BorderSide(
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    focusedErrorBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                      borderSide: const BorderSide(
+                                        color: Colors.white,
+                                        width: 2,
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               ),
-                              const Spacer(),
-                              const SizedBox(width: 48),
+                          
+                              if (login)
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const ResetPasswordPage(),
+                                        ),
+                                      );
+                                    },
+                                    child: Text(
+                                      'Forgot Password?',
+                                      style: whiteBody.copyWith(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                          
+                              SizedBox(height: screenHeight * 0.05),
+                              Spacer(),
+                              GradientBorderButton(
+                                onTap: login ? _login : _submitSignUpForm,
+                                text: login ? 'Login' : 'Continue',
+                              ),
+                              SizedBox(height: 25),
+                              Text(
+                                "Boulder, CO",
+                                style: whiteBody,
+                              ),
+                              SizedBox(height: MediaQuery.of(context).viewInsets.bottom),
                             ],
                           ),
-                          const SizedBox(height: 50),
-
-                          // Email form
-                          Form(
-                            key: _emailFormKey,
-                            child: TextFormField(
-                              autocorrect: false,
-                              controller: _emailController,
-                              focusNode: _emailFocusNode,
-                              cursorColor: Colors.white,
-                              validator: (value) {
-                                if (value == null ||
-                                    !RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$')
-                                        .hasMatch(value)) {
-                                  return 'Please enter a valid email address';
-                                }
-                                return null;
-                              },
-                              onChanged: (_) =>
-                                  _emailFormKey.currentState!.validate(),
-                              style: whiteBody,
-                              decoration: InputDecoration(
-                                filled: true,
-                                fillColor: Colors.white.withOpacity(0.15),
-                                prefixIcon: const Icon(
-                                  Icons.email_outlined,
-                                  color: Colors.white,
-                                ),
-                                hintText: 'example@colorad.edu',
-                                hintStyle: whiteBody,
-                                errorStyle: whiteBody.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 12,
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15),
-                                  borderSide: const BorderSide(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15),
-                                  borderSide: const BorderSide(
-                                    color: Colors.white,
-                                    width: 2,
-                                  ),
-                                ),
-                                errorBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15),
-                                  borderSide: const BorderSide(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                focusedErrorBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15),
-                                  borderSide: const BorderSide(
-                                    color: Colors.white,
-                                    width: 2,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 25),
-
-                          // Password form
-                          Form(
-                            key: _passwordFormKey,
-                            child: TextFormField(
-                              autocorrect: false,
-                              controller: _passwordController,
-                              focusNode: _passwordFocusNode,
-                              cursorColor: Colors.white,
-                              obscureText: obscureText,
-                              validator: (val) {
-                                if (val != null && val.contains(' ')) {
-                                  return 'Password cannot contain spaces.';
-                                }
-                                if (val == null || val.length < 6) {
-                                  return 'Password must be at least 6 characters long.';
-                                }
-                                return null;
-                              },
-                              onChanged: (_) =>
-                                  _passwordFormKey.currentState!.validate(),
-                              style: whiteBody,
-                              decoration: InputDecoration(
-                                suffixIcon: InkWell(
-                                  highlightColor: Colors.transparent,
-                                  splashColor: Colors.transparent,
-                                  onTap: () =>
-                                      setState(() => obscureText = !obscureText),
-                                  child: Icon(
-                                    obscureText
-                                        ? Icons.visibility_off
-                                        : Icons.visibility,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                filled: true,
-                                fillColor: Colors.white.withOpacity(0.15),
-                                hintText: 'Password',
-                                hintStyle: whiteBody,
-                                errorStyle: whiteBody.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 12,
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15),
-                                  borderSide: const BorderSide(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15),
-                                  borderSide: const BorderSide(
-                                    color: Colors.white,
-                                    width: 2,
-                                  ),
-                                ),
-                                errorBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15),
-                                  borderSide: const BorderSide(
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                focusedErrorBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15),
-                                  borderSide: const BorderSide(
-                                    color: Colors.white,
-                                    width: 2,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          if (login)
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const ResetPasswordPage(),
-                                    ),
-                                  );
-                                },
-                                child: Text(
-                                  'Forgot Password?',
-                                  style: whiteBody.copyWith(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w700,
-                                  ),
-                                ),
-                              ),
-                            ),
-
-                          SizedBox(height: screenHeight * 0.15),
-
-                          GradientBorderButton(
-                            onTap: login ? _login : _submitSignUpForm,
-                            text: login ? 'Login' : 'Continue',
-                          ),
-                          SizedBox(height: screenHeight * 0.04),
-                          Text(
-                            "Boulder, CO",
-                            style: whiteBody,
-                          ),
-                        ],
+                        ),
                       ),
                     ),
                   ),

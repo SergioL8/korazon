@@ -37,7 +37,7 @@ class _FinishUserSetupState extends State<FinishUserSetup> {
 
 
 
-  Widget addSmallPicWidget() {
+  Widget _addPicture() {
     return InkWell(
       onTap: () async {
         Uint8List? memoryImage = await selectImage(context);
@@ -197,7 +197,7 @@ class _FinishUserSetupState extends State<FinishUserSetup> {
                 ),
                 SizedBox(height: 15),
                 SizedBox(
-                  child: addSmallPicWidget(),
+                  child: _addPicture(),
                 ),
                 SizedBox(height: 30),
                 Row(
