@@ -7,6 +7,7 @@ import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
 import 'package:korazon/src/widgets/confirmationMessage.dart';
 import 'package:korazon/src/widgets/gradient_border_button.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 
 class ResetPasswordPage extends StatefulWidget {
   const ResetPasswordPage({super.key});
@@ -25,19 +26,36 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
         MaterialPageRoute(builder: (context) => const LandingPage()));
   }
 
+  Future<void> sendTestEmail() async {
+    try {
+      debugPrint('Sending test email...');
+      final HttpsCallable callable =
+          FirebaseFunctions.instance.httpsCallable('sendTestEmail');
+      final result = await callable();
+      debugPrint(result.data);
+
+
+      if (result.data['success'] == true) {
+      debugPrint("✅ Email sent successfully!");
+      }
+    } catch (error) {
+      debugPrint("❌ Error calling Firebase Function: $error");
+    }
+  }
+
   void resetPassword() async {
     final email = _emailController.text.trim();
 
     if (email.isNotEmpty) {
       try {
         // Pass the actual context of the widget to the method
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+        await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
 
-      showConfirmationMessage(context, message: 'We have sent you a verification email');
+        showConfirmationMessage(context,
+            message: 'We have sent you a verification email');
 
         // Navigator.of(context).pushReplacement(
         //     MaterialPageRoute(builder: (context) => const LoginSignupPage(parentPage: ParentPage.login,)));
-
       } catch (e) {
         debugPrint('Error: $e');
         showErrorMessage(context, title: 'An error occurred');
@@ -161,7 +179,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                   SizedBox(height: screenHeight * 0.03),
                   GradientBorderButton(
                     onTap: () {
-                      resetPassword();
+                      //resetPassword();
+                      sendTestEmail();
                     },
                     text: 'Reset Password',
                   ),
