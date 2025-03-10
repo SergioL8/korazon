@@ -100,120 +100,138 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     return Scaffold(
       backgroundColor: backgroundColorBM,
       body: Center(
-        child: Padding(
-          padding: EdgeInsets.only(
-            left: screenWidth * 0.11,
-            right: screenWidth * 0.11,
-            top: screenHeight * 0.11,
-            bottom: screenHeight * 0.07,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              ShaderMask(
-                shaderCallback: (Rect bounds) {
-                  return mainGradient.createShader(bounds);
-                },
-                blendMode: BlendMode.srcATop,
-                child: Image.asset(
-                  'assets/icons/love-letter.png',
-                  height: screenHeight * 0.25,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.only(
+              left: screenWidth * 0.11,
+              right: screenWidth * 0.11,
+              top: screenHeight * 0.11,
+              bottom: screenHeight * 0.07,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                ShaderMask(
+                  shaderCallback: (Rect bounds) {
+                    return mainGradient.createShader(bounds);
+                  },
+                  blendMode: BlendMode.srcATop,
+                  child: Image.asset(
+                    'assets/icons/love-letter.png',
+                    height: screenHeight * 0.22,
+                  ),
                 ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(
-                  top: screenHeight * 0.05,
-                ),
-                child: Text(
-                  'Verify your email',
-                  style: whiteTitle,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start, // Aligns text to the start
-                    children: [
-                      Text(
-                        'We have sent you a verification email, please check the inbox of:',
-                        style: TextStyle(
-                          color: tertiaryColor,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        textAlign: TextAlign.justify,
-                      ),
-                      Text(
-                        userEmail!, //user email must exist, otherwise it would have thrown an error before.
-                        style: TextStyle(
-                          color: tertiaryColor,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w900, // Bold for emphasis
-                        ),
-                        textAlign: TextAlign.center, // Centers the email
-                      ),
-                      Text(
-                        'and click the verification link.',
-                        style: TextStyle(
-                          color: tertiaryColor,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        textAlign: TextAlign.justify,
-                      ),
-                    ],
-                  )),
-              SizedBox(height: screenHeight * 0.05),
-              GradientBorderButton(
-                text: 'I have verified my email',
-                onTap: () async {
-                  await FirebaseAuth.instance.currentUser?.reload();
-                  setState(
-                      () {}); // Trigger a rebuild to check the latest state
-                },
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 16, right: 16),
-                child: GestureDetector(
+                Padding(
+                  padding: EdgeInsets.only(
+                    top: screenHeight * 0.05,
+                  ),
                   child: Text(
-                    'Resend verification email',
-                    style: TextStyle(
-                      color: tertiaryColor,
-                      fontSize: 18,
+                    'Verify your email',
+                    style: whiteSubtitle.copyWith(
                       fontWeight: FontWeight.w700,
                     ),
                   ),
+                ),
+                const SizedBox(height: 16),
+                Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      crossAxisAlignment:
+                          CrossAxisAlignment.start, // Aligns text to the start
+                      children: [
+                        Text(
+                          'We have sent you a verification email, please check the inbox of:',
+                          style: whiteBody,
+                          // TextStyle(
+                          //   color: tertiaryColor,
+                          //   fontSize: 18,
+                          //   fontWeight: FontWeight.w500,
+                          // ),
+                          // textAlign: TextAlign.justify,
+                        ),
+                        Text(
+                          userEmail!, //user email must exist, otherwise it would have thrown an error before.
+                          style: whiteBody.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                          // TextStyle(
+                          //   color: tertiaryColor,
+                          //   fontSize: 20,
+                          //   fontWeight: FontWeight.w900, // Bold for emphasis
+                          // ),
+                          // textAlign: TextAlign.center, // Centers the email
+                        ),
+                        Text(
+                          'and click the verification link.',
+                          style: whiteBody,
+                          // TextStyle(
+                          //   color: tertiaryColor,
+                          //   fontSize: 18,
+                          //   fontWeight: FontWeight.w500,
+                          // ),
+                          // textAlign: TextAlign.justify,
+                        ),
+                      ],
+                    )),
+                SizedBox(height: screenHeight * 0.05),
+                GradientBorderButton(
+                  text: 'I have verified my email',
                   onTap: () async {
-                    if (mounted) {
-                      await sendVerificationEmail();
-                      //showSnackBar(context, 'Email de verificación reenviado');
-                    }
+                    await FirebaseAuth.instance.currentUser?.reload();
+                    setState(
+                        () {}); // Trigger a rebuild to check the latest state
                   },
                 ),
-              ),
-              SizedBox(height: 16),
-              Spacer(),
-              GestureDetector(
-                // TODO: make this a pop if you come from the landing page
-
-                onTap: navigateToLandingPage,
-                child: Text(
-                  'Return to landing page',
-                  style: TextStyle(
-                    color: tertiaryColor,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
+                SizedBox(
+                  height: 20,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 16, right: 16),
+                  child: GestureDetector(
+                    child: Text(
+                      'Resend verification email',
+                      style: whiteBody.copyWith(
+                        decoration: TextDecoration.underline,
+                        decorationColor: Colors.white, // Underline color
+                        decorationThickness: 1, // Thickness of the underline
+                      ),
+                      // TextStyle(
+                      //   color: tertiaryColor,
+                      //   fontSize: 18,
+                      //   fontWeight: FontWeight.w700,
+                      // ),
+                    ),
+                    onTap: () async {
+                      if (mounted) {
+                        await sendVerificationEmail();
+                        //showSnackBar(context, 'Email de verificación reenviado');
+                      }
+                    },
                   ),
                 ),
-              ),
-            ],
+                SizedBox(height: 6),
+                // Spacer(),
+                GestureDetector(
+                  // TODO: make this a pop if you come from the landing page
+            
+                  onTap: navigateToLandingPage,
+                  child: Text(
+                    'Return to landing page',
+                    style: whiteBody.copyWith(
+                      decoration: TextDecoration.underline,
+                      decorationColor: Colors.white, // Underline color
+                      decorationThickness: 1, // Thickness of the underline
+                    ),
+                    // TextStyle(
+                    //   color: tertiaryColor,
+                    //   fontSize: 16,
+                    //   fontWeight: FontWeight.w700,
+                    // ),
+                  ),
+                ),
+              ],
+            ),
           ),
-
         ),
       ),
     );
