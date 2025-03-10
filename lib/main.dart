@@ -24,14 +24,14 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  await FirebaseAppCheck.instance.activate(
-    //providerFactory: AppCheckProviderFactory.debugProviderFactory,
-    //webRecaptchaSiteKey: 'YOUR_RECAPTCHA_SITE_KEY',
-    // Use AndroidProvider.debug for development
-    androidProvider: AndroidProvider.debug, 
-    // AndroidProvider.playIntegrity, for production
-    //appleProvider: AppleProvider.appAttest,
-  );
+  // await FirebaseAppCheck.instance.activate(
+  //   //providerFactory: AppCheckProviderFactory.debugProviderFactory,
+  //   //webRecaptchaSiteKey: 'YOUR_RECAPTCHA_SITE_KEY',
+  //   // Use AndroidProvider.debug for development
+  //   androidProvider: AndroidProvider.debug, 
+  //   // AndroidProvider.playIntegrity, for production
+  //   //appleProvider: AppleProvider.appAttest,
+  // );
   }
 
   runApp(const App());
