@@ -23,7 +23,7 @@ class FinishUserSetup extends StatefulWidget {
 
 class _FinishUserSetupState extends State<FinishUserSetup> {
 
-
+  // variable declaration
   final _instaGramController = TextEditingController();
   final _bioController = TextEditingController();
   final FocusNode _instaGramFocusNode = FocusNode();
@@ -32,7 +32,7 @@ class _FinishUserSetupState extends State<FinishUserSetup> {
   UserModel? user;
   bool infoAdded = false;
   final uid = FirebaseAuth.instance.currentUser?.uid;
-  bool _isLoading = false;
+  // bool _isLoading = false; // LOADING NEEDS TO BE IMPLEMENTED
 
 
 
@@ -40,7 +40,7 @@ class _FinishUserSetupState extends State<FinishUserSetup> {
   Widget _addPicture() {
     return InkWell(
       onTap: () async {
-        Uint8List? memoryImage = await selectImage(context);
+        Uint8List? memoryImage = await selectImage(context); // function from utils
         if (memoryImage != null) {
           setState(() {
             _imageController = memoryImage;
@@ -53,11 +53,11 @@ class _FinishUserSetupState extends State<FinishUserSetup> {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(20),
         child: Container(
-          height: 306.66, // 70,
-          width: 230, // 52.5,
+          height: 306.66,
+          width: 230,
           decoration: BoxDecoration(
             image: _imageController == null ?
-              DecorationImage(
+              DecorationImage( // dynamically show a place holder or the selected image
                 image: AssetImage('assets/images/addImagePlaceHolder.jpeg'),
                 fit: BoxFit.cover,
               ) : DecorationImage(
@@ -72,7 +72,7 @@ class _FinishUserSetupState extends State<FinishUserSetup> {
 
 
 
-
+  // function to jump to the base page without uploading any new data
   void skipPage() {
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -82,7 +82,7 @@ class _FinishUserSetupState extends State<FinishUserSetup> {
   }
 
   
-
+  // function to submit the profile completion
   void submitProfileCompletion() async {
 
     String? refPath;
@@ -104,9 +104,9 @@ class _FinishUserSetupState extends State<FinishUserSetup> {
     // Dismiss the keyboard
     FocusScope.of(context).unfocus();
 
-    setState(() {
-      _isLoading = true;
-    });
+    // setState(() {
+    //   _isLoading = true;
+    // });
 
     if (_imageController != null) {
       // compress the image (compressImage is a helper function that can be found under the utils folder)
@@ -161,9 +161,9 @@ class _FinishUserSetupState extends State<FinishUserSetup> {
     _instaGramController.clear();
     _imageController = null;
 
-    setState(() {
-      _isLoading = false;
-    });
+    // setState(() {
+    //   _isLoading = false;
+    // });
 
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -171,12 +171,6 @@ class _FinishUserSetupState extends State<FinishUserSetup> {
       )
     );
   }
-
-
-
-
-
-
 
 
   @override

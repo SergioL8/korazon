@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'src/screens/singUpLogin/signedin_logic.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
   
@@ -33,7 +34,7 @@ void main() async {
     //appleProvider: AppleProvider.appAttest,
   );
   }
-
+  await dotenv.load(fileName: ".env");
   runApp(const App());
 }
 

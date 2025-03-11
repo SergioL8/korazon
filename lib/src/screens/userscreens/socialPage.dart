@@ -1,11 +1,9 @@
 import 'dart:typed_data';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:korazon/src/screens/userscreens/user_profile.dart';
-import 'package:korazon/src/screens/userscreens/user_profile_screen.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/utilities/models/eventModel.dart';
 import 'package:korazon/src/utilities/models/userModel.dart';

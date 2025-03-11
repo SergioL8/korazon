@@ -1,9 +1,15 @@
 import 'dart:typed_data';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:korazon/src/screens/singUpLogin/hostSignUpExperience/confirm_identity_page.dart';
+import 'package:korazon/src/utilities/models/userModel.dart';
 import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
+import 'package:korazon/src/widgets/alertBox.dart';
 import 'package:korazon/src/widgets/gradient_border_button.dart';
-
+import 'package:korazon/src/widgets/selectAddressBox.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 
 
@@ -18,16 +24,137 @@ class HostRequiredDetails extends StatefulWidget {
 
 class _HostRequiredDetailsState extends State<HostRequiredDetails> {
 
+  // variable declaration
   final orgNameController = TextEditingController();
   final FocusNode orgNameFocusNode = FocusNode();
   Uint8List? _imageController;
   bool infoAdded = false;
   bool isOrgNameFocused = false;
+  LocationModel? _selectedLocation;
+  bool addressError = false;
+  bool nameError = false;
+  bool _signingUpLoading = false;
+  
 
+  // call back function from the select address box
+  void _onAddressSelected(LocationModel location) {
+    setState(() {
+      _selectedLocation = location; // update the selected location
+      if (addressError) { // this variable is used to show an error in the address box. So we update it to false here if it was true and if the address is verified now
+        if (_selectedLocation!.verifiedAddress == true) {
+          addressError = false;
+        }
+      }
+    });
+  }
+
+
+
+  // function that creates the host account
+  void signUpHost() async {
+    String? refPath;
+
+    if (_signingUpLoading) return; // break the function if the user is already signing up
+
+    _signingUpLoading = true; // set the loading variable to true
+
+    if (_imageController == null) { // if no image has been seleced, show an error message
+      _signingUpLoading = false;
+      showErrorMessage(context, content: 'Please add a profile picture');
+      return;
+    }
+
+    if (orgNameController.text.isEmpty) { // if no organization name has been entered, show an error message
+      setState(() {
+        nameError = true; // variable used to set the color of the text field to red
+      });
+      _signingUpLoading = false;
+      showErrorMessage(context, content: 'Please enter your organization\'s name');
+      return;
+    }
+
+    if (_selectedLocation == null) { // if no address has been selected, show an error message
+      setState(() {
+        addressError = true;
+      });
+      _signingUpLoading = false;
+      showErrorMessage(context, content: 'Please select an address');
+      return;
+    }
+
+    setState(() {}); // this will update the loading spinner as _signingUpLoading has been set to true above
+
+    try {
+      // create the accoutn with auth
+      UserCredential credentials = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: widget.email,
+        password: widget.password
+      );
+
+      // check if the user was created
+      if (credentials.user == null) {
+        showErrorMessage(context, content: 'Error creating user. Please try again later');
+        setState(() {
+          _signingUpLoading = false;
+        });
+        return;
+      }
+
+      // compress the image
+      Uint8List comrpressedImage = await compressImage(_imageController!, 50);
+
+      // specify the path and name of the image
+      Reference storageRef = FirebaseStorage.instance.ref(); // create storage reference (basically the root of the storage bucket on the cloud)
+      Reference fileRef = storageRef.child('images/usersPictures/${credentials.user!.uid}/${credentials.user!.uid}_profilePic1_${DateTime.now()}.png');
+
+      // save the image to firebase storage
+      UploadTask imageUploadTask = fileRef.putData(comrpressedImage); // here uploadtask is a variable that stores information about how the upload is going
+
+      // This line will wait the execution of the function until the upload has completed (success or failure).
+      TaskSnapshot imageTaskSnapshot = await imageUploadTask;
+
+      // check for success or failure of the image upload
+      if (imageTaskSnapshot.state != TaskState.success) {
+        showErrorMessage(context, content: 'There was an error uploading the image. Please try again');
+        setState(() {
+          _signingUpLoading = false;
+        });
+        return;
+      } else {
+        refPath = fileRef.fullPath;
+      }
+
+      // create the host document in the database
+      await FirebaseFirestore.instance.collection('users').doc(credentials.user!.uid).set({
+        'email': widget.email.trim(),
+        'name': orgNameController.text.trim(),
+        'isHost': true,
+        'hostIdentityVerified': false,
+        'location': _selectedLocation!.toMap(),
+        'profilePicPath': refPath,
+      });
+
+      // push the confirm identity page
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => ConfirmIdentityPage()));
+
+    } on FirebaseAuthException catch(e) { // catch any errors that may occur during the creation of the user
+      if (e.code == 'email-already-in-use') {
+        showErrorMessage(context, content: 'This email address is already in use. Please log in.');
+      } else if (e.code == 'invalid-email') {
+        showErrorMessage(context, content: 'This email address is invalid. Please try again.');
+      } else {
+        showErrorMessage(context, content: 'Error creating user. Please try again later');
+      }
+    } catch(e) { // catch any other errors that may occur
+      showErrorMessage(context, content: 'Error creating user. Please try again later');
+    }
+  }
+
+  // widget that adds the profile picture
   Widget _addPicture() {
     return InkWell(
       onTap: () async {
-        Uint8List? memoryImage = await selectImage(context);
+        Uint8List? memoryImage = await selectImage(context); // function from utils
         if (memoryImage != null) {
           setState(() {
             _imageController = memoryImage;
@@ -40,12 +167,12 @@ class _HostRequiredDetailsState extends State<HostRequiredDetails> {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(250),
         child: Container(
-          height: 175, // 70,
-          width: 175, // 52.5,
+          height: 175, 
+          width: 175,
           decoration: BoxDecoration(
             image: _imageController == null ?
               DecorationImage(
-                image: AssetImage('assets/images/no_profile_picture_place_holder.png'),
+                image: AssetImage('assets/images/add_image_mountains_placeholder.png'),
                 fit: BoxFit.cover,
               ) : DecorationImage(
                 image: MemoryImage(_imageController!),
@@ -57,6 +184,7 @@ class _HostRequiredDetailsState extends State<HostRequiredDetails> {
     );
   }
 
+  // intiailize the focus for the org name
   @override
   void initState() {
     super.initState();
@@ -111,39 +239,48 @@ class _HostRequiredDetailsState extends State<HostRequiredDetails> {
                     focusNode: orgNameFocusNode,
                     style: whiteBody,
                     cursorColor: Colors.white,
+                    onChanged: (s) {
+                      if (nameError) {
+                        setState(() {
+                          nameError = false;
+                        });
+                      }
+                    },
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: Colors.white.withOpacity(0.15),
                       labelText: 'Organization\'s Name',
-                      errorStyle: whiteBody.copyWith(
-                        fontWeight: FontWeight.w700,
-                        fontSize: 12
-                      ),
                       labelStyle: isOrgNameFocused
                       ? whiteBody.copyWith(
+                        color: nameError ? Colors.red : Colors.white,
                         fontWeight: FontWeight.w800,
                       )
-                      : whiteBody,
+                      : whiteBody.copyWith(
+                        color: nameError ? Colors.red : Colors.white,
+                      ),
                       floatingLabelBehavior: FloatingLabelBehavior.always, // Always show label at the top left
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(15), // rounded corners
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(15), // Rounded corners
-                        borderSide: BorderSide(color: Colors.white), // Color when not focused
+                        borderSide: BorderSide(color: nameError ? Colors.red : Colors.white), // Color when not focused
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(15), // Rounded corners
-                        borderSide: BorderSide(color: Colors.white, width: 2), // Color when focused
+                        borderSide: BorderSide(color: nameError ? Colors.red : Colors.white, width: 2), // Color when focused
                       ),
                     ),
                   ),
+                  SizedBox(height: 35),
+                  SelectAddressBox(onAddressSelected: _onAddressSelected, error: addressError,), // select address box widget
+                  const SizedBox(height: 35),
                   Spacer(),
                   GradientBorderButton(
-                    onTap: () {},
+                    onTap: signUpHost,
                     text: 'Create Account',
                   ),
-                  const SizedBox(height: 70),
+                  const SizedBox(height: 35),
                 ],
               ),
             ),

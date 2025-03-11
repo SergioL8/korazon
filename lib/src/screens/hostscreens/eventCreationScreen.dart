@@ -131,7 +131,7 @@ class EventCreationScreenState extends State<EventCreationScreen> {
         // Host variables
         'hostId': uid,
         'hostName': user!.name,
-        'hostProfilePicUrl': user!.profilePicUrl,
+        'hostProfilePicUrl': user!.profilePicPath,
       });
 
 

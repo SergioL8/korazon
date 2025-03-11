@@ -1,9 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:korazon/src/screens/singUpLogin/landing_page.dart';
-import 'package:korazon/src/screens/singUpLogin/loginSignupPage.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
-import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
 import 'package:korazon/src/widgets/confirmationMessage.dart';
 import 'package:korazon/src/widgets/gradient_border_button.dart';

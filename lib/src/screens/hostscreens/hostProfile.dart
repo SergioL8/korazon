@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:korazon/src/screens/hostscreens/editHostProfile.dart';
 import 'package:korazon/src/screens/singUpLogin/landing_page.dart';
-import 'package:korazon/src/screens/singUpLogin/loginSignupPage.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/utilities/models/userModel.dart';
 import 'package:korazon/src/utilities/utils.dart';
@@ -187,9 +186,9 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
                                       child: CircleAvatar(
                                         radius: 48,
                                         backgroundColor: Colors.grey,
-                                        backgroundImage: user!.profilePicUrl == ''
+                                        backgroundImage: user!.profilePicPath == ''
                                           ? const AssetImage('assets/images/no_profile_picture.webp',)
-                                          : NetworkImage(user!.profilePicUrl) as ImageProvider
+                                          : NetworkImage(user!.profilePicPath) as ImageProvider
                                       ),
                                     ),
                                     SizedBox(
@@ -236,7 +235,7 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
                                         builder: (context) => EditProfilePage(
                                           currentName: user!.name,
                                           currentBio: user!.bio,
-                                          currentImageUrl: user!.profilePicUrl,
+                                          currentImageUrl: user!.profilePicPath,
                                         ),
                                       ),
                                     );

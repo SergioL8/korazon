@@ -12,12 +12,12 @@ Widget LoadingImagePlaceHolder() {
 }
 
 
-Widget LoadingTextlaceHolder() {
+Widget LoadingTextPlaceHolder({height = 30}) {
   return Shimmer.fromColors(
     baseColor: const Color.fromARGB(82, 94, 94, 94),
     highlightColor: const Color.fromARGB(82, 154, 154, 154),
     child: Container(
-      height: 30,
+      height: height.toDouble(),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         color: const Color.fromARGB(82, 94, 94, 94),

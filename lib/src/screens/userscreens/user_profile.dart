@@ -308,7 +308,7 @@ class _UserProfileState extends State<UserProfile> {
                   _loadingData 
                   ? Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 25),
-                    child: LoadingTextlaceHolder(),
+                    child: LoadingTextPlaceHolder(),
                   ) 
                   : Padding(
                     padding: const EdgeInsets.only(left: 25.0, right: 15.0),
@@ -350,7 +350,7 @@ class _UserProfileState extends State<UserProfile> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 25),
                     child: _loadingData
-                    ? LoadingTextlaceHolder()
+                    ? LoadingTextPlaceHolder()
                     : SelectableText(
                       userData!.bio,
                       style: whiteBody,
@@ -360,7 +360,7 @@ class _UserProfileState extends State<UserProfile> {
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 30),
                     
-                    child: _loadingData ? LoadingTextlaceHolder()
+                    child: _loadingData ? LoadingTextPlaceHolder()
                     : Column(
                       children: [
                         userData!.instaAcc == '' ? Container() :

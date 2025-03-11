@@ -107,8 +107,8 @@ class _CheckForAccessToEventState extends State<CheckForAccessToEvent> {
                             backgroundColor: Colors.white,
                             child: CircleAvatar(
                               backgroundColor: Colors.grey,
-                              backgroundImage: guestUser!.profilePicUrl != ''
-                                  ? NetworkImage(guestUser!.profilePicUrl)
+                              backgroundImage: guestUser!.profilePicPath != ''
+                                  ? NetworkImage(guestUser!.profilePicPath)
                                       as ImageProvider
                                   : const AssetImage(
                                       'assets/images/no_profile_picture.webp',

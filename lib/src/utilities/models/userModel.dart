@@ -1,8 +1,58 @@
-
-
-
-
 import 'package:cloud_firestore/cloud_firestore.dart';
+
+
+class LocationModel {
+  LocationModel({
+    required this.description,
+    required this.verifiedAddress,
+    this.placeID,
+    this.lat,
+    this.lon,
+    this.city,
+    this.state,
+    this.country,
+    this.postalCode,    
+  });
+
+  final String description;
+  final bool verifiedAddress;
+  final String? placeID;
+  final double? lat;
+  final double? lon;
+  final String? city;
+  final String? state;
+  final String? country;
+  final String? postalCode;  
+
+  Map<String, dynamic> toMap() {
+    return {
+      'description': description,
+      'verifiedAddress': verifiedAddress,
+      'placeID': placeID,
+      'lat': lat,
+      'lon': lon,
+      'city': city,
+      'state': state,
+      'country': country,
+      'postalCode': postalCode,
+    };
+  }
+
+  factory LocationModel.fromMap(Map<String, dynamic> map) {
+    return LocationModel(
+      description: map['description'] ?? '',
+      verifiedAddress: map['verifiedAddress'] ?? false,
+      placeID: map['placeID'],
+      lat: map['lat'],
+      lon: map['lon'],
+      city: map['city'],
+      state: map['state'],
+      country: map['country'],
+      postalCode: map['postalCode'],
+    );
+  }
+}
+
 
 class UserModel {
 
@@ -20,11 +70,13 @@ class UserModel {
     required this.qrCode,
     required this.tickets,
     required this.createdEvents,
-    required this.profilePicUrl,
+    required this.profilePicPath,
     required this.followers,
     required this.profilePicturesPath,
     required this.instaAcc,
     required this.snapAcc,
+    required this.location,
+    required this.hostIdentityVerified,
   });
 
   final String userID;
@@ -40,11 +92,13 @@ class UserModel {
   final String qrCode;
   final List<String> tickets;
   final List<String> createdEvents;
-  final String profilePicUrl;
+  final String profilePicPath;
   final List<String> followers;
   final List<String> profilePicturesPath;
   final String instaAcc;
   final String snapAcc;
+  final LocationModel? location;
+  final bool? hostIdentityVerified;
 
 
   static UserModel? fromDocumentSnapshot(DocumentSnapshot doc) {
@@ -69,11 +123,15 @@ class UserModel {
       qrCode: data['qrCode'] ?? '',
       tickets: List<String>.from(data['tickets'] ?? []),
       createdEvents: List<String>.from(data['createdEvents'] ?? []),
-      profilePicUrl: data['profilePicUrl'] ?? '',
+      profilePicPath: data['profilePicPath'] ?? '',
       followers: List<String>.from(data['followers'] ?? []),
       profilePicturesPath: List<String>.from(data['profilePicturesPath'] ?? []),
       instaAcc: data['instaAcc'] ?? '',
       snapAcc: data['snapAcc'] ?? '',
+      location: data['location'] != null 
+        ? LocationModel.fromMap(data['location'] as Map<String, dynamic>)
+        : null,
+      hostIdentityVerified: data['hostIdentityVerified'] ?? false,
     );
   }
 }

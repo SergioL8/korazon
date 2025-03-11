@@ -70,10 +70,11 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
         email: widget.email,
         password: widget.password
       );
-      print(credentials.user);
       if (credentials.user == null) {
-        print('here');
         showErrorMessage(context, content: 'Error creating user. Please try again later');
+        setState(() {
+          _siningUpLoading = false;
+        });
         return;
       }
 
@@ -81,6 +82,9 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
 
       if (qrCode == null) {
         showErrorMessage(context, content: 'Error creating qrCode. Please try again.');
+        setState(() {
+          _siningUpLoading = false;
+        });
         return;
       }
 
