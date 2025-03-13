@@ -11,6 +11,7 @@ import 'package:korazon/src/utilities/models/eventModel.dart';
 import 'package:korazon/src/utilities/models/userModel.dart';
 import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
+import 'package:korazon/src/widgets/colorfulSpinner.dart';
 import 'package:korazon/src/widgets/profileListTile.dart';
 
 class SocialPage extends StatefulWidget {
@@ -220,8 +221,7 @@ class _SocialPageState extends State<SocialPage> {
       ),
       body: _isLoading
     ? Center(
-        child: CircularProgressIndicator(
-          color: secondaryColor,
+        child: ColorfulSpinner(
         ),
       )
     : Column(
@@ -261,7 +261,7 @@ class _SocialPageState extends State<SocialPage> {
                   //           if (snapshot.connectionState ==
                   //               ConnectionState.waiting) {
                   //             return const Center(
-                  //                 child: CircularProgressIndicator());
+                  //                 child: ColorfulSpinner());
                   //           } else if (snapshot.hasError) {
                   //             return const Center(
                   //                 child: Text('Error loading hosts.'));
@@ -295,8 +295,7 @@ class _SocialPageState extends State<SocialPage> {
                             if (snapshot.connectionState ==
                                 ConnectionState.waiting) {
                               return Center(
-                                child: CircularProgressIndicator(
-                                  color: secondaryColor,
+                                child: ColorfulSpinner(
                                 ),
                               );
                             } else if (snapshot.hasError) {

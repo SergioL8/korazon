@@ -6,6 +6,7 @@ import 'package:korazon/src/utilities/models/userModel.dart';
 import 'package:korazon/src/utilities/models/eventModel.dart';
 import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
+import 'package:korazon/src/widgets/colorfulSpinner.dart';
 import 'package:korazon/src/widgets/eventCard.dart';
 import 'package:korazon/src/widgets/qrcodeImage.dart';
 
@@ -133,13 +134,13 @@ class _YourEventsState extends State<YourEvents> {
         itemBuilder: (context, index) {
           if (index == 0){
             if (_qrCodeLoading) {
-              return CircularProgressIndicator();
+              return ColorfulSpinner();
             } else {
               return QrCodeImage(user: usermodel!, onQrCodeUpdated: _updateQrCodeInParent,);
             }
           } else { 
             if (_isLoading) {
-              return CircularProgressIndicator();
+              return ColorfulSpinner();
             } else {
               final eventIndex = index -1;
             return EventCard(document: events[eventIndex], parentPage: ParentPage.yourEvents,);
@@ -180,7 +181,7 @@ class _YourEventsState extends State<YourEvents> {
 //       ),
 //       body: _isLoading 
 //       ? const Center(
-//         child: CircularProgressIndicator(),
+//         child: ColorfulSpinnerl(),
 //       )
 //       :eventUids.isEmpty
 //       ? const Center(

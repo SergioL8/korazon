@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
+import 'package:korazon/src/widgets/colorfulSpinner.dart';
 import 'package:korazon/src/widgets/pickDateTime.dart';
 import 'package:wheel_chooser/wheel_chooser.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -424,8 +425,7 @@ class EventCreationScreenState extends State<EventCreationScreen> {
                     ),
                     child: Center(
                       child: _isLoading ? 
-                        CircularProgressIndicator(
-                          color: const Color.fromRGBO(250, 177, 177, 1),
+                        ColorfulSpinner(
                         ) : 
                         Text(
                           'Post Event',

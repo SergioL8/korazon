@@ -12,6 +12,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
 import 'package:korazon/src/utilities/models/userModel.dart';
+import 'package:korazon/src/widgets/colorfulSpinner.dart';
 
 
 class BasePage extends StatefulWidget {
@@ -77,8 +78,7 @@ class _BasePage extends State<BasePage> {
     if (isHost == null) {
       return const Scaffold(
         body: Center(
-          child: CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(secondaryColor),
+          child: ColorfulSpinner(
           ),
         ),
       );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
+import 'package:korazon/src/widgets/colorfulSpinner.dart';
 import 'package:korazon/src/widgets/eventCard.dart';
 import 'package:korazon/src/utilities/utils.dart';
 
@@ -139,7 +140,7 @@ class _HomePageState extends State<HomePage> {
                     (_moreEventsleft ? 1 : 0),
                 itemBuilder: (context, index) {
                   if (_moreEventsleft && index == _documents.length) {
-                    return const Center(child: CircularProgressIndicator());
+                    return const Center(child: ColorfulSpinner());
                   }
                   return EventCard(document: _documents[index], parentPage: ParentPage.homePage,);
                 },
