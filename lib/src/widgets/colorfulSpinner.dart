@@ -66,20 +66,11 @@ class SpinnerPainter extends CustomPainter {
     final center = size.center(Offset.zero);
     final radius = (size.width - strokeWidth) / 2;
 
-    // Base arc length (80% of a full circle)
-    final baseSweepAngle = 0.8 * 2 * pi;
-
-    // Make the arc length dynamically change over time
-    //final lengthVariation = 0.15 * 2 * pi * sin(rotationValue * 2 * pi * 2);
-    final sweepAngle = baseSweepAngle; //l+ lengthVariation;
+    // Length of the arc (covers 80% of the circle)
+    final sweepAngle = 0.8 * 2 * pi;
 
     // Rotating start position
     final startAngle = rotationValue * 2 * pi + pi / 2;
-
-    // Dynamic stops for the gradient
-    double minStop = 0.0; // Always starts at the beginning
-    double midStop = 0.3 + 0.2 * sin(rotationValue * 2 * pi * 2); // Expands and shrinks
-    double maxStop = 0.75 + 0.1 * sin(rotationValue * 2 * pi * 2); // Changes with rotation
 
     // Sweep gradient to align colors dynamically with the arc
     final gradientPaint = Paint()
@@ -93,7 +84,7 @@ class SpinnerPainter extends CustomPainter {
           Color.fromARGB(255, 103, 132, 224), // Head (end of arc)
           Colors.transparent, // Invisible tail for smooth fade-out
         ],
-        stops: [minStop, midStop, maxStop, 1.0], // Dynamically changing stops
+        stops: [0.0, 0.35, 0.8, 1.0], // Defines the gradient blending
         transform: GradientRotation(startAngle), // Sync with rotation
       ).createShader(Rect.fromCircle(center: center, radius: radius));
 
@@ -112,4 +103,3 @@ class SpinnerPainter extends CustomPainter {
     return oldDelegate.rotationValue != rotationValue;
   }
 }
-
