@@ -79,7 +79,7 @@ class SpinnerPainter extends CustomPainter {
     // Dynamic stops for the gradient
     double minStop = 0.0; // Always starts at the beginning
     double midStop = 0.3 + 0.2 * sin(rotationValue * 2 * pi * 2); // Expands and shrinks
-    double maxStop = 0.85 + 0.1 * sin(rotationValue * 2 * pi * 2); // Changes with rotation
+    double maxStop = 0.75 + 0.1 * sin(rotationValue * 2 * pi * 2); // Changes with rotation
 
     // Sweep gradient to align colors dynamically with the arc
     final gradientPaint = Paint()
