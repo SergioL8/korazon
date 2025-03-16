@@ -86,7 +86,6 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     setState(() {
       isLoading = true;
     });
-    return;
     
     if (!_emailFormKey.currentState!.validate() ||
         !_passwordFormKey.currentState!.validate()) {

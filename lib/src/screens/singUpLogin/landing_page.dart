@@ -3,7 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:korazon/src/screens/singUpLogin/hostSignUpExperience/initialMessagePage.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:korazon/src/widgets/colorfulSpinner.dart';
 import 'package:korazon/src/widgets/gradient_border_button.dart';
 import 'package:korazon/src/screens/singUpLogin/loginSignupPage.dart';
 import 'package:korazon/src/utilities/utils.dart';
