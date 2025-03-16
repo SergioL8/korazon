@@ -45,4 +45,4 @@ app.*.map.json
 functions/.env
 
 #Avoid the 1 million conflicts
-node_modules/
+functions/node_modules/
