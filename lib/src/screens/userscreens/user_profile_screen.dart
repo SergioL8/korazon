@@ -7,6 +7,7 @@ import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/widgets/alertBox.dart'; // For base64 decoding
 import 'package:korazon/src/utilities/models/userModel.dart';
+import 'package:korazon/src/widgets/colorfulSpinner.dart';
 
 
 class UserSettings extends StatefulWidget{
@@ -117,7 +118,7 @@ class _UserSettingsState extends State<UserSettings> {
     ),
     body: _isLoading 
     ? Center(
-       child: CircularProgressIndicator(),
+       child: ColorfulSpinner(),
     )
     : usermodel == null ? Center (child: Text('Error Loading User. Logout and login.'),) 
     : SingleChildScrollView(

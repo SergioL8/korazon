@@ -7,6 +7,7 @@ import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/utilities/models/userModel.dart';
 import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
+import 'package:korazon/src/widgets/colorfulSpinner.dart';
 import 'package:korazon/src/widgets/eventCard.dart';
 import 'package:korazon/src/widgets/followButton.dart';
 
@@ -111,7 +112,7 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
     return isLoading
         ? const Scaffold(
             body: Center(
-              child: CircularProgressIndicator(),
+              child: ColorfulSpinner(),
             ),
           )
         : Scaffold(
@@ -306,7 +307,7 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
                         .snapshots(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
+                        return const Center(child: ColorfulSpinner());
                       }
                       if (snapshot.hasError) {
                         return Center(child: Text('Error: ${snapshot.error}'));

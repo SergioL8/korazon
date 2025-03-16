@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
+import 'package:korazon/src/widgets/colorfulSpinner.dart';
 
 class EditProfilePage extends StatefulWidget {
   final String currentName;
@@ -146,7 +147,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         ],
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: ColorfulSpinner())
           : SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),

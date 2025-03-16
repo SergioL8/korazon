@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
+import 'package:korazon/src/widgets/colorfulSpinner.dart';
 import 'package:korazon/src/widgets/selectEventCard.dart';
 import 'package:flutter/material.dart';
 import 'package:korazon/src/utilities/utils.dart';
@@ -105,7 +106,7 @@ class _SelectEventForActionState extends State<SelectEventForAction> {
             ),
           ),
       body: _isLoading // dynamically set the loading indicator or show the list of events
-        ? const Center(child: CircularProgressIndicator()) 
+        ? const Center(child: ColorfulSpinner()) 
         : listOfCreatedEvents.isEmpty  // check if the user has created any events
             ? Text("You don't have any events created") 
             : ListView.builder(

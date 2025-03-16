@@ -6,6 +6,7 @@ import 'package:korazon/src/widgets/accessToEventWidgets/denyGuestIntoPartyButto
 import 'package:korazon/src/widgets/accessToEventWidgets/tickCrossAccess.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
 import 'package:korazon/src/utilities/models/userModel.dart';
+import 'package:korazon/src/widgets/colorfulSpinner.dart';
 
 
 
@@ -57,7 +58,7 @@ class _CheckForAccessToEventState extends State<CheckForAccessToEvent> {
         future: _checkAccessToEvent(), // check if the user has access to the event and store the result in snapshot
         builder: (ctx, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) { // if checking is still in progress show a loading indicator
-            return const CircularProgressIndicator();
+            return const ColorfulSpinner();
           } else {
             if (snapshot.hasError || noUserInfo) { // if there is an error show an error message
               return const Text('An error occurred, try again later');

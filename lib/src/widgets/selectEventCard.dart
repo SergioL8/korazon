@@ -5,6 +5,7 @@ import 'package:korazon/src/utilities/utils.dart';
 import 'package:flutter/material.dart';
 import 'dart:typed_data';
 import 'package:korazon/src/utilities/models/eventModel.dart';
+import 'package:korazon/src/widgets/colorfulSpinner.dart';
 
 
 
@@ -90,10 +91,10 @@ class _SelectEventCardState extends State<SelectEventCard> {
   Widget build(BuildContext context) {
     return _errorLoading ? SizedBox() : Card(
       child: _dataLoading // if the data is still loading then the image is still loading so set the card to a loading state
-        ? const Center(child: CircularProgressIndicator())
+        ? const Center(child: ColorfulSpinner())
         : ListTile( // if the data has been loaded then show the card with the event details
           leading: _imageLoading // if the image is still loading then show a circular progress indicator only for the image
-            ? const CircularProgressIndicator()
+            ? const ColorfulSpinner()
             : Image.memory(imageData!), // once the data has been loaded show the image
           
           title: Text(eventTitle!),

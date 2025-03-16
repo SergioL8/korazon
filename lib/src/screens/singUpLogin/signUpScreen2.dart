@@ -433,7 +433,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
             //           ),
             //         ),
             //         _siningUpLoading ?
-            //           const CircularProgressIndicator() :
+            //           const Colorfullspinner() :
             //           const Icon(
             //             Icons.arrow_forward_ios,
             //             color: secondaryColor,

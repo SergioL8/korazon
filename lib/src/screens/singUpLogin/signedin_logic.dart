@@ -4,6 +4,7 @@ import 'package:korazon/src/screens/basePage.dart';
 import 'package:korazon/src/screens/singUpLogin/landing_page.dart';
 import 'package:korazon/src/screens/singUpLogin/verify_email_page.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
+import 'package:korazon/src/widgets/colorfulSpinner.dart';
 
 class isSignedLogic extends StatelessWidget {
   const isSignedLogic({super.key});
@@ -17,8 +18,7 @@ class isSignedLogic extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           // From the snapshot, we can identify if the the user is signed in, in the process of signing in or signed out
           return const Center(
-            child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(korazonColor),
+            child: ColorfulSpinner(
             ),
           );
         }
