@@ -32,23 +32,24 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   }
 
   Future<void> sendVerificationEmail() async {
-      try {
-        final HttpsCallable callable =
-            FirebaseFunctions.instance.httpsCallable('VerificationEmail');
+    debugPrint("📧 AAAAAAAA Sending verification email to ${widget.userEmail}");
+    try {
+      final HttpsCallable callable =
+          FirebaseFunctions.instance.httpsCallable('VerificationEmail');
 
-        final result = await callable.call({
-          "recipientEmail": widget.userEmail, //Its the only required data
-        });
+      final result = await callable.call({
+        "recipientEmail": widget.userEmail, //Its the only required data
+      });
 
-        if (result.data['success'] == true) {
-          showConfirmationMessage(context,
-              message: 'We have sent you a verification email');
-          debugPrint("✅ Email sent successfully!");
-        }
-      } catch (error) {
-        showErrorMessage(context, title: 'An error occurred');
-        debugPrint("❌ Error calling Firebase Function: $error");
+      if (result.data['success'] == true) {
+        showConfirmationMessage(context,
+            message: 'We have sent you a verification email');
+        debugPrint("✅ Email sent successfully!");
       }
+    } catch (error) {
+      showErrorMessage(context, title: 'An error occurred');
+      debugPrint("❌ Error calling Firebase Function: $error");
+    }
   }
 
   // Future<void> sendVerificationEmail() async {
