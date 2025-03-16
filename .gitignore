@@ -44,3 +44,7 @@ app.*.map.json
 
 # API KEY
 .env
+functions/.env
+
+#Avoid the 1 million conflicts
+functions/node_modules/

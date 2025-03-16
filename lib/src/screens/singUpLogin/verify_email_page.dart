@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:korazon/src/screens/singUpLogin/landing_page.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/screens/singUpLogin/finish_user_setup.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
+import 'package:korazon/src/widgets/confirmationMessage.dart';
 import 'package:korazon/src/widgets/gradient_border_button.dart';
 
 class VerifyEmailPage extends StatefulWidget {
@@ -24,19 +26,39 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   @override
   void initState() {
     super.initState();
-    sendVerificationEmail();
+//    sendVerificationEmail();
     _timer =
         Timer.periodic(Duration(seconds: 5), (timer) => checkEmailVerified());
   }
 
   Future<void> sendVerificationEmail() async {
-    try {
-      await FirebaseAuth.instance.currentUser?.sendEmailVerification();
-    } catch (e) {
-      debugPrint(e.toString());
-      showErrorMessage(context, title: 'Error sending verification email');
-    }
+      try {
+        final HttpsCallable callable =
+            FirebaseFunctions.instance.httpsCallable('VerificationEmail');
+
+        final result = await callable.call({
+          "recipientEmail": widget.userEmail, //Its the only required data
+        });
+
+        if (result.data['success'] == true) {
+          showConfirmationMessage(context,
+              message: 'We have sent you a verification email');
+          debugPrint("✅ Email sent successfully!");
+        }
+      } catch (error) {
+        showErrorMessage(context, title: 'An error occurred');
+        debugPrint("❌ Error calling Firebase Function: $error");
+      }
   }
+
+  // Future<void> sendVerificationEmail() async {
+  //   try {
+  //     await FirebaseAuth.instance.currentUser?.sendEmailVerification();
+  //   } catch (e) {
+  //     debugPrint(e.toString());
+  //     showErrorMessage(context, title: 'Error sending verification email');
+  //   }
+  // }
 
   Future<void> checkEmailVerified() async {
     await FirebaseAuth.instance.currentUser?.reload();

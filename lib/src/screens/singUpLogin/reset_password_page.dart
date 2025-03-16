@@ -5,6 +5,7 @@ import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
 import 'package:korazon/src/widgets/confirmationMessage.dart';
 import 'package:korazon/src/widgets/gradient_border_button.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 
 class ResetPasswordPage extends StatefulWidget {
   const ResetPasswordPage({super.key});
@@ -23,27 +24,70 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
         MaterialPageRoute(builder: (context) => const LandingPage()));
   }
 
-  void resetPassword() async {
-    final email = _emailController.text.trim();
-
-    if (email.isNotEmpty) {
-      try {
-        // Pass the actual context of the widget to the method
-      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
-
-      showConfirmationMessage(context, message: 'We have sent you a verification email');
-
-        // Navigator.of(context).pushReplacement(
-        //     MaterialPageRoute(builder: (context) => const LoginSignupPage(parentPage: ParentPage.login,)));
-
-      } catch (e) {
-        debugPrint('Error: $e');
-        showErrorMessage(context, title: 'An error occurred');
-      }
+  Future<void> sendResetPasswordEmail({
+    required String recipientEmail,
+    //required String name,
+    //required String verificationLink,
+  }) async {
+    if (!_emailFormKey.currentState!.validate()) {
+      showErrorMessage(context, title: 'Please enter a valid email address');
+      return;
     } else {
-      showErrorMessage(context, title: 'Please enter your email');
+      try {
+        debugPrint('Inside the try for ResetPasswordEmail');
+        final HttpsCallable callable =
+            FirebaseFunctions.instance.httpsCallable('ResetPasswordEmail');
+
+        final result = await callable.call({
+          "recipientEmail": recipientEmail, //Its the only required data
+        });
+
+        debugPrint('After calling ResetPasswordEmail');
+
+        if (result.data['success'] == true) {
+          showConfirmationMessage(context,
+              message: 'We have sent you a verification email');
+          debugPrint("✅ Email sent successfully to $recipientEmail!");
+        } else {
+          showErrorMessage(context,
+              title: 'An error occurred');
+          debugPrint("�� Failed to send email to $recipientEmail!");
+        }
+      // } on FirebaseFunctionsException catch (e) {
+      //   // This catches errors explicitly thrown by the callable function
+      //   // or by Firebase Functions backend.
+      //   debugPrint('❌ FirebaseFunctionsException: ${e.message}');
+      //   showErrorMessage(context,
+      //       title: e.message ?? 'A functions error occurred');
+      }
+       catch (error) {
+        //showErrorMessage(context, title: 'An error occurred');
+        debugPrint("❌ Error calling Firebase Function: $error");
+      }
     }
   }
+
+  // void resetPassword() async {
+  //   final email = _emailController.text.trim();
+
+  //   if (email.isNotEmpty) {
+  //     try {
+  //       // Pass the actual context of the widget to the method
+  //       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+
+  //       showConfirmationMessage(context,
+  //           message: 'We have sent you a verification email');
+
+  //       // Navigator.of(context).pushReplacement(
+  //       //     MaterialPageRoute(builder: (context) => const LoginSignupPage(parentPage: ParentPage.login,)));
+  //     } catch (e) {
+  //       debugPrint('Error: $e');
+  //       showErrorMessage(context, title: 'An error occurred');
+  //     }
+  //   } else {
+  //     showErrorMessage(context, title: 'Please enter your email');
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -159,7 +203,10 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                   SizedBox(height: screenHeight * 0.03),
                   GradientBorderButton(
                     onTap: () {
-                      resetPassword();
+                      //resetPassword();
+                      sendResetPasswordEmail(
+                        recipientEmail: _emailController.text.trim(),
+                      );
                     },
                     text: 'Reset Password',
                   ),
