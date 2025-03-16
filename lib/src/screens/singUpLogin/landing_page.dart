@@ -130,7 +130,6 @@ class LandingPage extends StatelessWidget {
                           text: "Sign Up",
                         ),
                         Spacer(),
-                        ColorfulSpinner(),
                         SizedBox(height: 25),
                         GradientBorderButton(
                           onTap: () {

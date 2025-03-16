@@ -5,11 +5,13 @@ import 'package:korazon/src/utilities/design_variables.dart';
 class ColorfulSpinner extends StatefulWidget {
   final double size;
   final double strokeWidth;
+  final int speed;
 
   const ColorfulSpinner({
     super.key,
     this.size = 80,
-    this.strokeWidth = 8,
+    this.strokeWidth = 5,
+    this.speed = 1000,
   });
 
   @override
@@ -22,10 +24,11 @@ class _ColorfulSpinnerState extends State<ColorfulSpinner>
 
   @override
   void initState() {
+    
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 2), // Faster spin
+      duration: Duration(milliseconds: widget.speed), // Faster spin
     )..repeat();
   }
 

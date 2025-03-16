@@ -1,14 +1,19 @@
- import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'src/screens/singUpLogin/signedin_logic.dart';
-import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter/services.dart';
 
 void main() async {
   
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Block device rotation
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+  ]);
 
   if (kIsWeb){
   await Firebase.initializeApp(

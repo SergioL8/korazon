@@ -20,7 +20,7 @@ class VerifyEmailPage extends StatefulWidget {
 
 class _VerifyEmailPageState extends State<VerifyEmailPage> {
   bool _emailVerified = false;
-  //final bool _isLoading = false;
+  // final bool _isLoading = false;
   late Timer _timer;
 
   @override

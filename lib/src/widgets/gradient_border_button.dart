@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
+import 'package:korazon/src/widgets/colorfulSpinner.dart';
 
 final iconGradient = LinearGradient(
   begin: Alignment.centerLeft,
@@ -12,10 +13,11 @@ final iconGradient = LinearGradient(
 
 
 class GradientBorderButton extends StatelessWidget {
-  const GradientBorderButton({super.key, required this.onTap, required this.text});
+  const GradientBorderButton({super.key, required this.onTap, required this.text, this.loading = false});
   
   final VoidCallback onTap;
   final String text;
+  final bool loading;
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +57,8 @@ class GradientBorderButton extends StatelessWidget {
                     ),
                   ),
                 ),
-              ShaderMask(
+              loading ? ColorfulSpinner(size: 35, strokeWidth: 3,)
+              : ShaderMask(
                 shaderCallback: (Rect bounds) {
                   return iconGradient.createShader(bounds);
                 },

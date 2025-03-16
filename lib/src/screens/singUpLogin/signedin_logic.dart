@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:korazon/src/screens/basePage.dart';
 import 'package:korazon/src/screens/singUpLogin/landing_page.dart';
 import 'package:korazon/src/screens/singUpLogin/verify_email_page.dart';
-import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/widgets/colorfulSpinner.dart';
 
 class isSignedLogic extends StatelessWidget {

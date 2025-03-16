@@ -83,8 +83,11 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
 
   /// Function that is executed when clicking the login button
   void _login() async {
-    isLoading = true;
-
+    setState(() {
+      isLoading = true;
+    });
+    return;
+    
     if (!_emailFormKey.currentState!.validate() ||
         !_passwordFormKey.currentState!.validate()) {
       isLoading = false;
@@ -439,6 +442,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                               GradientBorderButton(
                                 onTap: login ? _login : _submitSignUpForm,
                                 text: login ? 'Login' : 'Continue',
+                                loading: isLoading,
                               ),
                               SizedBox(height: 25),
                               Text(
