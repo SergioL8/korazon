@@ -28,7 +28,11 @@ class isSignedLogic extends StatelessWidget {
             // Base page is the widget where all the different pages of the app are displayed
             // Wether a host is confirmed or not is going to be checked within each screen of the app.
           } else {
-            return VerifyEmailPage(userEmail: user.email);
+            return VerifyEmailPage(
+              userEmail: user.email,
+              isHost: false,
+              isLogin: true,
+              );
           }
         } else {
           return const LandingPage(); // This is the widget where the user can sign in

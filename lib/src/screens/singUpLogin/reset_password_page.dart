@@ -66,27 +66,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
     }
   }
 
-  // void resetPassword() async {
-  //   final email = _emailController.text.trim();
-
-  //   if (email.isNotEmpty) {
-  //     try {
-  //       // Pass the actual context of the widget to the method
-  //       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
-
-  //       showConfirmationMessage(context,
-  //           message: 'We have sent you a verification email');
-
-  //       // Navigator.of(context).pushReplacement(
-  //       //     MaterialPageRoute(builder: (context) => const LoginSignupPage(parentPage: ParentPage.login,)));
-  //     } catch (e) {
-  //       debugPrint('Error: $e');
-  //       showErrorMessage(context, title: 'An error occurred');
-  //     }
-  //   } else {
-  //     showErrorMessage(context, title: 'Please enter your email');
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
