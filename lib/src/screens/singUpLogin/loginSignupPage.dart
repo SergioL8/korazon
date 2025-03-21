@@ -280,10 +280,14 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                                   focusNode: _emailFocusNode,
                                   cursorColor: Colors.white,
                                   validator: (value) {
-                                    if (value == null ||
-                                        !RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$')
-                                            .hasMatch(value)) {
-                                      return 'Please enter a valid email address';
+                                    if (widget.parentPage == ParentPage.signup) {
+                                      if (value == null || !RegExp(r'^[^\s@]+@colorado\.edu$').hasMatch(value)) {
+                                        return 'Please enter a valid @colorado.edu email address';
+                                      }
+                                    } else {
+                                      if (value == null || !RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(value)) {
+                                        return 'Please enter a valid email address';
+                                      }
                                     }
                                     return null;
                                   },
