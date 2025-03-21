@@ -19,6 +19,7 @@ enum HostAction {
 enum ErrorAction {
   none,
   logout,
+  verify,
 }
 
 
