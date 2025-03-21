@@ -34,9 +34,8 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   @override
   void initState() {
     super.initState();
-//    sendVerificationEmail();
-    _timer =
-        Timer.periodic(Duration(seconds: 5), (timer) => checkEmailVerified());
+    sendVerificationEmail();
+    _timer = Timer.periodic(Duration(seconds: 5), (timer) => checkEmailVerified());
   }
 
   Future<void> sendVerificationEmail() async {
@@ -215,11 +214,6 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                         decorationColor: Colors.white, // Underline color
                         decorationThickness: 1, // Thickness of the underline
                       ),
-                      // TextStyle(
-                      //   color: tertiaryColor,
-                      //   fontSize: 18,
-                      //   fontWeight: FontWeight.w700,
-                      // ),
                     ),
                     onTap: () async {
                       if (mounted) {
