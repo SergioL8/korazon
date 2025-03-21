@@ -61,6 +61,7 @@ class UserModel {
     required this.username,
     required this.email,
     required this.isHost,
+    required this.isVerifiedHost,
     required this.name,
     required this.lastName,
     required this.gender,
@@ -83,6 +84,7 @@ class UserModel {
   final String email;
   final String username;
   final bool isHost;
+  final bool isVerifiedHost;
   final String name;
   final String lastName;
   final String gender;
@@ -114,6 +116,7 @@ class UserModel {
       email: data['email'] ?? '',
       username: data['username'] ?? 'No username',
       isHost: data['isHost'] ?? false,
+      isVerifiedHost: data['isVerifiedHost'] ?? false,
       name: data['name'] ?? 'No name',
       lastName: data['lastName'] ?? 'No last name',
       gender: data['gender'] ?? 'Unknown',

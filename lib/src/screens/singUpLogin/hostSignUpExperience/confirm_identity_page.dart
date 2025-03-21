@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:korazon/src/screens/basePage.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
+import 'package:korazon/src/utilities/models/identityCodeModel.dart';
 import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
+import 'package:korazon/src/widgets/gradient_border_button.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-
-
 class ConfirmIdentityPage extends StatefulWidget {
-
   const ConfirmIdentityPage({super.key});
 
   @override
@@ -18,11 +19,9 @@ class ConfirmIdentityPage extends StatefulWidget {
 }
 
 class _ConfirmIdentityPageState extends State<ConfirmIdentityPage> {
-
   final TextEditingController _pinController = TextEditingController();
-  // bool _loading = false; // STILL NEED TO IMPLEMENT LOADING
+  bool _isLoading = false;
   bool _error = false;
-
 
   // Dispose controllers
   @override
@@ -31,81 +30,162 @@ class _ConfirmIdentityPageState extends State<ConfirmIdentityPage> {
     super.dispose();
   }
 
-
-  // this function checks if the code is valid, 
+  // this function checks if the code is valid,
   // updates the user's document to mark the account as verified
   // and updates the code document to store who and when the code was used
+
   void checkCode(String code) async {
+    _isLoading = true;
 
     // search for the code in the database
-    final querySnapShot = await FirebaseFirestore.instance.collection('users').where('codes', isEqualTo: code).limit(1).get();
+    final codeQuery = await FirebaseFirestore.instance
+        .collection('codes')
+        .where('code', isEqualTo: code)
+        .limit(1)
+        .get();
 
-    // if the code is not found, show an error message
-    if (querySnapShot.docs.isEmpty) {
-      setState(() {
-        _error = true; // error should be used to display visual feedback to the user
-      });
-      showErrorMessage(context, content: 'Invalid code. Please try again');
+    if (codeQuery.docs.isEmpty) {
+      showErrorMessage(context, content: 'Invalid code');
       return;
-    }
+    } else {
+      // Accessing the first of the documents retrieves, documents retrieved are limited to 1 so it will only return 1 anyway
+      // but it is still a good practice
+      final codeDocument = codeQuery.docs.first;
 
-    // get the user document
-    String? currentUser = FirebaseAuth.instance.currentUser?.uid;
-    if (currentUser == null) {
-      showErrorMessage(context, content: 'Error loading user. Please logout and login again', errorAction: ErrorAction.logout);
+      // Now we store the query document in the model
+      final IdentityCodeModel? codeModel =
+          IdentityCodeModel.fromDocumentSnapshot(codeDocument);
+
+      if (codeModel == null) {
+        showErrorMessage(context, content: 'Invalid code, contact support');
+        return;
+      } else {
+        String? currentUser = FirebaseAuth.instance.currentUser?.uid;
+        if (currentUser == null) {
+          showErrorMessage(context,
+              content: 'Error loading user. Please logout and login again',
+              errorAction: ErrorAction.logout);
+        } else {
+          // Now let's first update the code to mark it as used and add additional information
+          await FirebaseFirestore.instance
+              .collection('codes')
+              .doc(codeModel.documentID)
+              .update({
+            'used': true,
+            'dateUsed': DateTime.now(),
+            'fratUID': currentUser,
+          });
+
+          // Update the user's document to mark the account as verified
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(currentUser)
+              .update({
+            'isVerifiedHost': true,
+          });
+
+          //TODO: Create another random code for verification and upload it to Firebase and also send an email to Korazon.dev with the new code
+
+          // Now lets get out of here
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => const BasePage()));
+        }
+      }
     }
+    _isLoading = false;
   }
-
 
   @override
   Widget build(BuildContext context) {
+    double screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
-      backgroundColor: backgroundColorBM,
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          children: [
-            SizedBox(height: MediaQuery.of(context).padding.top + 20), // add the notch padding
-            Text(
-              'Confirm Identity',
-              style: whiteTitle,
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'If you have already received a key, please enter it below.',
-              style: whiteBody,
-              textAlign: TextAlign.center,
-            ),
-            PinCodeTextField( // pin code field imported from pin_code_fields package
-              appContext: context,
-              length: 6, // length of the pin code
-              controller: _pinController,
-              keyboardType: TextInputType.text,
-              animationType: AnimationType.fade, // animation of numbers when they are entered
-              textStyle: whiteBody,
-              textCapitalization: TextCapitalization.characters, // set the keyboard to uppercase
-              enableActiveFill: true, // enable fill in the boxes
-              inputFormatters: [ // force the input to be uppercase when entered
-                TextInputFormatter.withFunction((oldValue, newValue) {
-                  return newValue.copyWith(text: newValue.text.toUpperCase());
-                }),
-              ],
-              pinTheme: PinTheme( // theme of the individual boxes
-                shape: PinCodeFieldShape.box,
-                borderRadius: BorderRadius.circular(10), // make the boxes rounded
-                borderWidth: 0, // no border
-                inactiveFillColor: Colors.white.withOpacity(0.15),
-                activeFillColor: Colors.white.withOpacity(0.15),
-                selectedFillColor: Colors.white.withOpacity(0.15),
-                activeColor: _error ? Colors.red : Colors.transparent,
-                inactiveColor: _error ? Colors.red : Colors.transparent,
-                selectedColor: _error ? Colors.red : Colors.transparent,
+        backgroundColor: backgroundColorBM,
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            children: [
+              // 20 pixels from the beginning of the safe area (outside battery and time bar)
+              SizedBox(
+                  height:
+                      MediaQuery.of(context).padding.top + screenHeight * 0.15),
+              Text(
+                'Confirm Identity',
+                style: whiteTitle,
               ),
-            )
-          ],
-        ),
-      )
-    );
+              SizedBox(height: screenHeight * 0.1),
+              Text(
+                'If you have already received a key, please enter it below. Otherwise, you can skip it by now.',
+                style: whiteBody,
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: screenHeight * 0.05),
+              PinCodeTextField(
+                // pin code field imported from pin_code_fields package
+                appContext: context,
+                length: 6, // length of the pin code
+                controller: _pinController,
+                keyboardType: TextInputType.text,
+                animationType: AnimationType
+                    .fade, // animation of numbers when they are entered
+                textStyle: whiteBody,
+                textCapitalization: TextCapitalization
+                    .characters, // set the keyboard to uppercase
+                enableActiveFill: true, // enable fill in the boxes
+                inputFormatters: [
+                  // force the input to be uppercase when entered
+                  TextInputFormatter.withFunction((oldValue, newValue) {
+                    return newValue.copyWith(text: newValue.text.toUpperCase());
+                  }),
+                ],
+                pinTheme: PinTheme(
+                  // theme of the individual boxes
+                  shape: PinCodeFieldShape.box,
+                  borderRadius:
+                      BorderRadius.circular(10), // make the boxes rounded
+                  borderWidth: 0, // no border
+                  inactiveFillColor: Colors.white.withOpacity(0.15),
+                  activeFillColor: Colors.white.withOpacity(0.15),
+                  selectedFillColor: Colors.white.withOpacity(0.15),
+                  activeColor: _error ? Colors.red : Colors.transparent,
+                  inactiveColor: _error ? Colors.red : Colors.transparent,
+                  selectedColor: _error ? Colors.red : Colors.transparent,
+                ),
+              ),
+              //! Needs change
+              SizedBox(height: screenHeight * 0.2),
+              GestureDetector(
+                onTap: () => Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (context) => const BasePage())),
+                child: Text(
+                  'Skip identity verification',
+                  style: whiteBody.copyWith(
+                    decoration: TextDecoration.underline,
+                    decorationColor: Colors.white, // Underline color
+                    decorationThickness: 1, // Thickness of the underline
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 8,
+              ),
+              Text(
+                'Warning: If you do not confirm your identity, you will not be able to access certain features of the app.(Learn more)',
+                style: GoogleFonts.josefinSans(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: const Color.fromARGB(255, 134, 134, 134)),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+
+              GradientBorderButton(
+                  loading: _isLoading,
+                  onTap: () => checkCode(_pinController.text),
+                  text:
+                      'Verify Code'), // Use () => to pass the function reference
+            ],
+          ),
+        ));
   }
 }
- 
