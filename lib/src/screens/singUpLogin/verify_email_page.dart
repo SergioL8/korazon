@@ -75,7 +75,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       _timer.cancel();
       // Here is where the widget info is useful, we have 3 possible scenarios:
 
-      if (widget.isLogin){
+      if (widget.isLogin == true){
 
       // 1. User has already created his account but left before verifying his/her email but 
       // is already logged in or it just logged in in the Landing page
@@ -83,16 +83,16 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
         Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => const BasePage()));
 
-      } else if (widget.isHost) {
+      } else if (widget.isHost == true) {
 
       // 2. New Host creating his account
 
-        Navigator.of(context).pushReplacement(
+        Navigator.of(context).push(
         MaterialPageRoute(builder: (context) => const ConfirmIdentityPage()));
 
       } else {
         // 3. New User creating his account
-        Navigator.of(context).pushReplacement(
+        Navigator.of(context).push(
         MaterialPageRoute(builder: (context) => const FinishUserSetup()));
       }
     }
