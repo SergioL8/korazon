@@ -88,12 +88,12 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       // 2. New Host creating his account
 
         Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const FinishUserSetup()));
+        MaterialPageRoute(builder: (context) => const ConfirmIdentityPage()));
 
       } else {
         // 3. New User creating his account
         Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const ConfirmIdentityPage()));
+        MaterialPageRoute(builder: (context) => const FinishUserSetup()));
       }
     }
   }
