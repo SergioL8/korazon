@@ -32,7 +32,7 @@ class _FinishUserSetupState extends State<FinishUserSetup> {
   UserModel? user;
   bool infoAdded = false;
   final uid = FirebaseAuth.instance.currentUser?.uid;
-  // bool _isLoading = false; // LOADING NEEDS TO BE IMPLEMENTED
+  bool _isLoading = false; // LOADING NEEDS TO BE IMPLEMENTED
 
 
 
@@ -104,9 +104,9 @@ class _FinishUserSetupState extends State<FinishUserSetup> {
     // Dismiss the keyboard
     FocusScope.of(context).unfocus();
 
-    // setState(() {
-    //   _isLoading = true;
-    // });
+    setState(() {
+      _isLoading = true;
+    });
 
     if (_imageController != null) {
       // compress the image (compressImage is a helper function that can be found under the utils folder)
@@ -161,9 +161,9 @@ class _FinishUserSetupState extends State<FinishUserSetup> {
     _instaGramController.clear();
     _imageController = null;
 
-    // setState(() {
-    //   _isLoading = false;
-    // });
+    setState(() {
+      _isLoading = false;
+    });
 
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -281,6 +281,7 @@ class _FinishUserSetupState extends State<FinishUserSetup> {
                 GradientBorderButton(
                   onTap: infoAdded ? submitProfileCompletion : skipPage,
                   text: infoAdded ? 'Save' : 'Skip',
+                  loading: _isLoading,
                 ),
               ],
             ),

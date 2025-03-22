@@ -414,6 +414,7 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
             GradientBorderButton(
               onTap: signUpUser,
               text: 'Start Korazon',
+              loading: _siningUpLoading,
             ),
 
             // InkWell( // make the container clickable

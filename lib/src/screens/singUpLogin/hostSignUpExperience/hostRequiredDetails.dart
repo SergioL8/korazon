@@ -284,6 +284,7 @@ class _HostRequiredDetailsState extends State<HostRequiredDetails> {
                   GradientBorderButton(
                     onTap: signUpHost,
                     text: 'Create Account',
+                    loading: _signingUpLoading,
                   ),
                   const SizedBox(height: 35),
                 ],
