@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:korazon/src/screens/singUpLogin/hostSignUpExperience/confirm_identity_page.dart';
 import 'package:korazon/src/screens/singUpLogin/landing_page.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/utilities/utils.dart';
@@ -52,7 +53,13 @@ void showErrorMessage(BuildContext context, {String title = 'Something went wron
                 builder: (context) => const LandingPage(),
               ),
             );
-          } : () {
+          } : errorAction == ErrorAction.verify ? () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const ConfirmIdentityPage(),
+              ),
+            );          }
+          :() {
             Navigator.of(context).pop();
           },
           child: Text(

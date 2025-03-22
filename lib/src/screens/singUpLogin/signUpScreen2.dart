@@ -103,7 +103,12 @@ class _SignUpScreen2State extends State<SignUpScreen2> {
 
       // Why is this necessary push needed? Because even though the streambuild of "signedin_logic.dart" is listening to the authentication state, we are
       // not in the same page that the streambuilder has returned. So we need to push the new page to the navigator stack.
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => VerifyEmailPage(userEmail: widget.email)));
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => VerifyEmailPage(
+          userEmail: widget.email,
+          isHost: false,
+          isLogin: false,
+          )));
 
     } on FirebaseAuthException catch(e) {
       if (e.code == 'email-already-in-use') {

@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:korazon/src/screens/basePage.dart';
+import 'package:korazon/src/screens/singUpLogin/hostSignUpExperience/confirm_identity_page.dart';
 import 'package:korazon/src/screens/singUpLogin/landing_page.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/screens/singUpLogin/finish_user_setup.dart';
@@ -11,8 +13,14 @@ import 'package:korazon/src/widgets/gradient_border_button.dart';
 
 class VerifyEmailPage extends StatefulWidget {
   final String? userEmail;
+  final bool isHost;
+  final bool isLogin;
 
-  const VerifyEmailPage({super.key, required this.userEmail});
+  const VerifyEmailPage({super.key, 
+  required this.userEmail,
+  required this.isHost,
+  required this.isLogin,
+  });
 
   @override
   State<VerifyEmailPage> createState() => _VerifyEmailPageState();
@@ -26,9 +34,8 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   @override
   void initState() {
     super.initState();
-//    sendVerificationEmail();
-    _timer =
-        Timer.periodic(Duration(seconds: 5), (timer) => checkEmailVerified());
+    sendVerificationEmail();
+    _timer = Timer.periodic(Duration(seconds: 5), (timer) => checkEmailVerified());
   }
 
   Future<void> sendVerificationEmail() async {
@@ -52,15 +59,6 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     }
   }
 
-  // Future<void> sendVerificationEmail() async {
-  //   try {
-  //     await FirebaseAuth.instance.currentUser?.sendEmailVerification();
-  //   } catch (e) {
-  //     debugPrint(e.toString());
-  //     showErrorMessage(context, title: 'Error sending verification email');
-  //   }
-  // }
-
   Future<void> checkEmailVerified() async {
     await FirebaseAuth.instance.currentUser?.reload();
     setState(() {
@@ -68,15 +66,35 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
           FirebaseAuth.instance.currentUser?.emailVerified ?? false;
       // emailVerified is a boolean that returns true if the user's email is verified
     });
-    // IF EMAIL IS NOT VERIFIED WE DO NOTHING, WE KEEP WAITING
+    // If email is not verified, we do nothing, we keep waiting
     if (!_emailVerified) {
       return;
 
-      // IF THE AUTHENTICATED USE IS NOT AN ASSOCIATION WE LOG HIM IN BECAUSE HE ALREADY HAS A FIRESTORE DOCUMENT
     } else {
+
       _timer.cancel();
-      Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const FinishUserSetup()));
+      // Here is where the widget info is useful, we have 3 possible scenarios:
+
+      if (widget.isLogin){
+
+      // 1. User has already created his account but left before verifying his/her email but 
+      // is already logged in or it just logged in in the Landing page
+
+        Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const BasePage()));
+
+      } else if (widget.isHost) {
+
+      // 2. New Host creating his account
+
+        Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const FinishUserSetup()));
+
+      } else {
+        // 3. New User creating his account
+        Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const ConfirmIdentityPage()));
+      }
     }
   }
 
@@ -196,11 +214,6 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                         decorationColor: Colors.white, // Underline color
                         decorationThickness: 1, // Thickness of the underline
                       ),
-                      // TextStyle(
-                      //   color: tertiaryColor,
-                      //   fontSize: 18,
-                      //   fontWeight: FontWeight.w700,
-                      // ),
                     ),
                     onTap: () async {
                       if (mounted) {

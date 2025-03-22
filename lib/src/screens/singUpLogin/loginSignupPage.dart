@@ -112,6 +112,8 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
           MaterialPageRoute(
             builder: (context) => VerifyEmailPage(
               userEmail: _emailController.text,
+              isHost: false,
+              isLogin: true,
             ),
           ),
         );

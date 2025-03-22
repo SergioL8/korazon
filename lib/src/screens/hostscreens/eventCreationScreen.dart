@@ -52,24 +52,6 @@ class EventCreationScreenState extends State<EventCreationScreen> {
     //String? profilePicUrl,
   ) async {
 
-    if (uid == null) {
-      showErrorMessage(context, content: 'There was an error loading your user, please logout and login again', errorAction: ErrorAction.logout);
-      return;
-    }
-
-    var userDocument = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(uid)
-          .get();
-
-    user = UserModel.fromDocumentSnapshot(userDocument);
-
-    if (user == null) {
-      showErrorMessage(context, content: 'There was an error loading your user, please logout and login again', errorAction: ErrorAction.logout);
-      return;
-    }
-  
-
     // Dismiss the keyboard
     FocusScope.of(context).unfocus();
 
@@ -99,6 +81,26 @@ class EventCreationScreenState extends State<EventCreationScreen> {
       _isLoading = true; // set the loading spinner to true
     });
 
+    if (uid == null) {
+      showErrorMessage(context, content: 'There was an error loading your user, please logout and login again', errorAction: ErrorAction.logout);
+      return;
+    }
+
+    var userDocument = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .get();
+
+    user = UserModel.fromDocumentSnapshot(userDocument);
+
+    if (user == null) {
+      showErrorMessage(context, content: 'There was an error loading your user, please logout and login again', errorAction: ErrorAction.logout);
+      return;
+    }
+    if (user!.isVerifiedHost == false) {
+      showErrorMessage(context, content: 'Only verified users can post events', errorAction: ErrorAction.verify);
+      return;
+    }
 
     // compress the image (compressImage is a helper function that can be found under the utils folder)
     _photofile = await compressImage(_photofile!, 50);

@@ -24,9 +24,15 @@ class isSignedLogic extends StatelessWidget {
         if (snapshot.hasData) {
           final user = snapshot.data as User;
           if (user.emailVerified) {
-            return const BasePage(); // Base page is the widget where all the different pages of the app are displayed
+            return const BasePage(); 
+            // Base page is the widget where all the different pages of the app are displayed
+            // Wether a host is confirmed or not is going to be checked within each screen of the app.
           } else {
-            return VerifyEmailPage(userEmail: user.email);
+            return VerifyEmailPage(
+              userEmail: user.email,
+              isHost: false,
+              isLogin: true,
+              );
           }
         } else {
           return const LandingPage(); // This is the widget where the user can sign in
@@ -36,4 +42,4 @@ class isSignedLogic extends StatelessWidget {
   }
 }
 
-//! THIS PAGE SHOULD BE PART OF THE basePage.dart file
+

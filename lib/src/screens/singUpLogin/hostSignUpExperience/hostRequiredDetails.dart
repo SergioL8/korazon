@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:korazon/src/screens/singUpLogin/hostSignUpExperience/confirm_identity_page.dart';
+import 'package:korazon/src/screens/singUpLogin/verify_email_page.dart';
 import 'package:korazon/src/utilities/models/userModel.dart';
 import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
@@ -135,7 +135,12 @@ class _HostRequiredDetailsState extends State<HostRequiredDetails> {
       });
 
       // push the confirm identity page
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => ConfirmIdentityPage()));
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => VerifyEmailPage(
+          userEmail: widget.email.trim(),
+          isHost: true,
+          isLogin: false,
+          )));
 
     } on FirebaseAuthException catch(e) { // catch any errors that may occur during the creation of the user
       if (e.code == 'email-already-in-use') {
