@@ -27,7 +27,7 @@ class EventDetails extends StatelessWidget {
     final double eventAge = event.age;
     final String hostName = event.hostName;
     final String hostId = event.hostId;
-    final String hostProfilePicUrl = event.hostProfilePicUrl;
+    final String hostProfilePicUrl = event.profilePicPath;
 
 
     return Scaffold(

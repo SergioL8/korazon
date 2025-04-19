@@ -3,7 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
 import 'package:korazon/src/widgets/colorfulSpinner.dart';
-import 'package:korazon/src/widgets/pickDateTime.dart';
+import 'package:korazon/src/widgets/selectAddressBox.dart';
+import 'package:korazon/src/widgets/selectDateTime.dart';
 import 'package:wheel_chooser/wheel_chooser.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -22,7 +23,6 @@ class EventCreationScreen extends StatefulWidget {
 
 
 
-
 class EventCreationScreenState extends State<EventCreationScreen> {
 
   // get the uid of the host creating the event
@@ -30,15 +30,51 @@ class EventCreationScreenState extends State<EventCreationScreen> {
 
   // Variable declaration
   final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _dateTimeController = TextEditingController();
+  Timestamp? _startDateTimeController;
+  Timestamp? _endDateTimeController;
   TextEditingController _ageController = TextEditingController(text: '18'); // set initial value of the age to 18 (you need this because if the wheel is not moved, the controller will not be updated)
   final TextEditingController _descriptionController = TextEditingController();
-  final TextEditingController _locationController = TextEditingController();
   final TextEditingController _priceController = TextEditingController(text: '0.00'); // set initial value of the price to 0.00
   UserModel? user;
+  final FocusNode eventTitleFocousNode = FocusNode();
+  final FocusNode descriptionFocusNode = FocusNode();
+  bool isEventTitleFocused = false;
+  bool isDescriptionFocused = false;
+  bool addressError = false;
+  LocationModel? _selectedLocation;
 
   bool _isLoading = false; // this variable will be used to show a loading spinner when the user clicks the submit button
   Uint8List? _photofile; // this variable will be used to store the image file that the user uploads
+
+
+
+
+  // call back function from the select address box
+  void _onAddressSelected(LocationModel location) {
+    setState(() {
+      _selectedLocation = location; // update the selected location
+      if (addressError) { // this variable is used to show an error in the address box. So we update it to false here if it was true and if the address is verified now
+        if (_selectedLocation!.verifiedAddress == true) {
+          addressError = false;
+        }
+      }
+    });
+  }
+
+  void _onDateTimeSelected(DateTime? startDateTime, DateTime? endDateTime) {
+    debugPrint('Start date time: $startDateTime');
+    debugPrint('End date time: $endDateTime');
+    if (startDateTime == null) {
+      _startDateTimeController = null;
+    } else{
+      _startDateTimeController = Timestamp.fromDate(startDateTime); // update the start date time controller
+    }
+    if (endDateTime == null) {
+      _endDateTimeController = null;
+    } else {
+      _endDateTimeController = Timestamp.fromDate(endDateTime); // update the end date time controller
+    }
+  }
 
 
 
@@ -60,12 +96,15 @@ class EventCreationScreenState extends State<EventCreationScreen> {
       showErrorMessage(context, title: 'Add a title to post your event.');
       return;
     }
-    if (_dateTimeController.text.isEmpty) {
+    if (_startDateTimeController == null) {
       showErrorMessage(context, title: 'Please select a time and date.');
       return;
     }
-    if (_locationController.text.isEmpty) {
-      showErrorMessage(context, title: 'Please select a location.');
+    if (_selectedLocation == null) { // if no address has been selected, show an error message
+      setState(() {
+        addressError = true;
+      });
+      showErrorMessage(context, content: 'Please select an address');
       return;
     }
     if (_photofile == null) {
@@ -124,12 +163,13 @@ class EventCreationScreenState extends State<EventCreationScreen> {
       // save the event to firebase firestore
       DocumentReference docRef = await FirebaseFirestore.instance.collection('events').add({
         'title': _titleController.text,
+        'photoPath': fileRef.fullPath,
         'description': _descriptionController.text,
-        'dateTime': _dateTimeController.text,
-        'location': _locationController.text,
+        'location': _selectedLocation!.toMap(), // this is a helper function that converts the location to a map
+        'startDateTime': _startDateTimeController,
+        'endDateTime': _endDateTimeController,
         'price': double.parse(_priceController.text),
         'age': double.parse(_ageController.text),
-        'photoPath': fileRef.fullPath,
         
         // Host variables
         'hostId': uid,
@@ -146,10 +186,10 @@ class EventCreationScreenState extends State<EventCreationScreen> {
 
       // Clear all controllers
       _titleController.clear();
-      _dateTimeController.clear();
+      _startDateTimeController = null;
+      _endDateTimeController = null;
       _ageController.clear();
       _descriptionController.clear();
-      _locationController.clear();
       _priceController.clear();
       _photofile = null; // Clear the image file
 
@@ -172,279 +212,301 @@ class EventCreationScreenState extends State<EventCreationScreen> {
 
 
 
+  // intiailize the focus for the event title
+  @override
+  void initState() {
+    super.initState();
+    eventTitleFocousNode.addListener(() {
+      setState(() {
+        isEventTitleFocused = eventTitleFocousNode.hasFocus;
+      });
+    });
+    descriptionFocusNode.addListener(() {
+      setState(() {
+        isDescriptionFocused = descriptionFocusNode.hasFocus;
+      });
+    });
+  }
+
+
+
+
+
   @override
   Widget build(BuildContext context) {
     
-    return Scaffold(
-      backgroundColor: tertiaryColor,
-      appBar: AppBar(
-            backgroundColor: appBarColor,
-            automaticallyImplyLeading: false,
-            title: Row(
-              children: [
-                const Text('Create an Event',
-                style: TextStyle(
-                  color: secondaryColor,
-                  fontWeight: primaryFontWeight,
-                  fontSize: 32.0,
-                ),
-                ),
-              ],
-            ),
-            bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(2.0),
-              child: Container(
-                color: dividerColor,
-                height: barThickness,
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus(); // Dismiss the keyboard
+      },
+      child: Scaffold(
+        backgroundColor: backgroundColorBM,
+        appBar: AppBar(
+          backgroundColor: backgroundColorBM,
+          automaticallyImplyLeading: false,
+          title: Row(
+            children: [
+              const Text('Create Event',
+              style: TextStyle(
+                color: tertiaryColor,
+                fontWeight: primaryFontWeight,
+                fontSize: 32.0,
+              ),
+              ),
+            ],
+          ),
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(2.0),
+            child: Container(
+              height: barThickness,
+              decoration: const BoxDecoration(
+                gradient: mainGradient,
               ),
             ),
           ),
-      body: Center(
-        child: SingleChildScrollView( // makes the column scrollable
-          child: Padding(
-            padding: EdgeInsets.all(MediaQuery.of(context).size.height * 0.03), // 3% padding on all sides
-            child: Column(
-              children: [
-
-
-                TextField( // TITLE text field
-                  style: TextStyle( // change the size of the input text (the text when typing)
-                    fontSize: 40,
-                  ),
-                  controller: _titleController, // set the controller
-                  decoration: InputDecoration(
-                    labelStyle: TextStyle( // change the size of the label text
-                      fontSize: 40,
-                    ),
-                    labelText: 'Event Title',
-                    ),
-                ),
-
-
-                const SizedBox(height: 20),
-
-                // UPLOAD IMAGE
-                InkWell( // this will make the container clickable
-                  onTap: () async {
-                    Uint8List? file = await selectImage(context); // get the image file from the user
-                    if (file != null) {
-                      setState(() {
-                        _photofile = file; // set the image file to the file that the user uploaded
-                      });
-                    }
-                  },
-                  child: Container(
-                    height: MediaQuery.of(context).size.width, // Set height equal to the width of the screen
-                    width: double.infinity, // take the full width of the screen
-
-                    // if there is no image uploaded, set the container to default style
-                    decoration: _photofile == null ? 
-                    BoxDecoration( 
-                      borderRadius: BorderRadius.circular(15), // rounded corners
-                      color: const Color.fromARGB(255, 158, 158, 158), // set background color of the container to grey
-                    ) :
-                    // if there is an image uploaded, set the container to the image
-                    BoxDecoration(
-                      borderRadius: BorderRadius.circular(15), // rounded corners
-                      image: DecorationImage(
-                        image: MemoryImage(_photofile!), // set the image to the image that the user uploaded
-                        fit: BoxFit.cover, // cover the whole container with the image
+        ),
+        body: Center(
+          child: SingleChildScrollView( // makes the column scrollable
+            child: Padding(
+              padding: EdgeInsets.all(MediaQuery.of(context).size.height * 0.03), // 3% padding on all sides
+              child: Column(
+                children: [
+                  const SizedBox(height: 15), // add some space at the top
+                  TextField( // TITLE text field
+                    controller: _titleController, // set the controller
+                    focusNode: eventTitleFocousNode, // set the focus node
+                    style: whiteSubtitle,
+                    cursorColor: Colors.white,
+                    textCapitalization: TextCapitalization.sentences,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white.withOpacity(0.07),
+                      labelText: 'Event Title',
+                      labelStyle: whiteTitle.copyWith(
+                        fontWeight: isEventTitleFocused ? FontWeight.w800 : FontWeight.w400,
+                      ),
+                      floatingLabelBehavior: FloatingLabelBehavior.always, // Always show label at the top left
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15), // rounded corners
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15), // Rounded corners
+                        borderSide: BorderSide(color: Colors.white)
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15), // Rounded corners
+                        borderSide: BorderSide(color: Colors.white)
                       ),
                     ),
-
-                    child: Center( // child is the same for both cases of _photofile null or not since the user might want to change the image
-                      child: Icon(Icons.upload, size: 50, color: Colors.white), // add an icon to the center of the container
-                    ),
                   ),
-                ),
-
-
-                const SizedBox(height: 20),
-
-
-                TextField( // DESCRIPTION text field
-                  minLines: 3, // make the text field thicker
-                  maxLines: 5,
-                  controller: _descriptionController, // set the controller
-                  decoration: InputDecoration(
-                    labelText: 'Description...',
-                    alignLabelWithHint: true, // Aligns the label with the top of the text field
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15), // rounded corners
-                    ),
-                  ),
-                ),
-
-
-                const SizedBox(height: 20),
-
-
-                TextField( // LOCATION text field
-                  controller: _locationController, // set the controller
-                  decoration: InputDecoration(
-                    labelText: 'Location',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15), // rounded corners
-                    ),
-                  ),
-                ),
-
-
-                const SizedBox(height: 20),
-
-
-                // DATE TIME BUTTON
-                SizedBox(
-                  width: double.infinity, // take the full width of the screen
-                  child: TextButton(
-
-                    style: ButtonStyle(
-                      fixedSize: WidgetStatePropertyAll(Size(double.infinity, 50)), // set the size of the button
-                      shape: WidgetStatePropertyAll<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15), // rounded corners
-                          side: BorderSide(color: const Color.fromARGB(255, 127, 127, 127), width: 1.1), // add a border to the button
-                        ),
-                      ),
-                    ),
-
-                    onPressed: () async {
-                      final String? date = await selectDateTime(context); // execute the function to get the date and time
-                      setState(() {
-                        if (date != null) {
-                          _dateTimeController.text = date; // once the date and time is selected, set the controller to the selected date and time
-                        }
-                      });
+      
+      
+                  const SizedBox(height: 20),
+      
+                  // UPLOAD IMAGE
+                  InkWell( // this will make the container clickable
+                    onTap: () async {
+                      Uint8List? file = await selectImage(context); // get the image file from the user
+                      if (file != null) {
+                        setState(() {
+                          _photofile = file; // set the image file to the file that the user uploaded
+                        });
+                      }
                     },
-
-                    child: _dateTimeController.text.isEmpty ? // dynamically change the text of the button
-                    const Text('Select Date&Time',
-                    style: TextStyle(color: secondaryColor),
-                    ) : 
-                    Text(_dateTimeController.text),
-                  ),
-                ),
-
-
-                const SizedBox(height: 20),
-
-
-                // AGE WHEEL
-                SizedBox( // necessary to size the column to a fixed height
-                  height: 100,
-                  child: Column(
-                    children: [
-                      Text('Age'), // add a label
-                      Expanded( // necessary to make the wheel chooser take the full height of the column
-                        child: WheelChooser.integer( // this is a widget from the wheel_chooser package
-                          onValueChanged: (s) => _ageController.text = s.toString(), // when the wheel is moved update the controller
-                          initValue: 18, // set an initial value
-                          minValue: 1, // set the minimum value
-                          maxValue: 99, // set the maximum value
-                          horizontal: true, // make the wheel horizontal, if false, it would be vertical
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-
-                const SizedBox(height: 20),
-
-                // PRICE text field
-                Container(
-                  height: MediaQuery.of(context).size.height * 0.12, // set the container to a height relative to the device
-                  width: double.infinity, // take the full width of the screen
-                  padding: EdgeInsets.all(20), // add padding to the container
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15), // rounded corners
-                    color: const Color.fromRGBO(250, 177, 177, 1), // this color will have to be updated to the korazon color
-                  ),
-                  child: Row( // this row is necessary to have the label and the text field side by side
-                    children: [
-                      Expanded( // this is necessary to make the text field take the full width of the container
-                        child: Center(
-                          child: Text(
-                            'Price',
-                            style: TextStyle( // style the text
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          )
-                        )
-                      ),
-                      Expanded( // this is necessary to make the text field take the full width of the container
-                        child: TextField(
-                          style: TextStyle(color: Colors.white), // change the color of the input text (what is being written)
-                          controller: _priceController, // set the controller
-                          keyboardType: TextInputType.numberWithOptions(decimal: true), // set the keyboard type to only numbers and a decimal point
-                          inputFormatters: [ // this field forces a type of input
-                            FilteringTextInputFormatter.allow(RegExp(r'^\d+([.,]\d{0,2})?$')), // only allow digits and a decimal point (need to know regex to understand this)
-                          ],
-                          onChanged: (value) {
-                            // If the user typed a comma, replace it with a dot
-                            if (value.contains(',')) {
-                              final cursorPos = _priceController.selection.baseOffset;
-                              final newValue = value.replaceAll(',', '.');
-                              _priceController.text = newValue;
-                              // Restore the cursor position
-                              _priceController.selection = TextSelection.collapsed(offset: cursorPos);
-                            }
-                          },
-                          decoration: InputDecoration( // decoration for the text field
-                            contentPadding: const EdgeInsets.symmetric(vertical: 38), // add vertical padding
-                            filled: true, // allows to add a fill color
-                            fillColor: Colors.black, // set the fill color to black
-                            prefixIcon: Icon(Icons.attach_money), // add a money icon to the left of the text field
-                            prefixIconColor: Colors.white, // set the color of the icon to white
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15), // rounded corners
-                            ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(25), // rounded corners
+                      child: Container(
+                        height: MediaQuery.of(context).size.width, // Set height equal to the width of the screen
+                        width: double.infinity, // take the full width of the screen
+                      
+                        // if there is no image uploaded, set the container to default style
+                        decoration: _photofile == null ? 
+                        BoxDecoration( 
+                          image: DecorationImage( // Wrap AssetImage in DecorationImage
+                            image: AssetImage('assets/images/addImagePlaceHolder.jpeg'),
+                            fit: BoxFit.cover,
+                          ),
+                        ) :
+                        // if there is an image uploaded, set the container to the image
+                        BoxDecoration(
+                          image: DecorationImage(
+                            image: MemoryImage(_photofile!), // set the image to the image that the user uploaded
+                            fit: BoxFit.cover, // cover the whole container with the image
                           ),
                         ),
+                      
+                        child: Center( // child is the same for both cases of _photofile null or not since the user might want to change the image
+                          child: _photofile == null 
+                          ? SizedBox()
+                          : Icon(Icons.upload, size: 50, color: Colors.white), // add an icon to the center of the container
+                        ),
                       ),
-                    ],
+                    ),
                   ),
-                ),
-
-
-                const SizedBox(height: 20),
-
-
-                // POST EVENT BUTTON
-                InkWell(
-                  onTap:() => postEvent(
-                  //  user?.name, //! This could also come from provider
-                  //  user?.profilePicUrl, //! Make sure to add to provider 
+      
+      
+                  const SizedBox(height: 20),
+      
+      
+                  TextField( // DESCRIPTION text field
+                    minLines: 3, // make the text field thicker
+                    maxLines: 5,
+                    style: whiteBody,
+                    cursorColor: Colors.white,
+                    textCapitalization: TextCapitalization.sentences,
+                    controller: _descriptionController, // set the controller
+                    focusNode: descriptionFocusNode,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Colors.white.withOpacity(0.07),
+                      labelText: 'Description',
+                      labelStyle: whiteSubtitle.copyWith(
+                        fontWeight: isDescriptionFocused ? FontWeight.w800 : FontWeight.w400,
+                      ),
+                      floatingLabelBehavior: FloatingLabelBehavior.always, // Always show label at the top left
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15), // rounded corners
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15), // Rounded corners
+                        borderSide: BorderSide(color: Colors.white)
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15), // Rounded corners
+                        borderSide: BorderSide(color: Colors.white)
+                      ),
+                    ),
                   ),
-                  child: Container(
+      
+      
+                  const SizedBox(height: 20),
+      
+                  SelectAddressBox(onAddressSelected: _onAddressSelected, error: addressError),
+      
+                  const SizedBox(height: 20),
+      
+                  // DATE TIME BUTTON   
+                  SelectDateTime(onDateChanged: _onDateTimeSelected,),
+      
+                  const SizedBox(height: 20),
+      
+                  // AGE WHEEL
+                  SizedBox( // necessary to size the column to a fixed height
+                    height: 100,
+                    child: Column(
+                      children: [
+                        Text('Age'), // add a label
+                        Expanded( // necessary to make the wheel chooser take the full height of the column
+                          child: WheelChooser.integer( // this is a widget from the wheel_chooser package
+                            onValueChanged: (s) => _ageController.text = s.toString(), // when the wheel is moved update the controller
+                            initValue: 18, // set an initial value
+                            minValue: 1, // set the minimum value
+                            maxValue: 99, // set the maximum value
+                            horizontal: true, // make the wheel horizontal, if false, it would be vertical
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+      
+      
+                  const SizedBox(height: 20),
+      
+                  // PRICE text field
+                  Container(
                     height: MediaQuery.of(context).size.height * 0.12, // set the container to a height relative to the device
                     width: double.infinity, // take the full width of the screen
                     padding: EdgeInsets.all(20), // add padding to the container
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(15), // rounded corners
-                      color: const Color.fromARGB(255, 0, 0, 0), // this color will have to be updated to the korazon color
+                      color: const Color.fromRGBO(250, 177, 177, 1), // this color will have to be updated to the korazon color
                     ),
-                    child: Center(
-                      child: _isLoading ? 
-                        ColorfulSpinner(
-                        ) : 
-                        Text(
-                          'Post Event',
-                          style: TextStyle( // style the text
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: const Color.fromRGBO(250, 177, 177, 1),
-                                ),
-                        )
-                    )
-                    
+                    child: Row( // this row is necessary to have the label and the text field side by side
+                      children: [
+                        Expanded( // this is necessary to make the text field take the full width of the container
+                          child: Center(
+                            child: Text(
+                              'Price',
+                              style: TextStyle( // style the text
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            )
+                          )
+                        ),
+                        Expanded( // this is necessary to make the text field take the full width of the container
+                          child: TextField(
+                            style: TextStyle(color: Colors.white), // change the color of the input text (what is being written)
+                            controller: _priceController, // set the controller
+                            keyboardType: TextInputType.numberWithOptions(decimal: true), // set the keyboard type to only numbers and a decimal point
+                            inputFormatters: [ // this field forces a type of input
+                              FilteringTextInputFormatter.allow(RegExp(r'^\d+([.,]\d{0,2})?$')), // only allow digits and a decimal point (need to know regex to understand this)
+                            ],
+                            onChanged: (value) {
+                              // If the user typed a comma, replace it with a dot
+                              if (value.contains(',')) {
+                                final cursorPos = _priceController.selection.baseOffset;
+                                final newValue = value.replaceAll(',', '.');
+                                _priceController.text = newValue;
+                                // Restore the cursor position
+                                _priceController.selection = TextSelection.collapsed(offset: cursorPos);
+                              }
+                            },
+                            decoration: InputDecoration( // decoration for the text field
+                              contentPadding: const EdgeInsets.symmetric(vertical: 38), // add vertical padding
+                              filled: true, // allows to add a fill color
+                              fillColor: Colors.black, // set the fill color to black
+                              prefixIcon: Icon(Icons.attach_money), // add a money icon to the left of the text field
+                              prefixIconColor: Colors.white, // set the color of the icon to white
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15), // rounded corners
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                )
-              ]
+      
+      
+                  const SizedBox(height: 20),
+      
+      
+                  // POST EVENT BUTTON
+                  InkWell(
+                    onTap:() => postEvent(
+                    //  user?.name, //! This could also come from provider
+                    //  user?.profilePicUrl, //! Make sure to add to provider 
+                    ),
+                    child: Container(
+                      height: MediaQuery.of(context).size.height * 0.12, // set the container to a height relative to the device
+                      width: double.infinity, // take the full width of the screen
+                      padding: EdgeInsets.all(20), // add padding to the container
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15), // rounded corners
+                        color: const Color.fromARGB(255, 0, 0, 0), // this color will have to be updated to the korazon color
+                      ),
+                      child: Center(
+                        child: _isLoading ? 
+                          ColorfulSpinner(
+                          ) : 
+                          Text(
+                            'Post Event',
+                            style: TextStyle( // style the text
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: const Color.fromRGBO(250, 177, 177, 1),
+                                  ),
+                          )
+                      )
+                      
+                    ),
+                  )
+                ]
+              ),
             ),
-          ),
-        )
+          )
+        ),
       ),
     );
   }
@@ -453,10 +515,8 @@ class EventCreationScreenState extends State<EventCreationScreen> {
   @override
   void dispose() {
     _titleController.dispose();
-    _dateTimeController.dispose();
     _ageController.dispose();
     _descriptionController.dispose();
-    _locationController.dispose();
     _priceController.dispose();
     super.dispose();
   }

@@ -30,7 +30,7 @@ class _EventCardState extends State<EventCard> {
       return SizedBox();
     }
 
-    final String dateTimeStr = event.dateTime; // e.g., "2025-01-15 22:00"
+    final String dateTimeStr = event.startDateTime.toString(); // e.g., "2025-01-15 22:00"
 
     String formattedDate = 'No Date'; // e.g., "January 15, 2025"
     String formattedTime = 'No time'; // e.g., "10:00 PM"
@@ -126,8 +126,8 @@ class _EventCardState extends State<EventCard> {
                             ),
                             child: CircleAvatar(
                               backgroundColor: korazonColor,
-                              backgroundImage: event.hostProfilePicUrl != ''
-                                  ? NetworkImage(event.hostProfilePicUrl)
+                              backgroundImage: event.profilePicPath != ''
+                                  ? NetworkImage(event.profilePicPath)
                                   : AssetImage(
                                       'assets/images/no_profile_picture.webp',
                                     ) as ImageProvider,
