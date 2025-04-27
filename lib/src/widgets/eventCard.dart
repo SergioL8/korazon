@@ -30,18 +30,12 @@ class _EventCardState extends State<EventCard> {
       return SizedBox();
     }
 
-    final String dateTimeStr = event.startDateTime.toString(); // e.g., "2025-01-15 22:00"
+    final Timestamp dateTimeStamp = event.startDateTime; 
+    DateTime dateTime = dateTimeStamp.toDate();
 
-    String formattedDate = 'No Date'; // e.g., "January 15, 2025"
-    String formattedTime = 'No time'; // e.g., "10:00 PM"
+    String formattedDate = DateFormat('MMMM d, yyyy').format(dateTime); // e.g., "January 15, 2025"
+    String formattedTime = DateFormat('h:mm a').format(dateTime); // e.g., "10:00 PM"
 
-    if (dateTimeStr != '') {
-      DateTime eventDateTime = DateTime.parse(dateTimeStr);
-
-      // Format the date and time separately
-      formattedDate = DateFormat('MMMM d, yyyy').format(eventDateTime); // e.g., "January 15, 2025"
-      formattedTime = DateFormat('h:mm a').format(eventDateTime); // e.g., "10:00 PM"
-    }
 
     return FutureBuilder<Uint8List?>(
       future: getImage(event.photoPath),

@@ -2,12 +2,14 @@ import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:korazon/src/utilities/utils.dart';
 
 
 class SelectDateTime extends StatefulWidget {
-  const SelectDateTime({super.key, required this.onDateChanged});
+  const SelectDateTime({super.key, required this.onDateChanged, required this.dateTimeUse});
 
   final void Function(DateTime? startDateTime, DateTime? endDateTime) onDateChanged;
+  final DateTimeUse dateTimeUse;
 
   @override
   State<SelectDateTime> createState() => _SelectDateTimeState();
@@ -43,7 +45,7 @@ class _SelectDateTimeState extends State<SelectDateTime> {
 
 
 
-  void _showScrollDatePicker() {
+  void _showScrollDatePicker(bool isStartTime) {
     // temp holder so cancelling doesn’t immediately clobber your state
     // DateTime tempPickedDate = _startDate ?? DateTime.now();
     showModalBottomSheet(
@@ -53,12 +55,13 @@ class _SelectDateTimeState extends State<SelectDateTime> {
         color: Colors.white, // or transparent if you want
         child: CupertinoDatePicker(
           mode: CupertinoDatePickerMode.date,
-          initialDateTime: _startDate ?? DateTime.now(),
+          initialDateTime: isStartTime ? _startDate : _endDate ?? DateTime.now(),
           minimumDate: DateTime.now(),
           maximumDate: DateTime(2100),
           onDateTimeChanged: (newDate) {
             setState(() {
-              _startDate = newDate;
+              if (isStartTime) { _startDate = newDate; }
+              else { _endDate = newDate; }
             });
             DateTime? startDateTime;
             DateTime? endDateTime;
@@ -88,14 +91,14 @@ class _SelectDateTimeState extends State<SelectDateTime> {
   }
 
 
-  void _showScrollTimePicker() {
+  void _showScrollTimePicker(bool isStartTime) {
     final now = DateTime.now();
     DateTime tempPickedTime = DateTime(
       now.year,
       now.month,
       now.day,
-      _startTime?.hour ?? now.hour,
-      _startTime?.minute ?? now.minute,
+      (isStartTime ? _startTime?.hour : _endTime?.hour) ?? now.hour,
+      (isStartTime ? _startTime?.minute : _endTime?.minute) ?? now.minute,
     );
     showModalBottomSheet(
       context: context,
@@ -108,7 +111,8 @@ class _SelectDateTimeState extends State<SelectDateTime> {
           use24hFormat: false,
           onDateTimeChanged: (newDateTime) {
             setState(() {
-              _startTime = TimeOfDay.fromDateTime(newDateTime);
+              if (isStartTime) { _startTime = TimeOfDay.fromDateTime(newDateTime); }
+              else { _endTime = TimeOfDay.fromDateTime(newDateTime); }
             });
             DateTime? startDateTime;
             DateTime? endDateTime;
@@ -167,7 +171,11 @@ class _SelectDateTimeState extends State<SelectDateTime> {
           ),
         ),
         leading: const Icon(Icons.calendar_today, color: korazonColor,),
-        title: Text('Date', style: whiteBody,),
+        title: Text(
+          widget.dateTimeUse == DateTimeUse.event
+            ? 'Date'
+            : 'Entry Time',
+          style: whiteBody,),
         trailing: SizedBox(
           width: 140,
           child: Row(
@@ -180,7 +188,7 @@ class _SelectDateTimeState extends State<SelectDateTime> {
                   ? whiteBody.copyWith(color: korazonColor)
                   : whiteBody.copyWith(fontSize: 14),
                 _startDate == null || _startTime == null
-                  ? '*Required'
+                  ? widget.dateTimeUse == DateTimeUse.event ? '*Required' : ''
                   : '${DateFormat('d MMM').format(_startDate!)} ${_startTime!.format(context)}',
               ),
               Icon(
@@ -194,6 +202,16 @@ class _SelectDateTimeState extends State<SelectDateTime> {
         ),
         onExpansionChanged: (open) {
           setState(() => _expanded = open);
+          if (_startDate == null || _startTime == null) {
+            final startDateTime = DateTime(
+              DateTime.now().year,
+              DateTime.now().month,
+              DateTime.now().day,
+              22,
+              0,
+            );
+            widget.onDateChanged(startDateTime, null);
+          }
           _startDate ??= DateTime.now().add(Duration(days: 1));
           _startTime ??= TimeOfDay(hour: 22, minute: 0);
         },
@@ -208,14 +226,18 @@ class _SelectDateTimeState extends State<SelectDateTime> {
                   text: _startDate != null
                       ? DateFormat('d MMM').format(_startDate!)
                       : 'Select date',
-                  onTap: _showScrollDatePicker
+                  onTap: () {
+                    _showScrollDatePicker(true);
+                  } 
                 ),
                 const SizedBox(width: 8),
                 _pillButton(
                   text: _startTime != null
                       ? _startTime!.format(context)
                       : 'Select time',
-                  onTap: _showScrollTimePicker
+                  onTap: () {
+                    _showScrollTimePicker(true);
+                  } 
                 ),
       
               ],
@@ -233,14 +255,18 @@ class _SelectDateTimeState extends State<SelectDateTime> {
                     text: _endDate != null
                         ? DateFormat('d MMM').format(_endDate!)
                         : 'Select date',
-                    onTap: _showScrollDatePicker
+                    onTap:() {
+                    _showScrollDatePicker(false);
+                  } 
                   ),
                   const SizedBox(width: 8),
                   _pillButton(
                     text: _endTime != null
                         ? _endTime!.format(context)
                         : 'Select time',
-                    onTap: _showScrollTimePicker
+                    onTap: () {
+                    _showScrollTimePicker(false);
+                  } 
                   ),
                 ],
               ),

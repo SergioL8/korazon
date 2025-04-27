@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:korazon/src/screens/hostscreens/ticketCreationScreen.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
 import 'package:korazon/src/widgets/colorfulSpinner.dart';
+import 'package:korazon/src/widgets/displayCurrentTickets.dart';
 import 'package:korazon/src/widgets/selectAddressBox.dart';
 import 'package:korazon/src/widgets/selectDateTime.dart';
-import 'package:wheel_chooser/wheel_chooser.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/utilities/models/userModel.dart';
+import 'package:korazon/src/utilities/models/eventModel.dart';
 
 
 
@@ -42,6 +44,7 @@ class EventCreationScreenState extends State<EventCreationScreen> {
   bool isDescriptionFocused = false;
   bool addressError = false;
   LocationModel? _selectedLocation;
+  List<TicketModel> _tickets = []; // this will be used to store the tickets created by the user
 
   bool _isLoading = false; // this variable will be used to show a loading spinner when the user clicks the submit button
   Uint8List? _photofile; // this variable will be used to store the image file that the user uploads
@@ -99,6 +102,14 @@ class EventCreationScreenState extends State<EventCreationScreen> {
     if (_startDateTimeController == null) {
       showErrorMessage(context, title: 'Please select a time and date.');
       return;
+    }
+    if (_endDateTimeController != null) { // check if the end date is before the start date
+      final startDate = _startDateTimeController!.toDate();
+      final endDate = _endDateTimeController!.toDate();
+      if (endDate.isBefore(startDate)) { // check if the end date is before the start date
+        showErrorMessage(context, title: 'The end date must be after the start date.');
+        return;
+      }
     }
     if (_selectedLocation == null) { // if no address has been selected, show an error message
       setState(() {
@@ -210,6 +221,25 @@ class EventCreationScreenState extends State<EventCreationScreen> {
 
 
 
+
+  void newTicket() async {
+    final TicketModel? newTicket = await showModalBottomSheet<TicketModel>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      backgroundColor: backgroundColorBM,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
+      ),
+      builder: (_) => const TicketCreationScreen(),
+    );
+
+    if (newTicket != null) {
+      setState(() {
+        _tickets.add(newTicket);
+      });
+    }
+  }
 
 
   // intiailize the focus for the event title
@@ -386,88 +416,78 @@ class EventCreationScreenState extends State<EventCreationScreen> {
                   const SizedBox(height: 20),
       
                   // DATE TIME BUTTON   
-                  SelectDateTime(onDateChanged: _onDateTimeSelected,),
+                  SelectDateTime(onDateChanged: _onDateTimeSelected, dateTimeUse: DateTimeUse.event,),
       
                   const SizedBox(height: 20),
       
-                  // AGE WHEEL
-                  SizedBox( // necessary to size the column to a fixed height
-                    height: 100,
-                    child: Column(
-                      children: [
-                        Text('Age'), // add a label
-                        Expanded( // necessary to make the wheel chooser take the full height of the column
-                          child: WheelChooser.integer( // this is a widget from the wheel_chooser package
-                            onValueChanged: (s) => _ageController.text = s.toString(), // when the wheel is moved update the controller
-                            initValue: 18, // set an initial value
-                            minValue: 1, // set the minimum value
-                            maxValue: 99, // set the maximum value
-                            horizontal: true, // make the wheel horizontal, if false, it would be vertical
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
       
       
                   const SizedBox(height: 20),
       
                   // PRICE text field
-                  Container(
-                    height: MediaQuery.of(context).size.height * 0.12, // set the container to a height relative to the device
-                    width: double.infinity, // take the full width of the screen
-                    padding: EdgeInsets.all(20), // add padding to the container
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15), // rounded corners
-                      color: const Color.fromRGBO(250, 177, 177, 1), // this color will have to be updated to the korazon color
-                    ),
-                    child: Row( // this row is necessary to have the label and the text field side by side
-                      children: [
-                        Expanded( // this is necessary to make the text field take the full width of the container
-                          child: Center(
-                            child: Text(
-                              'Price',
-                              style: TextStyle( // style the text
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            )
-                          )
-                        ),
-                        Expanded( // this is necessary to make the text field take the full width of the container
-                          child: TextField(
-                            style: TextStyle(color: Colors.white), // change the color of the input text (what is being written)
-                            controller: _priceController, // set the controller
-                            keyboardType: TextInputType.numberWithOptions(decimal: true), // set the keyboard type to only numbers and a decimal point
-                            inputFormatters: [ // this field forces a type of input
-                              FilteringTextInputFormatter.allow(RegExp(r'^\d+([.,]\d{0,2})?$')), // only allow digits and a decimal point (need to know regex to understand this)
-                            ],
-                            onChanged: (value) {
-                              // If the user typed a comma, replace it with a dot
-                              if (value.contains(',')) {
-                                final cursorPos = _priceController.selection.baseOffset;
-                                final newValue = value.replaceAll(',', '.');
-                                _priceController.text = newValue;
-                                // Restore the cursor position
-                                _priceController.selection = TextSelection.collapsed(offset: cursorPos);
-                              }
-                            },
-                            decoration: InputDecoration( // decoration for the text field
-                              contentPadding: const EdgeInsets.symmetric(vertical: 38), // add vertical padding
-                              filled: true, // allows to add a fill color
-                              fillColor: Colors.black, // set the fill color to black
-                              prefixIcon: Icon(Icons.attach_money), // add a money icon to the left of the text field
-                              prefixIconColor: Colors.white, // set the color of the icon to white
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(15), // rounded corners
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  // Container(
+                  //   height: MediaQuery.of(context).size.height * 0.12, // set the container to a height relative to the device
+                  //   width: double.infinity, // take the full width of the screen
+                  //   padding: EdgeInsets.all(20), // add padding to the container
+                  //   decoration: BoxDecoration(
+                  //     borderRadius: BorderRadius.circular(15), // rounded corners
+                  //     color: const Color.fromRGBO(250, 177, 177, 1), // this color will have to be updated to the korazon color
+                  //   ),
+                  //   child: Row( // this row is necessary to have the label and the text field side by side
+                  //     children: [
+                  //       Expanded( // this is necessary to make the text field take the full width of the container
+                  //         child: Center(
+                  //           child: Text(
+                  //             'Price',
+                  //             style: TextStyle( // style the text
+                  //               fontSize: 20,
+                  //               fontWeight: FontWeight.bold,
+                  //             ),
+                  //           )
+                  //         )
+                  //       ),
+                  //       Expanded( // this is necessary to make the text field take the full width of the container
+                  //         child: TextField(
+                  //           style: TextStyle(color: Colors.white), // change the color of the input text (what is being written)
+                  //           controller: _priceController, // set the controller
+                  //           keyboardType: TextInputType.numberWithOptions(decimal: true), // set the keyboard type to only numbers and a decimal point
+                  //           inputFormatters: [ // this field forces a type of input
+                  //             FilteringTextInputFormatter.allow(RegExp(r'^\d+([.,]\d{0,2})?$')), // only allow digits and a decimal point (need to know regex to understand this)
+                  //           ],
+                  //           onChanged: (value) {
+                  //             // If the user typed a comma, replace it with a dot
+                  //             if (value.contains(',')) {
+                  //               final cursorPos = _priceController.selection.baseOffset;
+                  //               final newValue = value.replaceAll(',', '.');
+                  //               _priceController.text = newValue;
+                  //               // Restore the cursor position
+                  //               _priceController.selection = TextSelection.collapsed(offset: cursorPos);
+                  //             }
+                  //           },
+                  //           decoration: InputDecoration( // decoration for the text field
+                  //             contentPadding: const EdgeInsets.symmetric(vertical: 38), // add vertical padding
+                  //             filled: true, // allows to add a fill color
+                  //             fillColor: Colors.black, // set the fill color to black
+                  //             prefixIcon: Icon(Icons.attach_money), // add a money icon to the left of the text field
+                  //             prefixIconColor: Colors.white, // set the color of the icon to white
+                  //             border: OutlineInputBorder(
+                  //               borderRadius: BorderRadius.circular(15), // rounded corners
+                  //             ),
+                  //           ),
+                  //         ),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
       
+
+                  TicketsSection(tickets: _tickets),
+
+                  ElevatedButton(
+                    onPressed: newTicket,
+                    child: Text('Create New Ticket')
+                  ),
+
       
                   const SizedBox(height: 20),
       
@@ -499,7 +519,6 @@ class EventCreationScreenState extends State<EventCreationScreen> {
                                   ),
                           )
                       )
-                      
                     ),
                   )
                 ]

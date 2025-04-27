@@ -3,6 +3,59 @@ import 'package:korazon/src/utilities/models/userModel.dart';
 
 
 
+class TicketModel {
+  TicketModel({
+    required this.ticketID,
+    required this.ticketName,
+    required this.ticketPrice,
+    this.ticketDescription,
+    this.ticketEntryTimeStart,
+    this.ticketEntryTimeEnd,
+    this.ticketCapacity = 9999999,
+    this.genderRestriction = 'all',
+    this.ticketsSold,
+  });
+
+  final String ticketID;
+  final String ticketName;
+  final double ticketPrice;
+  final String? ticketDescription;
+  final Timestamp? ticketEntryTimeStart;
+  final Timestamp? ticketEntryTimeEnd;
+  final int? ticketCapacity;
+  final String genderRestriction;
+  final int? ticketsSold;
+
+  Map<String, dynamic> toMap() {
+    return {
+      'documentID': ticketID,
+      'ticketName': ticketName,
+      'ticketPrice': ticketPrice,
+      'ticketDescription': ticketDescription,
+      'ticketEntryTimeStart': ticketEntryTimeStart,
+      'ticketEntryTimeEnd': ticketEntryTimeEnd,
+      'ticketCapacity': ticketCapacity,
+      'genderRestriction': genderRestriction,
+      'ticketsSold': ticketsSold,
+    };
+  }
+
+  factory TicketModel.fromMap(Map<String, dynamic> map) {
+    return TicketModel(
+      ticketID: map['documentID'],
+      ticketName: map['ticketName'] ?? 'No Ticket Name',
+      ticketPrice: (map['ticketPrice'] is num) ? (map['ticketPrice'] as num).toDouble() : 0.0,
+      ticketDescription: map['ticketDescription'] ?? '',
+      ticketEntryTimeStart: map['ticketEntryTimeStart'],
+      ticketEntryTimeEnd: map['ticketEntryTimeEnd'],
+      ticketCapacity: (map['ticketCapacity'] is num) ? (map['ticketCapacity'] as num).toInt() : 999999999,
+      genderRestriction: map['genderRestriction'] ?? 'all',
+      ticketsSold: (map['ticketsSold'] is num) ? (map['ticketsSold'] as num).toInt() : null,
+    );
+  }
+}
+
+
 
 class EventModel {
 
