@@ -11,7 +11,9 @@ import 'package:uuid/uuid.dart';
 
 
 class TicketCreationScreen extends StatefulWidget {
-  const TicketCreationScreen({super.key});
+  const TicketCreationScreen({super.key, this.ticket});
+
+  final TicketModel? ticket;
 
   @override
   State<TicketCreationScreen> createState() => _TicketCreationScreenState();
@@ -53,8 +55,7 @@ class _TicketCreationScreenState extends State<TicketCreationScreen> {
       return;
     }
     if (_ticketPriceController.text.isEmpty) {
-      showErrorMessage(context, title: 'Please enter a ticket price');
-      return;
+      _ticketPriceController.text = '0.00';
     }
     
     final String uuid = Uuid().v4();
@@ -71,6 +72,20 @@ class _TicketCreationScreenState extends State<TicketCreationScreen> {
     Navigator.of(context).pop<TicketModel>(ticket);
   }
 
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.ticket != null) {
+      _ticketNameController.text = widget.ticket!.ticketName;
+      _ticketPriceController.text = widget.ticket!.ticketPrice.toString() == '0.0' ? 'Free' : widget.ticket!.ticketPrice.toString();
+      _ticketDescriptionController.text = widget.ticket!.ticketDescription ?? '';
+      _startTicketDateTimeController = widget.ticket!.ticketEntryTimeStart;
+      _enTicketdDateTimeController = widget.ticket!.ticketEntryTimeEnd;
+      _ticketMaxCapacityController.text = widget.ticket!.ticketCapacity?.toString() == '9999999' ? 'Unlimited' : 'widget.ticket!.ticketCapacity?.toString()';
+      _genderController.text;
+    }
+  }
   
   @override
   Widget build(BuildContext context) {

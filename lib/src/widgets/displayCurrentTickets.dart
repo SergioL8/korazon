@@ -4,9 +4,11 @@ import 'package:korazon/src/utilities/models/eventModel.dart';
 
 class TicketsSection extends StatelessWidget {
   
-  const TicketsSection({super.key, required this.tickets});
+  const TicketsSection({super.key, required this.tickets, required this.newTicket, required this.removeTicket});
 
   final List<TicketModel> tickets;
+  final Function({TicketModel? ticket}) newTicket;
+  final Function(String) removeTicket;
 
   @override
   Widget build(BuildContext context) {
@@ -43,9 +45,7 @@ class TicketsSection extends StatelessWidget {
                   minHeight: 32,
                 ),
                 visualDensity: VisualDensity.compact, 
-                onPressed: () {
-                  
-                },
+                onPressed: newTicket,
               ),
             ],
           ),
@@ -62,21 +62,45 @@ class TicketsSection extends StatelessWidget {
             return Dismissible(
               key: ValueKey(ticket.ticketID),
               direction: DismissDirection.endToStart,
-              onDismissed: (_) {
-                // immediately remove: you can call a callback here or
-                // directly modify the list via setState in a parent
-              },
+              onDismissed: (_) => removeTicket(ticket.ticketID),
               background: Container(
                 color: Colors.red,
                 alignment: Alignment.centerRight,
                 padding: const EdgeInsets.only(right: 16),
                 child: const Icon(Icons.delete, color: Colors.white),
               ),
-              child: Card(
-                margin: const EdgeInsets.symmetric(vertical: 8),
-                child: ListTile(
-                  title: Text(ticket.ticketName),
-                  // subtitle, trailing, etc. can go here
+              child: GestureDetector(
+                onTap: () {
+                  newTicket(ticket: ticket);
+                },
+                child: Card(
+                  margin: const EdgeInsets.symmetric(vertical: 8),
+                  color: Colors.white.withOpacity(0.15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    side: const BorderSide(
+                      color: Colors.white,
+                      width: 2,
+                    ),
+                  ),
+                  child: ListTile(
+                    title: Text(
+                      ticket.ticketName,
+                      style: whiteBody.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    trailing: Text(
+                      ticket.ticketPrice == 0
+                        ? 'Free'
+                        : ticket.ticketPrice.toString(),
+                      style: whiteBody.copyWith(
+                        color: korazonColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )
+                    // subtitle, trailing, etc. can go here
+                  ),
                 ),
               ),
             );
