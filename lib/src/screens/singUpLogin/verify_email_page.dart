@@ -16,10 +16,11 @@ class VerifyEmailPage extends StatefulWidget {
   final bool isHost;
   final bool isLogin;
 
-  const VerifyEmailPage({super.key, 
-  required this.userEmail,
-  required this.isHost,
-  required this.isLogin,
+  const VerifyEmailPage({
+    super.key,
+    required this.userEmail,
+    required this.isHost,
+    required this.isLogin,
   });
 
   @override
@@ -28,14 +29,20 @@ class VerifyEmailPage extends StatefulWidget {
 
 class _VerifyEmailPageState extends State<VerifyEmailPage> {
   bool _emailVerified = false;
-  // final bool _isLoading = false;
+  bool _hasSentEmail = false;
   late Timer _timer;
 
   @override
   void initState() {
     super.initState();
-    sendVerificationEmail();
-    _timer = Timer.periodic(Duration(seconds: 5), (timer) => checkEmailVerified());
+
+    // Only send the verification email once in initState in case it is triggered multiple times
+    if (!_hasSentEmail) {
+      sendVerificationEmail();
+      _hasSentEmail = true;
+    }
+    _timer =
+        Timer.periodic(Duration(seconds: 5), (timer) => checkEmailVerified());
   }
 
   Future<void> sendVerificationEmail() async {
@@ -69,31 +76,25 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     // If email is not verified, we do nothing, we keep waiting
     if (!_emailVerified) {
       return;
-
     } else {
-
       _timer.cancel();
       // Here is where the widget info is useful, we have 3 possible scenarios:
 
-      if (widget.isLogin == true){
-
-      // 1. User has already created his account but left before verifying his/her email but 
-      // is already logged in or it just logged in in the Landing page
+      if (widget.isLogin == true) {
+        // 1. User has already created his account but left before verifying his/her email but
+        // is already logged in or it just logged in in the Landing page
 
         Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const BasePage()));
-
+            MaterialPageRoute(builder: (context) => const BasePage()));
       } else if (widget.isHost == true) {
+        // 2. New Host creating his account
 
-      // 2. New Host creating his account
-
-        Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => const ConfirmIdentityPage()));
-
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => const ConfirmIdentityPage()));
       } else {
         // 3. New User creating his account
         Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => const FinishUserSetup()));
+            MaterialPageRoute(builder: (context) => const FinishUserSetup()));
       }
     }
   }
@@ -227,7 +228,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                 // Spacer(),
                 GestureDetector(
                   // TODO: make this a pop if you come from the landing page
-            
+
                   onTap: navigateToLandingPage,
                   child: Text(
                     'Return to landing page',

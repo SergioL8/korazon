@@ -56,7 +56,7 @@ exports.ResetPasswordEmail = onCall(async (req) => {
     // Step 3: Prepare and send email via SendGrid
     const msg = {
       to: recipientEmail,
-      from: "Korazon@korazonapp.com",
+      from: "korazon@korazonapp.com",
       name: "Korazon",
       templateId: sendGridTemplateId,
       subject: "Reset Your Password - Korazon", // Dynamic subject
@@ -156,7 +156,7 @@ exports.VerificationEmail = onCall(async (req) => {
     // Step 3: Prepare and send email via SendGrid
     const msg = {
       to: recipientEmail,
-      from: "Korazon@korazonapp.com",
+      from: "korazon@korazonapp.com",
       name: "Korazon",
       templateId: sendGridTemplateId,
       subject: "Verify Your Email - Korazon", // Dynamic subject
