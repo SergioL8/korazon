@@ -134,7 +134,7 @@ class LandingPage extends StatelessWidget {
                           onTap: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => InitialMessagePage()), // Replace with your destination page
+                              MaterialPageRoute(builder: (context) => InitialMessagePage()),
                             );
                           },
                           text: "Create Host Acc.",

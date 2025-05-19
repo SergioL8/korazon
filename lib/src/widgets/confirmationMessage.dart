@@ -20,10 +20,10 @@ void showConfirmationMessage(BuildContext context, {required String message}) {
             child: Text(
               message,
               overflow: TextOverflow.clip,
-              style: const TextStyle(
+              style: whiteBody.copyWith(
                 fontSize: 18,
-                color: secondaryColor,
-                fontWeight: FontWeight.w700,
+                fontWeight: FontWeight.w600,
+                color: backgroundColorBM
               ),
             ),
           ),

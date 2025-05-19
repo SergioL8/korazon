@@ -22,7 +22,6 @@ enum ErrorAction {
   verify,
 }
 
-
 // Used to let certain pages like event details where they have been called
 enum ParentPage {
   homePage,
@@ -35,6 +34,11 @@ enum ParentPage {
   login,
   signup,
   createHostAcc,
+}
+
+enum DateTimeUse {
+  event,
+  ticket,
 }
 
 

@@ -67,7 +67,7 @@ class _SelectEventCardState extends State<SelectEventCard> {
     setState(() {
       // get the event name and date from the event data
       eventTitle = event.title;
-      eventDateAndTime = event.dateTime;
+      eventDateAndTime = event.startDateTime.toString();
       imagePath = event.photoPath;
       
       _dataLoading = false; // data has been loaded so set the loading variable to false
