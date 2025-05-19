@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -6,10 +7,12 @@ import 'package:korazon/src/utilities/utils.dart';
 
 
 class SelectDateTime extends StatefulWidget {
-  const SelectDateTime({super.key, required this.onDateChanged, required this.dateTimeUse});
+  const SelectDateTime({super.key, required this.onDateChanged, required this.dateTimeUse, this.startDateTime, this.endDateTime});
 
   final void Function(DateTime? startDateTime, DateTime? endDateTime) onDateChanged;
   final DateTimeUse dateTimeUse;
+  final Timestamp? startDateTime;
+  final Timestamp? endDateTime;
 
   @override
   State<SelectDateTime> createState() => _SelectDateTimeState();
@@ -25,6 +28,21 @@ class _SelectDateTimeState extends State<SelectDateTime> {
   TimeOfDay? _endTime;
   bool _isEndDateTime = false;
 
+  @override
+  void initState() {
+    debugPrint('In select time endtime: ${widget.endDateTime}');
+    if (widget.startDateTime != null) {
+      _startDate = widget.startDateTime!.toDate();
+      _startTime = TimeOfDay.fromDateTime(widget.startDateTime!.toDate());
+    }
+    if (widget.endDateTime != null) {
+      _endDate = widget.endDateTime!.toDate();
+      _endTime = TimeOfDay.fromDateTime(widget.endDateTime!.toDate());
+      _isEndDateTime = true;
+    }
+    super.initState();
+  }
+
 
   Widget _pillButton({required String text, required VoidCallback onTap}) {
     return GestureDetector(
@@ -32,7 +50,7 @@ class _SelectDateTimeState extends State<SelectDateTime> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.20),
+          color: Colors.white.withValues(alpha: 0.50),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Text(
@@ -46,8 +64,6 @@ class _SelectDateTimeState extends State<SelectDateTime> {
 
 
   void _showScrollDatePicker(bool isStartTime) {
-    // temp holder so cancelling doesn’t immediately clobber your state
-    // DateTime tempPickedDate = _startDate ?? DateTime.now();
     showModalBottomSheet(
       context: context,
       builder: (_) => Container(
@@ -55,8 +71,8 @@ class _SelectDateTimeState extends State<SelectDateTime> {
         color: Colors.white, // or transparent if you want
         child: CupertinoDatePicker(
           mode: CupertinoDatePickerMode.date,
-          initialDateTime: isStartTime ? _startDate : _endDate ?? DateTime.now(),
-          minimumDate: DateTime.now(),
+          initialDateTime: isStartTime ? _startDate : _endDate,
+          minimumDate: DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day),
           maximumDate: DateTime(2100),
           onDateTimeChanged: (newDate) {
             setState(() {
@@ -154,8 +170,8 @@ class _SelectDateTimeState extends State<SelectDateTime> {
         splashColor: Colors.transparent,
       ),
       child: ExpansionTile(
-        backgroundColor: Colors.white.withOpacity(0.07),
-        collapsedBackgroundColor: Colors.white.withOpacity(0.07),
+        backgroundColor: Colors.white.withValues(alpha: 0.06),
+        collapsedBackgroundColor: Colors.white.withValues(alpha: 0.06),
         collapsedShape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),
           side: BorderSide(
@@ -163,6 +179,7 @@ class _SelectDateTimeState extends State<SelectDateTime> {
             width: 1,
           ),
         ),
+        tilePadding: const EdgeInsets.only(left: 16, right: 12),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15), 
           side: BorderSide(
@@ -177,7 +194,7 @@ class _SelectDateTimeState extends State<SelectDateTime> {
             : 'Entry Time',
           style: whiteBody,),
         trailing: SizedBox(
-          width: 140,
+          width: 150,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
@@ -212,7 +229,7 @@ class _SelectDateTimeState extends State<SelectDateTime> {
             );
             widget.onDateChanged(startDateTime, null);
           }
-          _startDate ??= DateTime.now().add(Duration(days: 1));
+          _startDate ??= DateTime.now();
           _startTime ??= TimeOfDay(hour: 22, minute: 0);
         },
         children: [
@@ -291,6 +308,22 @@ class _SelectDateTimeState extends State<SelectDateTime> {
                       final end = start.add(const Duration(hours: 6));
                       _endDate = DateTime(end.year, end.month, end.day);
                       _endTime = TimeOfDay.fromDateTime(end);
+                      widget.onDateChanged(
+                        DateTime(
+                          _startDate!.year,
+                          _startDate!.month,
+                          _startDate!.day,
+                          _startTime!.hour,
+                          _startTime!.minute,
+                        ),
+                        DateTime(
+                          _endDate!.year,
+                          _endDate!.month,
+                          _endDate!.day,
+                          _endTime!.hour,
+                          _endTime?.minute ?? 0,
+                        ),
+                      );
                     } else {
                       _endDate = null;
                       _endTime = null;

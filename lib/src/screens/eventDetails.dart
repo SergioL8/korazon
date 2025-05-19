@@ -24,7 +24,7 @@ class EventDetails extends StatelessWidget {
 
     final String eventName = event.title;
     final String eventDescription = event.description;
-    final double eventAge = event.age;
+    final bool plus21 = event.plus21;
     final String hostName = event.hostName;
     final String hostId = event.hostId;
     final String hostProfilePicUrl = event.profilePicPath;
@@ -188,7 +188,7 @@ class EventDetails extends StatelessWidget {
                         Row(
                           children: [
                             Text(
-                              eventAge == -1 ? "No age restrictions." : eventAge.toString(),
+                              '+21: ${plus21.toString()}',
                               style: const TextStyle(
                                 color: secondaryColor,
                                 fontSize: 16,

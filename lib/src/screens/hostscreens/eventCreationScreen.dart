@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:korazon/src/screens/hostscreens/ticketCreationScreen.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
-import 'package:korazon/src/widgets/colorfulSpinner.dart';
+import 'package:korazon/src/widgets/confirmationMessage.dart';
 import 'package:korazon/src/widgets/displayCurrentTickets.dart';
 import 'package:korazon/src/widgets/selectAddressBox.dart';
 import 'package:korazon/src/widgets/selectDateTime.dart';
@@ -13,6 +13,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/utilities/models/userModel.dart';
 import 'package:korazon/src/utilities/models/eventModel.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 
 
@@ -31,18 +32,17 @@ class EventCreationScreenState extends State<EventCreationScreen> {
   final uid = FirebaseAuth.instance.currentUser?.uid;
 
   // Variable declaration
-  final TextEditingController _titleController = TextEditingController();
+  UserModel? user;
   Timestamp? _startDateTimeController;
   Timestamp? _endDateTimeController;
-  TextEditingController _ageController = TextEditingController(text: '18'); // set initial value of the age to 18 (you need this because if the wheel is not moved, the controller will not be updated)
+  final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
-  final TextEditingController _priceController = TextEditingController(text: '0.00'); // set initial value of the price to 0.00
-  UserModel? user;
   final FocusNode eventTitleFocousNode = FocusNode();
   final FocusNode descriptionFocusNode = FocusNode();
   bool isEventTitleFocused = false;
   bool isDescriptionFocused = false;
   bool addressError = false;
+  bool plus21 = false;
   LocationModel? _selectedLocation;
   List<TicketModel> tickets = [
     TicketModel(
@@ -54,6 +54,8 @@ class EventCreationScreenState extends State<EventCreationScreen> {
 
   bool _isLoading = false; // this variable will be used to show a loading spinner when the user clicks the submit button
   Uint8List? _photofile; // this variable will be used to store the image file that the user uploads
+  int _dateTimeWidgetKey = 0;
+  int _adressWidgetKey = 0;
 
 
 
@@ -92,46 +94,53 @@ class EventCreationScreenState extends State<EventCreationScreen> {
   /// This function uploads the image to firebase storage and the event to firebase firestore. It uses the function from utils compressImage
   /// 
   /// The function doesn't take any parameters and doesn't return anything. But the result is the event uploaded to firestore
-  void postEvent(
-    //String? hostName,  //! These could come from the provider but we will get them from firestore 
-    //String? profilePicUrl,
-  ) async {
+  void postEvent() async {
 
     // Dismiss the keyboard
     FocusScope.of(context).unfocus();
 
-    // Check mandatory inputs
+    // ~~~~~~~~~~~~~~~ CHECK REQUIRED FIELDS ~~~~~~~~~~~~~~~~~~~
     if (_titleController.text.isEmpty) {
-      showErrorMessage(context, title: 'Add a title to post your event.');
+      showErrorMessage(context, title: 'Add a title to post your event');
       return;
     }
-    if (_startDateTimeController == null) {
-      showErrorMessage(context, title: 'Please select a time and date.');
+
+    if (_photofile == null) {
+      showErrorMessage(context, title: 'Please add a flyer');
       return;
     }
-    if (_endDateTimeController != null) { // check if the end date is before the start date
-      final startDate = _startDateTimeController!.toDate();
-      final endDate = _endDateTimeController!.toDate();
-      if (endDate.isBefore(startDate)) { // check if the end date is before the start date
-        showErrorMessage(context, title: 'The end date must be after the start date.');
-        return;
-      }
-    }
-    if (_selectedLocation == null) { // if no address has been selected, show an error message
+
+    if (_selectedLocation == null) {
       setState(() {
         addressError = true;
       });
       showErrorMessage(context, content: 'Please select an address');
       return;
     }
-    if (_photofile == null) {
-      showErrorMessage(context, title: 'Please add a flyer.');
+
+    if (_startDateTimeController == null) {
+      showErrorMessage(context, title: 'Please select a time and date');
       return;
     }
-    if (_priceController.text.isEmpty) {
-      showErrorMessage(context, title: 'Please set a ticket price.');
+
+    if (_endDateTimeController != null) { // check if the end date is before the start date
+      final startDate = _startDateTimeController!.toDate();
+      final endDate = _endDateTimeController!.toDate();
+      if (endDate.isBefore(startDate)) { // check if the end date is before the start date
+        showErrorMessage(context, title: 'The end date must be after the start date');
+        return;
+      }
+    } else { // if end time is null then set it to +8 hours of the start time
+      _endDateTimeController = Timestamp.fromDate(_startDateTimeController!.toDate().add(const Duration(hours: 8)));
+    }
+
+    if (tickets.isEmpty) {
+      showErrorMessage(context, title: 'Please create at least one ticket');
       return;
     }
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    
+    
 
     setState(() {
       _isLoading = true; // set the loading spinner to true
@@ -142,10 +151,7 @@ class EventCreationScreenState extends State<EventCreationScreen> {
       return;
     }
 
-    var userDocument = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(uid)
-          .get();
+    var userDocument = await FirebaseFirestore.instance.collection('users').doc(uid).get();
 
     user = UserModel.fromDocumentSnapshot(userDocument);
 
@@ -185,8 +191,8 @@ class EventCreationScreenState extends State<EventCreationScreen> {
         'location': _selectedLocation!.toMap(), // this is a helper function that converts the location to a map
         'startDateTime': _startDateTimeController,
         'endDateTime': _endDateTimeController,
-        'price': double.parse(_priceController.text),
-        'age': double.parse(_ageController.text),
+        'tickets': tickets.map((ticket) => ticket.toMap()).toList(), // this will convert each ticket to a map and create a list with those maps
+        'plus21': plus21,
         
         // Host variables
         'hostId': uid,
@@ -203,32 +209,44 @@ class EventCreationScreenState extends State<EventCreationScreen> {
 
       // Clear all controllers
       _titleController.clear();
-      _startDateTimeController = null;
-      _endDateTimeController = null;
-      _ageController.clear();
       _descriptionController.clear();
-      _priceController.clear();
       _photofile = null; // Clear the image file
-
-
+      
+      setState(() {
+        _startDateTimeController = null;
+        _endDateTimeController = null;
+        _selectedLocation = null;
+        tickets = [
+          TicketModel(
+            ticketID: 'firstTicket',
+            ticketName: 'General Admission',
+            ticketPrice: 0.00,
+          )
+        ];
+        _dateTimeWidgetKey++;
+        _adressWidgetKey++;
+        addressError = false; // Clear the address error
+        _isLoading = false; // set the loading spinner to false
+      });
+      
+      
       // show a success message to the user
-      showSnackBar(context, 'Post created successfully');
-
+      showConfirmationMessage(context, message: 'Post created successfully');
 
     } catch (e) { // catch any errors that occur during the upload
       showErrorMessage(context, content: 'There was an error posting your event. Please try again');
+      setState(() {
+        _isLoading = false; // set the loading spinner to false
+      });
     }
-
-
-    setState(() {
-      _isLoading = false; // set the loading spinner to true
-    });
   }
 
 
 
 
   void newTicket({TicketModel? ticket}) async {
+    debugPrint('New ticket function, ticket end time: ${ticket?.ticketEntryTimeEnd}');
+    debugPrint('New ticket function, ticket title: ${ticket?.ticketName}');
     final TicketModel? newTicket = await showModalBottomSheet<TicketModel>(
       context: context,
       isScrollControlled: true,
@@ -328,7 +346,7 @@ class EventCreationScreenState extends State<EventCreationScreen> {
                     textCapitalization: TextCapitalization.sentences,
                     decoration: InputDecoration(
                       filled: true,
-                      fillColor: Colors.white.withOpacity(0.07),
+                      fillColor: Colors.white.withValues(alpha: 0.06),
                       labelText: 'Event Title',
                       labelStyle: whiteTitle.copyWith(
                         fontWeight: isEventTitleFocused ? FontWeight.w800 : FontWeight.w400,
@@ -366,24 +384,20 @@ class EventCreationScreenState extends State<EventCreationScreen> {
                       child: Container(
                         height: MediaQuery.of(context).size.width, // Set height equal to the width of the screen
                         width: double.infinity, // take the full width of the screen
-                      
-                        // if there is no image uploaded, set the container to default style
-                        decoration: _photofile == null ? 
-                        BoxDecoration( 
-                          image: DecorationImage( // Wrap AssetImage in DecorationImage
-                            image: AssetImage('assets/images/addImagePlaceHolder.jpeg'),
-                            fit: BoxFit.cover,
-                          ),
-                        ) :
-                        // if there is an image uploaded, set the container to the image
-                        BoxDecoration(
-                          image: DecorationImage(
-                            image: MemoryImage(_photofile!), // set the image to the image that the user uploaded
-                            fit: BoxFit.cover, // cover the whole container with the image
-                          ),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.white, width: 1), // Add white border
+                          borderRadius: BorderRadius.circular(25), // Match the ClipRRect
+                          image: _photofile == null
+                              ? DecorationImage(
+                                  image: AssetImage('assets/images/add_image_mountains_placeholder.png'),
+                                  fit: BoxFit.cover,
+                                )
+                              : DecorationImage(
+                                  image: MemoryImage(_photofile!),
+                                  fit: BoxFit.cover,
+                                ),
                         ),
-                      
-                        child: Center( // child is the same for both cases of _photofile null or not since the user might want to change the image
+                        child: Center(
                           child: _photofile == null 
                           ? SizedBox()
                           : Icon(Icons.upload, size: 50, color: Colors.white), // add an icon to the center of the container
@@ -406,7 +420,7 @@ class EventCreationScreenState extends State<EventCreationScreen> {
                     focusNode: descriptionFocusNode,
                     decoration: InputDecoration(
                       filled: true,
-                      fillColor: Colors.white.withOpacity(0.07),
+                      fillColor: Colors.white.withValues(alpha: 0.06),
                       labelText: 'Description',
                       labelStyle: whiteSubtitle.copyWith(
                         fontWeight: isDescriptionFocused ? FontWeight.w800 : FontWeight.w400,
@@ -429,49 +443,88 @@ class EventCreationScreenState extends State<EventCreationScreen> {
       
                   const SizedBox(height: 20),
       
-                  SelectAddressBox(onAddressSelected: _onAddressSelected, error: addressError),
+                  SelectAddressBox(
+                    key: ValueKey('address_$_adressWidgetKey'),
+                    onAddressSelected: _onAddressSelected,
+                    error: addressError,
+                  ),
       
                   const SizedBox(height: 20),
       
                   // DATE TIME BUTTON   
-                  SelectDateTime(onDateChanged: _onDateTimeSelected, dateTimeUse: DateTimeUse.event,),
+                  SelectDateTime(
+                    key: ValueKey('datetime_$_dateTimeWidgetKey'),
+                    onDateChanged: _onDateTimeSelected,
+                    dateTimeUse: DateTimeUse.event,
+                  ),
       
                   const SizedBox(height: 20),
 
                   TicketsSection(tickets: tickets, newTicket: newTicket, removeTicket: removeTicket,), // this widget will show the tickets created by the user
 
                   const SizedBox(height: 20),
-      
-      
+
+                  // PLUS 21 TOGGLE SECTION
+                  Container(
+                    width: double.infinity,
+                    height: 60,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.06),
+                      border: Border.all(color: Colors.white),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '+21 Only',
+                          style: whiteBody.copyWith(
+                            color: korazonColor,
+                            fontWeight: FontWeight.w800,
+                            fontSize: 20,
+                          ),
+                        ),
+                        Switch(
+                          value: plus21,
+                          activeTrackColor: korazonColor,
+                          onChanged: (value) {
+                            setState(() {
+                              plus21 = value;
+                            });
+                          },
+                          activeColor: Colors.white,
+                          inactiveThumbColor: Colors.white70,
+                          inactiveTrackColor: Colors.white38,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
                   // POST EVENT BUTTON
-                  InkWell(
-                    onTap:() => postEvent(
-                    //  user?.name, //! This could also come from provider
-                    //  user?.profilePicUrl, //! Make sure to add to provider 
-                    ),
+                  GestureDetector(
+                    onTap: postEvent,
                     child: Container(
-                      height: MediaQuery.of(context).size.height * 0.12, // set the container to a height relative to the device
-                      width: double.infinity, // take the full width of the screen
-                      padding: EdgeInsets.all(20), // add padding to the container
+                      width: double.infinity,
+                      height: 75,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15), // rounded corners
-                        color: const Color.fromARGB(255, 0, 0, 0), // this color will have to be updated to the korazon color
+                        gradient: linearGradient,
+                        borderRadius: BorderRadius.circular(15),
                       ),
-                      child: Center(
-                        child: _isLoading ? 
-                          ColorfulSpinner(
-                          ) : 
-                          Text(
-                            'Post Event',
-                            style: TextStyle( // style the text
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: const Color.fromRGBO(250, 177, 177, 1),
-                                  ),
+                      child: _isLoading 
+                      ? SpinKitThreeBounce(color: Colors.white, size: 30) // loading animation if the user clicks the post button
+                      : Center(
+                        child: Text(
+                          'Post Event',
+                          style: whiteSubtitle.copyWith(
+                            fontSize: 30,
+                            fontWeight: FontWeight.w800,
                           )
-                      )
+                        ),
+                      ),
                     ),
-                  )
+                  ),
                 ]
               ),
             ),
@@ -485,9 +538,16 @@ class EventCreationScreenState extends State<EventCreationScreen> {
   @override
   void dispose() {
     _titleController.dispose();
-    _ageController.dispose();
+    _photofile = null;
     _descriptionController.dispose();
-    _priceController.dispose();
+    _selectedLocation = null;
+    _startDateTimeController = null;
+    _endDateTimeController = null;
+    tickets.clear();
+    _isLoading = false;
+    
+    eventTitleFocousNode.dispose();
+    descriptionFocusNode.dispose();
     super.dispose();
   }
 }

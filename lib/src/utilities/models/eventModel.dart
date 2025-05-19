@@ -63,11 +63,11 @@ class EventModel {
     required this.documentID,
     required this.title,
     required this.description,
-    required this.age,
     required this.location,
     required this.photoPath,
     required this.startDateTime,
     required this.endDateTime,
+    required this.plus21,
     required this.hostId,
     required this.hostName,
     required this.profilePicPath,
@@ -78,11 +78,11 @@ class EventModel {
   final String documentID;
   final String title;
   final String description;
-  final double age;
   final LocationModel? location;
   final String photoPath;
   final Timestamp startDateTime;
   final Timestamp? endDateTime;
+  final bool plus21;
   final String hostId;
   final String hostName;
   final String profilePicPath;
@@ -100,13 +100,13 @@ class EventModel {
       documentID: doc.id,
       title: data['title'] ?? 'No title',
       description: data['description'] ?? '',
-      age: (data['age'] is num) ? (data['age'] as num).toDouble() : -1.0, // if num convert it to double otherwise it doesn't exists to set it to -1
       location: data['location'] != null 
         ? LocationModel.fromMap(data['location'] as Map<String, dynamic>)
         : null,
       photoPath: data['photoPath'] ?? '',
       startDateTime: data['startDateTime'],
       endDateTime: data['endDateTime'],
+      plus21: data['plus21'] ?? false,
       hostId: data['hostId'] ?? '',
       hostName: data['hostName'] ?? 'No host name',
       profilePicPath: data['profilePicPath'] ?? '',

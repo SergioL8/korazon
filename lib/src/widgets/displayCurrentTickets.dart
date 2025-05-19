@@ -22,7 +22,7 @@ class TicketsSection extends StatelessWidget {
           width: 1,
         ),
         borderRadius: BorderRadius.circular(16),
-        color: Colors.white.withOpacity(0.07),
+        color: Colors.white.withValues(alpha: 0.06),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -31,7 +31,7 @@ class TicketsSection extends StatelessWidget {
           Row(
             children: [
               Text(
-                'Tickets of Event',
+                'Event Tickets',
                 style: whiteBody,
               ),
               const Spacer(),
@@ -75,7 +75,7 @@ class TicketsSection extends StatelessWidget {
                 },
                 child: Card(
                   margin: const EdgeInsets.symmetric(vertical: 8),
-                  color: Colors.white.withOpacity(0.15),
+                  color: Colors.white.withValues(alpha: 0.15),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
                     side: const BorderSide(
@@ -93,7 +93,7 @@ class TicketsSection extends StatelessWidget {
                     trailing: Text(
                       ticket.ticketPrice == 0
                         ? 'Free'
-                        : ticket.ticketPrice.toString(),
+                        : '\$${ticket.ticketPrice.toStringAsFixed(2)}',
                       style: whiteBody.copyWith(
                         color: korazonColor,
                         fontWeight: FontWeight.bold,
