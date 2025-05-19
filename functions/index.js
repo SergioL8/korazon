@@ -1,5 +1,4 @@
 const {onCall} = require("firebase-functions/v2/https");
-// const {onRequest} = require("firebase-functions/v2/https");
 const logger = require("firebase-functions/logger");
 const sgMail = require("@sendgrid/mail");
 const admin = require("firebase-admin");
@@ -131,7 +130,7 @@ exports.VerificationEmail = onCall(async (req) => {
     }
 
     // Step 2: Generate a Firebase email verification link
-    let verifyEmailLink;
+    //let verifyEmailLink;
     const actionCodeSettings = {
       url: `https://korazonapp.com/verify?email=${encodeURIComponent(recipientEmail)}`,
       handleCodeInApp: true,
@@ -157,20 +156,17 @@ exports.VerificationEmail = onCall(async (req) => {
     // Step 3: Prepare and send email via SendGrid
     const msg = {
       to: recipientEmail,
-      from: "no-reply@korazonapp.com",
+      from: "korazon@korazonapp.com",
       name: "Korazon",
       templateId: sendGridTemplateId,
-      subject: "",//"Verify Your Email - Korazon", // Dynamic subject
+      subject: "Verify Your Email - Korazon", // Dynamic subject
       dynamic_template_data: {
         subject: "Verify Your Email - Korazon",
-        headerText: "Verify Your Email", // New header variable
-        body1:
-          "We've received a request to verify your email. " +
-          "Your code is: ${verificationCode}",
+        headerText: "Verify Your Email",
+        body1: `We've received a request to verify your email. Your code is: ${verificationCode}`,
         body2: "Your Korazon account is almost ready.",
-        //actionLink: verifyEmailLink, // The verification link generated above
-        buttonText: "Verify Email", // New button text variable
-      },
+        //buttonText: "Verify Email",
+      }
     };
 
     try {
@@ -193,6 +189,40 @@ exports.VerificationEmail = onCall(async (req) => {
       success: false,
       error: `❌ Error: ${error.message}`,
     };
+  }
+});
+
+exports.verifyUserEmailManually = functions.https.onCall(async (data, context) => {
+  try {
+    // Ensure the user is authenticated
+    if (!context.auth) {
+      throw new functions.https.HttpsError(
+        "unauthenticated",
+        "You must be authenticated to verify your email."
+      );
+    }
+
+    const uid = context.auth.uid;
+
+    // Optionally, you could check that the email matches
+    const user = await admin.auth().getUser(uid);
+    const email = user.email;
+
+    // Actually set emailVerified = true
+    await admin.auth().updateUser(uid, {
+      emailVerified: true,
+    });
+
+    // Optionally log or store metadata in Firestore
+    await admin.firestore().collection("users").doc(uid).update({
+      verified: true,
+      verifiedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    return { success: true, message: `✅ Email for ${email} marked as verified.` };
+  } catch (error) {
+    console.error("❌ Failed to verify email manually:", error.message);
+    throw new functions.https.HttpsError("internal", error.message);
   }
 });
 

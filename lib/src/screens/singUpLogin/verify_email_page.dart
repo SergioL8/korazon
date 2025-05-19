@@ -13,7 +13,6 @@ import 'package:korazon/src/widgets/alertBox.dart';
 import 'package:korazon/src/widgets/confirmationMessage.dart';
 import 'package:korazon/src/widgets/customPinInput.dart';
 import 'package:korazon/src/widgets/gradient_border_button.dart';
-import 'package:pin_code_fields/pin_code_fields.dart';
 
 class VerifyEmailPage extends StatefulWidget {
   final String? userEmail;
@@ -113,6 +112,29 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     }
   }
 
+  Future<void> verifyEmailManually(BuildContext context) async {
+    try {
+      final HttpsCallable callable =
+          FirebaseFunctions.instance.httpsCallable('verifyUserEmailManually');
+
+      final result = await callable();
+
+      if (result.data['success'] == true) {
+        showConfirmationMessage(
+          context,
+          message: 'Email verified successfully!',
+        );
+        // You can also navigate or update state here
+      } else {
+        showErrorMessage(context, title: 'An error occurred');
+        debugPrint("❌ Error calling Firebase Function: $result");
+      }
+    } catch (e) {
+      showErrorMessage(context, title: 'An error occurred');
+      debugPrint("❌ Error calling Firebase Function: $e");
+    }
+  }
+
   @override
   void dispose() {
     _timer.cancel();
@@ -177,12 +199,6 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                         Text(
                           'We have sent you a verification email, please check the inbox of:',
                           style: whiteBody,
-                          // TextStyle(
-                          //   color: tertiaryColor,
-                          //   fontSize: 18,
-                          //   fontWeight: FontWeight.w500,
-                          // ),
-                          // textAlign: TextAlign.justify,
                         ),
                         Text(
                           userEmail!, //user email must exist, otherwise it would have thrown an error before.
@@ -218,14 +234,10 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                 ),
 
                 GradientBorderButton(
-                  text: 'I have verified my email',
-                  onTap: () async {
-                    await FirebaseAuth.instance.currentUser?.reload();
-                    if (!mounted) return;
-                    setState(
-                        () {}); // Trigger a rebuild to check the latest state
-                  },
+                  text: 'Continue',
+                  onTap: () => verifyEmailManually(context),
                 ),
+
                 SizedBox(
                   height: 20,
                 ),
