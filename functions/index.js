@@ -109,7 +109,8 @@ exports.VerificationEmail = onCall(async (req) => {
     sgMail.setApiKey(sendGridKey);
 
     // Extract recipient email from request data
-    const {recipientEmail} = req.data;
+    const { recipientEmail, verificationCode } = req.data;
+
 
     if (!recipientEmail) {
       logger.error("❌ Missing required email data.");
@@ -156,18 +157,18 @@ exports.VerificationEmail = onCall(async (req) => {
     // Step 3: Prepare and send email via SendGrid
     const msg = {
       to: recipientEmail,
-      from: "korazon@korazonapp.com",
+      from: "no-reply@korazonapp.com",
       name: "Korazon",
       templateId: sendGridTemplateId,
-      subject: "Verify Your Email - Korazon", // Dynamic subject
+      subject: "",//"Verify Your Email - Korazon", // Dynamic subject
       dynamic_template_data: {
         subject: "Verify Your Email - Korazon",
         headerText: "Verify Your Email", // New header variable
         body1:
           "We've received a request to verify your email. " +
-          "Click the button below to continue.",
+          "Your code is: ${verificationCode}",
         body2: "Your Korazon account is almost ready.",
-        actionLink: verifyEmailLink, // The verification link generated above
+        //actionLink: verifyEmailLink, // The verification link generated above
         buttonText: "Verify Email", // New button text variable
       },
     };

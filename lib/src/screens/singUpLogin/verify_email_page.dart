@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:korazon/src/screens/basePage.dart';
 import 'package:korazon/src/screens/singUpLogin/hostSignUpExperience/confirm_identity_page.dart';
 import 'package:korazon/src/screens/singUpLogin/landing_page.dart';
@@ -9,7 +11,9 @@ import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/screens/singUpLogin/finish_user_setup.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
 import 'package:korazon/src/widgets/confirmationMessage.dart';
+import 'package:korazon/src/widgets/customPinInput.dart';
 import 'package:korazon/src/widgets/gradient_border_button.dart';
+import 'package:pin_code_fields/pin_code_fields.dart';
 
 class VerifyEmailPage extends StatefulWidget {
   final String? userEmail;
@@ -28,9 +32,11 @@ class VerifyEmailPage extends StatefulWidget {
 }
 
 class _VerifyEmailPageState extends State<VerifyEmailPage> {
+  final _pinController = TextEditingController();
   bool _emailVerified = false;
   bool _hasSentEmail = false;
   late Timer _timer;
+  bool _error = false;
 
   @override
   void initState() {
@@ -46,19 +52,26 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   }
 
   Future<void> sendVerificationEmail() async {
-    debugPrint("📧 AAAAAAAA Sending verification email to ${widget.userEmail}");
+    debugPrint("📧 Sending verification email to ${widget.userEmail}");
+
+    // Generate a random 6-digit code
+    final String code = (100000 + Random().nextInt(900000)).toString();
+    debugPrint("🔐 Generated code: $code");
+
     try {
       final HttpsCallable callable =
           FirebaseFunctions.instance.httpsCallable('VerificationEmail');
 
       final result = await callable.call({
-        "recipientEmail": widget.userEmail, //Its the only required data
+        "recipientEmail": widget.userEmail,
+        "verificationCode": code,
       });
 
       if (result.data['success'] == true) {
-        showConfirmationMessage(context,
-            message: 'We have sent you a verification email');
-        debugPrint("✅ Email sent successfully!");
+        showConfirmationMessage(
+          context,
+          message: 'We have sent you a verification email with your code',
+        );
       }
     } catch (error) {
       showErrorMessage(context, title: 'An error occurred');
@@ -68,6 +81,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
 
   Future<void> checkEmailVerified() async {
     await FirebaseAuth.instance.currentUser?.reload();
+    if (!mounted) return;
     setState(() {
       _emailVerified =
           FirebaseAuth.instance.currentUser?.emailVerified ?? false;
@@ -102,6 +116,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   @override
   void dispose() {
     _timer.cancel();
+    _pinController.dispose();
     super.dispose();
   }
 
@@ -182,7 +197,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                           // textAlign: TextAlign.center, // Centers the email
                         ),
                         Text(
-                          'and click the verification link.',
+                          'and introduce the 6 digit code below.',
                           style: whiteBody,
                           // TextStyle(
                           //   color: tertiaryColor,
@@ -194,10 +209,19 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                       ],
                     )),
                 SizedBox(height: screenHeight * 0.05),
+
+                // This is our custom pin input
+
+                CustomPinInput(
+                  controller: _pinController,
+                  useNumericKeyboard: true,
+                ),
+
                 GradientBorderButton(
                   text: 'I have verified my email',
                   onTap: () async {
                     await FirebaseAuth.instance.currentUser?.reload();
+                    if (!mounted) return;
                     setState(
                         () {}); // Trigger a rebuild to check the latest state
                   },
@@ -237,11 +261,6 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                       decorationColor: Colors.white, // Underline color
                       decorationThickness: 1, // Thickness of the underline
                     ),
-                    // TextStyle(
-                    //   color: tertiaryColor,
-                    //   fontSize: 16,
-                    //   fontWeight: FontWeight.w700,
-                    // ),
                   ),
                 ),
               ],
