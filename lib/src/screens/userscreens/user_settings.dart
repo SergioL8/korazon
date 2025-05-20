@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:korazon/src/screens/singUpLogin/landing_page.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:korazon/src/screens/singUpLogin/signedin_logic.dart';
 
 class UserSettings extends StatelessWidget {
   const UserSettings({super.key});
@@ -41,10 +41,12 @@ class UserSettings extends StatelessWidget {
                   ),
                   onPressed: () {
                     FirebaseAuth.instance.signOut();
-                    Navigator.of(context).pop();
-                    Navigator.of(context).push(
+                    // This has to be a push replacement because their is no use in having a previous stack
+                    // after logging out because you need to log in again to use any of the pages anyway
+                    Navigator.of(context).pushReplacement(
                       MaterialPageRoute(
-                          builder: (context) => const IsSignedLogic()),
+                          // Navigate to the landing page instead of IsSignedLogic because it is the only option now
+                          builder: (context) => const LandingPage()),
                     );
                   },
                   child: Text(

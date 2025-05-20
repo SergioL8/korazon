@@ -48,7 +48,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'korazon',
-      home: const isSignedLogic(),
+      home: const IsSignedLogic(),
     );
   }
 }

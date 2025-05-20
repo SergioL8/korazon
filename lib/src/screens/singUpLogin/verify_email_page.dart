@@ -34,7 +34,6 @@ class VerifyEmailPage extends StatefulWidget {
 class _VerifyEmailPageState extends State<VerifyEmailPage> {
   final _pinController = TextEditingController();
   bool _emailVerified = false;
-  bool _hasSentEmail = false;
   late Timer _timer;
 
   @override
@@ -42,10 +41,11 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     super.initState();
 
     // Only send the verification email once in initState in case it is triggered multiple times
-    if (!_hasSentEmail) {
+    // Schedule sending the email to happen after the widget is fully built once
+    Future.microtask(() {
       sendVerificationEmail();
-      _hasSentEmail = true;
-    }
+    });
+
     _timer =
         Timer.periodic(Duration(seconds: 5), (timer) => checkEmailVerified());
   }
