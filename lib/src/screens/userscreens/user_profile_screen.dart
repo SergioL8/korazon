@@ -9,8 +9,7 @@ import 'package:korazon/src/widgets/alertBox.dart'; // For base64 decoding
 import 'package:korazon/src/utilities/models/userModel.dart';
 import 'package:korazon/src/widgets/colorfulSpinner.dart';
 
-
-class UserSettings extends StatefulWidget{
+class UserSettings extends StatefulWidget {
   const UserSettings({super.key});
 
   @override
@@ -18,13 +17,10 @@ class UserSettings extends StatefulWidget{
 }
 
 class _UserSettingsState extends State<UserSettings> {
-
-  
   bool _isLoading = false;
   UserModel? usermodel;
   bool _qrCodeLoading = false;
   String? qrCodeBase64;
-
 
   // DON'T HAVE TO EDIT THIS
   @override
@@ -33,7 +29,6 @@ class _UserSettingsState extends State<UserSettings> {
     fetchQrCode(); // Fetch QR code when widget loads
   }
 
-
   // DON'T HAVE TO EDIT THIS
   Future<void> fetchQrCode() async {
     setState(() {
@@ -41,10 +36,13 @@ class _UserSettingsState extends State<UserSettings> {
     });
 
     try {
-      
-      final user = FirebaseAuth.instance.currentUser; // get instance of the current user
+      final user =
+          FirebaseAuth.instance.currentUser; // get instance of the current user
 
-      if (user == null) {  qrCodeBase64 = null; return;  }  // Ensure the user is logged in
+      if (user == null) {
+        qrCodeBase64 = null;
+        return;
+      } // Ensure the user is logged in
 
       // Fetch data from firestore
       //final DocumentReference<Map<String, dynamic>> userDocument = FirebaseFirestore.instance.collection('users').doc(user.uid);
@@ -55,179 +53,201 @@ class _UserSettingsState extends State<UserSettings> {
           .doc(user.uid)
           .get();
 
-
       usermodel = UserModel.fromDocumentSnapshot(userDocument);
 
-      if (usermodel == null) { // Ensure the user data exists
-        qrCodeBase64 = null; return;  
+      if (usermodel == null) {
+        // Ensure the user data exists
+        qrCodeBase64 = null;
+        return;
       }
       qrCodeBase64 = usermodel!.qrCode;
-
     } catch (e) {
       showErrorMessage(context, content: e.toString());
     }
     setState(() {
-        _isLoading = false;
-      });
+      _isLoading = false;
+    });
   }
-
 
   @override
   Widget build(BuildContext context) {
-  // For illustration purposes, let’s assume you already have values for:
-  // final String userName = 'John Doe';
-  // final String userSex = 'Male';
-  // final int userAge = 25;
+    // For illustration purposes, let’s assume you already have values for:
+    // final String userName = 'John Doe';
+    // final String userSex = 'Male';
+    // final int userAge = 25;
 
-  return Scaffold(
-    backgroundColor: tertiaryColor,
-    appBar: AppBar(
-      backgroundColor: appBarColor,
-      title: const Text(
-        'Profile',
-        style: TextStyle(
-          color: secondaryColor,
-          fontWeight: primaryFontWeight,
-          fontSize: 32.0,
-        ),
-      ),
-      bottom: PreferredSize(
-        preferredSize: const Size.fromHeight(2.0),
-        child: Container(
-          color: dividerColor,
-          height: barThickness,
-        ),
-      ),
-      actions: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: IconButton(
-            icon: const Icon(Icons.login_outlined),
-            iconSize: 32.0,
+    return Scaffold(
+      backgroundColor: tertiaryColor,
+      appBar: AppBar(
+        backgroundColor: appBarColor,
+        title: const Text(
+          'Profile',
+          style: TextStyle(
             color: secondaryColor,
-            onPressed: () {
-              FirebaseAuth.instance.signOut();
-              Navigator.of(context).pop();
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => const isSignedLogic()),
-              );
-            },
+            fontWeight: primaryFontWeight,
+            fontSize: 32.0,
           ),
         ),
-      ],
-    ),
-    body: _isLoading 
-    ? Center(
-       child: ColorfulSpinner(),
-    )
-    : usermodel == null ? Center (child: Text('Error Loading User. Logout and login.'),) 
-    : SingleChildScrollView(
-      child: Padding(
-        // You can adjust horizontal padding to your liking
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // Title or username
-            SizedBox(height: 16.0), // Add spacing between name and last name
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  usermodel!.name,
-                  style: TextStyle(
-                    color: secondaryColor,
-                    fontSize: 24.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(width: 8.0), // Add spacing between name and last name
-                Text(
-                  usermodel!.lastName,
-                  style: TextStyle(
-                    color: secondaryColor,
-                    fontSize: 24.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-
-            // QR Code Container
-            Padding(
-              padding: const EdgeInsets.only(bottom: 10, top: 40, right: 40, left: 40),
-              child: qrCodeBase64 == ''
-                    ? const Text('Error fetching QR Code')
-                    : Image.memory(
-                        base64Decode(qrCodeBase64!.split(',')[1]),
-                        fit: BoxFit.contain,
-                    ),
-            ),
-            const SizedBox(height: 20,),
-            ElevatedButton(
-              style: ButtonStyle(
-                backgroundColor: WidgetStatePropertyAll<Color>(korazonColor),
-                shape: WidgetStatePropertyAll<OutlinedBorder>(RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                )),
-              ),
-              onPressed: () async {
-                if (_qrCodeLoading == true) { return; } // avoid multiple classs
-                _qrCodeLoading = true;
-                final temp = await createQRCode(usermodel!.userID);
-                await FirebaseFirestore.instance.collection('users').doc(usermodel!.userID).update({
-                  'qrCode': temp,
-                });
-                setState(() {
-                  qrCodeBase64 = temp;
-                });
-                _qrCodeLoading = false;
-              },
-              child: Text(
-                'Regenerate QR code',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 17,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 20,),
-
-            const Text(
-              'Use this QR Code to access all your events',
-              style: TextStyle(
-                color: secondaryColor,
-                fontSize: 16.0,
-                fontWeight: FontWeight.w300,
-              ),
-            ),
-            const SizedBox(height: 16.0),
-
-            // USER INFO
-
-            Text(
-              usermodel!.gender, 
-              style: const TextStyle(
-                    color: secondaryColor,
-                    fontSize: 24.0,
-                    fontWeight: FontWeight.w500,
-                  ),
-            ),
-            const SizedBox(height: 8.0),
-            Text( 
-              usermodel!.age == -1 ? 'Undefined Age' : (usermodel!.age).toString(),
-              style: const TextStyle(
-                    color: secondaryColor,
-                    fontSize: 24.0,
-                    fontWeight: FontWeight.w500,
-                  ),
-            ),
-          ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(2.0),
+          child: Container(
+            color: dividerColor,
+            height: barThickness,
+          ),
         ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: IconButton(
+              icon: const Icon(Icons.login_outlined),
+              iconSize: 32.0,
+              color: secondaryColor,
+              onPressed: () {
+                FirebaseAuth.instance.signOut();
+                Navigator.of(context).pop();
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                      builder: (context) => const IsSignedLogic()),
+                );
+              },
+            ),
+          ),
+        ],
       ),
-    ),
-  );
-}
+      body: _isLoading
+          ? Center(
+              child: ColorfulSpinner(),
+            )
+          : usermodel == null
+              ? Center(
+                  child: Text('Error Loading User. Logout and login.'),
+                )
+              : SingleChildScrollView(
+                  child: Padding(
+                    // You can adjust horizontal padding to your liking
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        // Title or username
+                        SizedBox(
+                            height:
+                                16.0), // Add spacing between name and last name
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              usermodel!.name,
+                              style: TextStyle(
+                                color: secondaryColor,
+                                fontSize: 24.0,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(
+                                width:
+                                    8.0), // Add spacing between name and last name
+                            Text(
+                              usermodel!.lastName,
+                              style: TextStyle(
+                                color: secondaryColor,
+                                fontSize: 24.0,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        // QR Code Container
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              bottom: 10, top: 40, right: 40, left: 40),
+                          child: qrCodeBase64 == ''
+                              ? const Text('Error fetching QR Code')
+                              : Image.memory(
+                                  base64Decode(qrCodeBase64!.split(',')[1]),
+                                  fit: BoxFit.contain,
+                                ),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        ElevatedButton(
+                          style: ButtonStyle(
+                            backgroundColor:
+                                WidgetStatePropertyAll<Color>(korazonColor),
+                            shape: WidgetStatePropertyAll<OutlinedBorder>(
+                                RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            )),
+                          ),
+                          onPressed: () async {
+                            if (_qrCodeLoading == true) {
+                              return;
+                            } // avoid multiple classs
+                            _qrCodeLoading = true;
+                            final temp = await createQRCode(usermodel!.userID);
+                            await FirebaseFirestore.instance
+                                .collection('users')
+                                .doc(usermodel!.userID)
+                                .update({
+                              'qrCode': temp,
+                            });
+                            setState(() {
+                              qrCodeBase64 = temp;
+                            });
+                            _qrCodeLoading = false;
+                          },
+                          child: Text(
+                            'Regenerate QR code',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 17,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                        ),
+
+                        const SizedBox(
+                          height: 20,
+                        ),
+
+                        const Text(
+                          'Use this QR Code to access all your events',
+                          style: TextStyle(
+                            color: secondaryColor,
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.w300,
+                          ),
+                        ),
+                        const SizedBox(height: 16.0),
+
+                        // USER INFO
+
+                        Text(
+                          usermodel!.gender,
+                          style: const TextStyle(
+                            color: secondaryColor,
+                            fontSize: 24.0,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 8.0),
+                        Text(
+                          usermodel!.age == -1
+                              ? 'Undefined Age'
+                              : (usermodel!.age).toString(),
+                          style: const TextStyle(
+                            color: secondaryColor,
+                            fontSize: 24.0,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+    );
+  }
 }

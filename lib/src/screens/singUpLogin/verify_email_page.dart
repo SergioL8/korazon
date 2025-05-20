@@ -1,9 +1,10 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
 import 'package:korazon/src/screens/basePage.dart';
 import 'package:korazon/src/screens/singUpLogin/hostSignUpExperience/confirm_identity_page.dart';
 import 'package:korazon/src/screens/singUpLogin/landing_page.dart';
@@ -35,7 +36,6 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   bool _emailVerified = false;
   bool _hasSentEmail = false;
   late Timer _timer;
-  bool _error = false;
 
   @override
   void initState() {
@@ -112,26 +112,35 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     }
   }
 
-  Future<void> verifyEmailManually(BuildContext context) async {
-    try {
-      final HttpsCallable callable =
-          FirebaseFunctions.instance.httpsCallable('verifyUserEmailManually');
+  Future<void> verifyEmailViaHttp() async {
+    final user = FirebaseAuth.instance.currentUser;
+    final idToken = await user?.getIdToken(); // no force refresh needed here
 
-      final result = await callable();
+    // We activate the cloud function that verifies the email directly with the user token
+    final response = await http.post(
+      Uri.parse(
+        'https://us-central1-korazon-dc77a.cloudfunctions.net/verifyUserEmailManuallyHttp',
+      ),
+      headers: {
+        'Authorization': 'Bearer $idToken',
+        'Content-Type': 'application/json',
+      },
+      body: '{}',
+    );
 
-      if (result.data['success'] == true) {
-        showConfirmationMessage(
-          context,
-          message: 'Email verified successfully!',
-        );
-        // You can also navigate or update state here
-      } else {
-        showErrorMessage(context, title: 'An error occurred');
-        debugPrint("❌ Error calling Firebase Function: $result");
-      }
-    } catch (e) {
+    final data = jsonDecode(response.body);
+    // Decoded response
+
+    if (data['success'] == true) {
+      await user?.reload();
+
+      // Check if the user is still on the page before showing the message
+      if (!mounted) return;
+      showConfirmationMessage(context, message: 'Email verified successfully');
+    } else {
+      if (!mounted) return;
       showErrorMessage(context, title: 'An error occurred');
-      debugPrint("❌ Error calling Firebase Function: $e");
+      debugPrint("❌ Error verifying email: ${data['error']}");
     }
   }
 
@@ -232,10 +241,9 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                   controller: _pinController,
                   useNumericKeyboard: true,
                 ),
-
                 GradientBorderButton(
                   text: 'Continue',
-                  onTap: () => verifyEmailManually(context),
+                  onTap: () => verifyEmailViaHttp(),
                 ),
 
                 SizedBox(

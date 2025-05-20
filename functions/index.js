@@ -1,4 +1,5 @@
 const {onCall} = require("firebase-functions/v2/https");
+const functions = require("firebase-functions");
 const logger = require("firebase-functions/logger");
 const sgMail = require("@sendgrid/mail");
 const admin = require("firebase-admin");
@@ -194,6 +195,7 @@ exports.VerificationEmail = onCall(async (req) => {
 
 exports.verifyUserEmailManually = functions.https.onCall(async (data, context) => {
   try {
+    logger.info(`🔐 Auth UID: ${context.auth?.uid}`);
     // Ensure the user is authenticated
     if (!context.auth) {
       throw new functions.https.HttpsError(
@@ -225,4 +227,36 @@ exports.verifyUserEmailManually = functions.https.onCall(async (data, context) =
     throw new functions.https.HttpsError("internal", error.message);
   }
 });
+
+// Add this to your index.js
+exports.verifyUserEmailManuallyHttp = functions.https.onRequest(async (req, res) => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader?.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Missing or invalid Authorization header' });
+  }
+
+  const idToken = authHeader.split('Bearer ')[1];
+
+  try {
+    const decoded = await admin.auth().verifyIdToken(idToken);
+    const uid = decoded.uid;
+    const email = decoded.email;
+
+    await admin.auth().updateUser(uid, {
+      emailVerified: true,
+    });
+
+    await admin.firestore().collection('users').doc(uid).set({
+      verified: true,
+      verifiedAt: admin.firestore.FieldValue.serverTimestamp(),
+    }, { merge: true });
+
+    res.status(200).json({ success: true, message: `✅ Email for ${email} marked as verified.` });
+  } catch (error) {
+    console.error('❌ Error verifying user manually via HTTP:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 
