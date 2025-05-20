@@ -193,42 +193,6 @@ exports.VerificationEmail = onCall(async (req) => {
   }
 });
 
-exports.verifyUserEmailManually = functions.https.onCall(async (data, context) => {
-  try {
-    logger.info(`🔐 Auth UID: ${context.auth?.uid}`);
-    // Ensure the user is authenticated
-    if (!context.auth) {
-      throw new functions.https.HttpsError(
-        "unauthenticated",
-        "You must be authenticated to verify your email."
-      );
-    }
-
-    const uid = context.auth.uid;
-
-    // Optionally, you could check that the email matches
-    const user = await admin.auth().getUser(uid);
-    const email = user.email;
-
-    // Actually set emailVerified = true
-    await admin.auth().updateUser(uid, {
-      emailVerified: true,
-    });
-
-    // Optionally log or store metadata in Firestore
-    await admin.firestore().collection("users").doc(uid).update({
-      verified: true,
-      verifiedAt: admin.firestore.FieldValue.serverTimestamp(),
-    });
-
-    return { success: true, message: `✅ Email for ${email} marked as verified.` };
-  } catch (error) {
-    console.error("❌ Failed to verify email manually:", error.message);
-    throw new functions.https.HttpsError("internal", error.message);
-  }
-});
-
-// Add this to your index.js
 exports.verifyUserEmailManuallyHttp = functions.https.onRequest(async (req, res) => {
   const authHeader = req.headers.authorization;
 

@@ -34,7 +34,9 @@ class VerifyEmailPage extends StatefulWidget {
 class _VerifyEmailPageState extends State<VerifyEmailPage> {
   final _pinController = TextEditingController();
   bool _emailVerified = false;
-  late Timer _timer;
+  late String _generatedCode;
+  late DateTime _codeGeneratedAt;
+  final Duration _codeExpiryDuration = Duration(minutes: 5);
 
   @override
   void initState() {
@@ -45,17 +47,24 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     Future.microtask(() {
       sendVerificationEmail();
     });
-
-    _timer =
-        Timer.periodic(Duration(seconds: 5), (timer) => checkEmailVerified());
   }
 
+  // Checks whether the code is expired or not
+  bool _isCodeExpired() {
+    final currentTime = DateTime.now();
+    return currentTime.difference(_codeGeneratedAt) > _codeExpiryDuration;
+  }
+
+  /// Sends a verification email to the user using Firebase Cloud Functions.
+  /// Every time this function is called a new 6 digit verification code is generated and sent.
+  /// Only the last code is valid, the previous ones are invalidated.
   Future<void> sendVerificationEmail() async {
     debugPrint("📧 Sending verification email to ${widget.userEmail}");
 
     // Generate a random 6-digit code
-    final String code = (100000 + Random().nextInt(900000)).toString();
-    debugPrint("🔐 Generated code: $code");
+    _generatedCode = (100000 + Random().nextInt(900000)).toString();
+    _codeGeneratedAt = DateTime.now();
+    debugPrint("🔐 Generated code: $_generatedCode at $_codeGeneratedAt");
 
     try {
       final HttpsCallable callable =
@@ -63,7 +72,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
 
       final result = await callable.call({
         "recipientEmail": widget.userEmail,
-        "verificationCode": code,
+        "verificationCode": _generatedCode,
       });
 
       if (result.data['success'] == true) {
@@ -78,6 +87,8 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     }
   }
 
+  //! MANY THINGS TO CHANGE HERE: This needs to changed to when the user is
+  // This should be a routing options
   Future<void> checkEmailVerified() async {
     await FirebaseAuth.instance.currentUser?.reload();
     if (!mounted) return;
@@ -90,7 +101,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     if (!_emailVerified) {
       return;
     } else {
-      _timer.cancel();
+      //_timer.cancel();
       // Here is where the widget info is useful, we have 3 possible scenarios:
 
       if (widget.isLogin == true) {
@@ -146,7 +157,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
 
   @override
   void dispose() {
-    _timer.cancel();
+    //_timer.cancel();
     _pinController.dispose();
     super.dispose();
   }
@@ -214,22 +225,10 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                           style: whiteBody.copyWith(
                             fontWeight: FontWeight.w700,
                           ),
-                          // TextStyle(
-                          //   color: tertiaryColor,
-                          //   fontSize: 20,
-                          //   fontWeight: FontWeight.w900, // Bold for emphasis
-                          // ),
-                          // textAlign: TextAlign.center, // Centers the email
                         ),
                         Text(
                           'and introduce the 6 digit code below.',
                           style: whiteBody,
-                          // TextStyle(
-                          //   color: tertiaryColor,
-                          //   fontSize: 18,
-                          //   fontWeight: FontWeight.w500,
-                          // ),
-                          // textAlign: TextAlign.justify,
                         ),
                       ],
                     )),
@@ -260,10 +259,25 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                         decorationThickness: 1, // Thickness of the underline
                       ),
                     ),
-                    onTap: () async {
-                      if (mounted) {
-                        await sendVerificationEmail();
-                        //showSnackBar(context, 'Email de verificación reenviado');
+                    // Code has to match and not be expired currently 5 minutes for expiration
+                    onTap: () {
+                      final enteredCode = _pinController.text.trim();
+
+                      if (_isCodeExpired()) {
+                        showErrorMessage(context,
+                            title: 'Code expired. Please request a new one.');
+                        debugPrint(
+                            "❌ Code expired. Generated at $_codeGeneratedAt");
+                        return;
+                      }
+
+                      if (enteredCode == _generatedCode) {
+                        verifyEmailViaHttp();
+                      } else {
+                        showErrorMessage(context,
+                            title: 'Incorrect verification code');
+                        debugPrint(
+                            "❌ Entered code $enteredCode does not match $_generatedCode");
                       }
                     },
                   ),
