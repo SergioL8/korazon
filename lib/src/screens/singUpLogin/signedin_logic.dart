@@ -4,6 +4,7 @@ import 'package:korazon/src/screens/basePage.dart';
 import 'package:korazon/src/screens/noConnectionPage.dart';
 import 'package:korazon/src/screens/singUpLogin/landing_page.dart';
 import 'package:korazon/src/screens/singUpLogin/verify_email_page.dart';
+import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/widgets/colorfulSpinner.dart';
 
 class IsSignedLogic extends StatelessWidget {
@@ -44,11 +45,12 @@ class IsSignedLogic extends StatelessWidget {
     return FutureBuilder<Widget>(
       future: checkAuthStatus(),
       builder: (context, snapshot) {
+        // We do not check for snapshot.hasError because we are already handling errors in the checkAuthStatus function
         if (snapshot.connectionState != ConnectionState.done) {
-          return const Center(child: ColorfulSpinner());
-        }
-        if (snapshot.hasError) {
-          return const Center(child: Text('An error occurred'));
+          return const Scaffold(
+            backgroundColor: backgroundColorBM,
+            body: Center(child: ColorfulSpinner()),
+          );
         }
         return snapshot.data!;
       },
