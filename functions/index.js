@@ -43,8 +43,7 @@ exports.ResetPasswordEmail = onCall(async (req) => {
     // Step 2: Generate a Firebase reset password link
     let resetPasswordLink;
     try {
-      resetPasswordLink = await admin.auth().generatePasswordResetLink(
-      );
+      resetPasswordLink = await admin.auth().generatePasswordResetLink(recipientEmail);
       logger.info("🔗 Password reset link generated successfully.");
     } catch (resetLinkError) {
       logger.error(

@@ -303,7 +303,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                       verifyAndRouteUser();
                     } else {
                       showErrorMessage(context,
-                          title: 'Incorrect verification code');
+                          title: 'Invalid verification code');
                       debugPrint(
                           "❌ Entered code $enteredCode does not match $_generatedCode");
                     }
