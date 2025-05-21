@@ -21,6 +21,16 @@ enum ErrorAction {
   verify,
 }
 
+// This enum is used to determine the parent page of the Email verification page,
+// I thought it made sense to create a new enum instead of using the parentPage enum
+// Because it is 3 specific pages
+
+enum EmailVerificationNextPage {
+  basePage,
+  confirmIdentityPage,
+  finishUserSetup,
+}
+
 // Used to let certain pages like event details where they have been called
 enum ParentPage {
   homePage,

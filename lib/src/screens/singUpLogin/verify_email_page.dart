@@ -10,6 +10,7 @@ import 'package:korazon/src/screens/singUpLogin/hostSignUpExperience/confirm_ide
 import 'package:korazon/src/screens/singUpLogin/landing_page.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/screens/singUpLogin/finish_user_setup.dart';
+import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
 import 'package:korazon/src/widgets/confirmationMessage.dart';
 import 'package:korazon/src/widgets/customPinInput.dart';
@@ -17,14 +18,12 @@ import 'package:korazon/src/widgets/gradient_border_button.dart';
 
 class VerifyEmailPage extends StatefulWidget {
   final String? userEmail;
-  final bool isHost;
-  final bool isLogin;
+  final EmailVerificationNextPage nextPage;
 
   const VerifyEmailPage({
     super.key,
     required this.userEmail,
-    required this.isHost,
-    required this.isLogin,
+    required this.nextPage,
   });
 
   @override
@@ -33,7 +32,6 @@ class VerifyEmailPage extends StatefulWidget {
 
 class _VerifyEmailPageState extends State<VerifyEmailPage> {
   final _pinController = TextEditingController();
-  bool _emailVerified = false;
   late String _generatedCode;
   late DateTime _codeGeneratedAt;
   final Duration _codeExpiryDuration = Duration(minutes: 5);
@@ -89,15 +87,81 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
 
   /// Verifies the email after the user has entered the code successfully.
   /// It gives the user's auth token directly to the cloud function
-  Future<void> verifyEmailViaHttp() async {
-    final user = FirebaseAuth.instance.currentUser;
-    final idToken = await user?.getIdToken(); // no force refresh needed here
+  // Future<void> verifyEmailViaHttp() async {
+  //   final user = FirebaseAuth.instance.currentUser;
+  //   final idToken = await user?.getIdToken(); // no force refresh needed here
 
-    // We activate the cloud function that verifies the email directly with the user token
+  //   // We activate the cloud function that verifies the email directly with the user token
+  //   final response = await http.post(
+  //     Uri.parse(
+  //       'https://us-central1-korazon-dc77a.cloudfunctions.net/verifyUserEmailManuallyHttp',
+  //     ),
+  //     headers: {
+  //       'Authorization': 'Bearer $idToken',
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: '{}',
+  //   );
+
+  //   final data = jsonDecode(response.body);
+  //   // Decoded response
+
+  //   if (data['success'] == true) {
+  //     //await user?.reload();
+
+  //     // Check if the user is still on the page before showing the message
+  //     if (!mounted) return;
+  //     showConfirmationMessage(context, message: 'Email verified successfully');
+  //   } else {
+  //     if (!mounted) return;
+  //     showErrorMessage(context, title: 'An error occurred');
+  //     debugPrint("❌ Error verifying email: ${data['error']}");
+  //   }
+  // }
+
+  // // MANY THINGS TO CHANGE HERE: This needs to changed to when the user is
+  // // This should be a routing options
+  // Future<void> checkEmailVerified() async {
+  //   await FirebaseAuth.instance.currentUser?.reload();
+  //   if (!mounted) return;
+  //   setState(() {
+  //     _emailVerified =
+  //         FirebaseAuth.instance.currentUser?.emailVerified ?? false;
+  //     // emailVerified is a boolean that returns true if the user's email is verified
+  //   });
+  //   // If email is not verified, we do nothing, we keep waiting
+  //   if (!_emailVerified) {
+  //     return;
+  //   } else {
+  //     //_timer.cancel();
+  //     // Here is where the widget info is useful, we have 3 possible scenarios:
+
+  //     if (widget.isLogin == true) {
+  //       // 1. User has already created his account but left before verifying his/her email but
+  //       // is already logged in or it just logged in in the Landing page
+
+  //       Navigator.of(context).pushReplacement(
+  //           MaterialPageRoute(builder: (context) => const BasePage()));
+  //     } else if (widget.isHost == true) {
+  //       // 2. New Host creating his account
+
+  //       Navigator.of(context).push(MaterialPageRoute(
+  //           builder: (context) => const ConfirmIdentityPage()));
+  //     } else {
+  //       // 3. New User creating his account
+  //       Navigator.of(context).push(
+  //           MaterialPageRoute(builder: (context) => const FinishUserSetup()));
+  //     }
+  //   }
+  // }
+
+  Future<void> verifyAndRouteUser() async {
+    final user = FirebaseAuth.instance.currentUser;
+    final idToken = await user?.getIdToken();
+
     final response = await http.post(
       Uri.parse(
-        'https://us-central1-korazon-dc77a.cloudfunctions.net/verifyUserEmailManuallyHttp',
-      ),
+          'https://us-central1-korazon-dc77a.cloudfunctions.net/verifyUserEmailManuallyHttp'),
       headers: {
         'Authorization': 'Bearer $idToken',
         'Content-Type': 'application/json',
@@ -106,54 +170,34 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     );
 
     final data = jsonDecode(response.body);
-    // Decoded response
+
+    if (!mounted) return;
 
     if (data['success'] == true) {
-      //await user?.reload();
-
-      // Check if the user is still on the page before showing the message
-      if (!mounted) return;
       showConfirmationMessage(context, message: 'Email verified successfully');
+
+      switch (widget.nextPage) {
+        case EmailVerificationNextPage.basePage:
+          Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => const BasePage()));
+          break;
+
+        case EmailVerificationNextPage.confirmIdentityPage:
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => const ConfirmIdentityPage()));
+          break;
+
+        case EmailVerificationNextPage.finishUserSetup:
+          Navigator.of(context).push(
+              MaterialPageRoute(builder: (context) => const FinishUserSetup()));
+          break;
+      }
+
+      // 🔄 Reload silently (not blocking UX)
+      FirebaseAuth.instance.currentUser?.reload();
     } else {
-      if (!mounted) return;
       showErrorMessage(context, title: 'An error occurred');
       debugPrint("❌ Error verifying email: ${data['error']}");
-    }
-  }
-
-  //! MANY THINGS TO CHANGE HERE: This needs to changed to when the user is
-  // This should be a routing options
-  Future<void> checkEmailVerified() async {
-    await FirebaseAuth.instance.currentUser?.reload();
-    if (!mounted) return;
-    setState(() {
-      _emailVerified =
-          FirebaseAuth.instance.currentUser?.emailVerified ?? false;
-      // emailVerified is a boolean that returns true if the user's email is verified
-    });
-    // If email is not verified, we do nothing, we keep waiting
-    if (!_emailVerified) {
-      return;
-    } else {
-      //_timer.cancel();
-      // Here is where the widget info is useful, we have 3 possible scenarios:
-
-      if (widget.isLogin == true) {
-        // 1. User has already created his account but left before verifying his/her email but
-        // is already logged in or it just logged in in the Landing page
-
-        Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const BasePage()));
-      } else if (widget.isHost == true) {
-        // 2. New Host creating his account
-
-        Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => const ConfirmIdentityPage()));
-      } else {
-        // 3. New User creating his account
-        Navigator.of(context).push(
-            MaterialPageRoute(builder: (context) => const FinishUserSetup()));
-      }
     }
   }
 
@@ -165,8 +209,8 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   }
 
   void navigateToLandingPage() {
-    Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const LandingPage()));
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => const LandingPage()));
   }
 
   @override
@@ -244,7 +288,26 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                 ),
                 GradientBorderButton(
                   text: 'Continue',
-                  onTap: () => verifyEmailViaHttp(),
+                  onTap: () {
+                    final enteredCode = _pinController.text.trim();
+
+                    if (_isCodeExpired()) {
+                      showErrorMessage(context,
+                          title: 'Code expired. Please request a new one.');
+                      debugPrint(
+                          "❌ Code expired. Generated at $_codeGeneratedAt");
+                      return;
+                    }
+
+                    if (enteredCode == _generatedCode) {
+                      verifyAndRouteUser();
+                    } else {
+                      showErrorMessage(context,
+                          title: 'Incorrect verification code');
+                      debugPrint(
+                          "❌ Entered code $enteredCode does not match $_generatedCode");
+                    }
+                  },
                 ),
 
                 SizedBox(
@@ -253,42 +316,20 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                 Padding(
                   padding: const EdgeInsets.only(left: 16, right: 16),
                   child: GestureDetector(
-                    child: Text(
-                      'Resend verification email',
-                      style: whiteBody.copyWith(
-                        decoration: TextDecoration.underline,
-                        decorationColor: Colors.white, // Underline color
-                        decorationThickness: 1, // Thickness of the underline
+                      child: Text(
+                        'Resend verification email',
+                        style: whiteBody.copyWith(
+                          decoration: TextDecoration.underline,
+                          decorationColor: Colors.white, // Underline color
+                          decorationThickness: 1, // Thickness of the underline
+                        ),
                       ),
-                    ),
-                    // Code has to match and not be expired currently 5 minutes for expiration
-                    onTap: () {
-                      final enteredCode = _pinController.text.trim();
-
-                      if (_isCodeExpired()) {
-                        showErrorMessage(context,
-                            title: 'Code expired. Please request a new one.');
-                        debugPrint(
-                            "❌ Code expired. Generated at $_codeGeneratedAt");
-                        return;
-                      }
-
-                      if (enteredCode == _generatedCode) {
-                        verifyEmailViaHttp();
-                      } else {
-                        showErrorMessage(context,
-                            title: 'Incorrect verification code');
-                        debugPrint(
-                            "❌ Entered code $enteredCode does not match $_generatedCode");
-                      }
-                    },
-                  ),
+                      // Code has to match and not be expired currently 5 minutes for expiration
+                      onTap: () => sendVerificationEmail()),
                 ),
                 SizedBox(height: 6),
                 // Spacer(),
                 GestureDetector(
-                  // TODO: make this a pop if you come from the landing page
-
                   onTap: navigateToLandingPage,
                   child: Text(
                     'Return to landing page',
