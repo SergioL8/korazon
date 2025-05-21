@@ -87,6 +87,40 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     }
   }
 
+  /// Verifies the email after the user has entered the code successfully.
+  /// It gives the user's auth token directly to the cloud function
+  Future<void> verifyEmailViaHttp() async {
+    final user = FirebaseAuth.instance.currentUser;
+    final idToken = await user?.getIdToken(); // no force refresh needed here
+
+    // We activate the cloud function that verifies the email directly with the user token
+    final response = await http.post(
+      Uri.parse(
+        'https://us-central1-korazon-dc77a.cloudfunctions.net/verifyUserEmailManuallyHttp',
+      ),
+      headers: {
+        'Authorization': 'Bearer $idToken',
+        'Content-Type': 'application/json',
+      },
+      body: '{}',
+    );
+
+    final data = jsonDecode(response.body);
+    // Decoded response
+
+    if (data['success'] == true) {
+      //await user?.reload();
+
+      // Check if the user is still on the page before showing the message
+      if (!mounted) return;
+      showConfirmationMessage(context, message: 'Email verified successfully');
+    } else {
+      if (!mounted) return;
+      showErrorMessage(context, title: 'An error occurred');
+      debugPrint("❌ Error verifying email: ${data['error']}");
+    }
+  }
+
   //! MANY THINGS TO CHANGE HERE: This needs to changed to when the user is
   // This should be a routing options
   Future<void> checkEmailVerified() async {
@@ -120,38 +154,6 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
         Navigator.of(context).push(
             MaterialPageRoute(builder: (context) => const FinishUserSetup()));
       }
-    }
-  }
-
-  Future<void> verifyEmailViaHttp() async {
-    final user = FirebaseAuth.instance.currentUser;
-    final idToken = await user?.getIdToken(); // no force refresh needed here
-
-    // We activate the cloud function that verifies the email directly with the user token
-    final response = await http.post(
-      Uri.parse(
-        'https://us-central1-korazon-dc77a.cloudfunctions.net/verifyUserEmailManuallyHttp',
-      ),
-      headers: {
-        'Authorization': 'Bearer $idToken',
-        'Content-Type': 'application/json',
-      },
-      body: '{}',
-    );
-
-    final data = jsonDecode(response.body);
-    // Decoded response
-
-    if (data['success'] == true) {
-      await user?.reload();
-
-      // Check if the user is still on the page before showing the message
-      if (!mounted) return;
-      showConfirmationMessage(context, message: 'Email verified successfully');
-    } else {
-      if (!mounted) return;
-      showErrorMessage(context, title: 'An error occurred');
-      debugPrint("❌ Error verifying email: ${data['error']}");
     }
   }
 

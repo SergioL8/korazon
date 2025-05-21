@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:korazon/src/screens/basePage.dart';
+import 'package:korazon/src/screens/noConnectionPage.dart';
 import 'package:korazon/src/screens/singUpLogin/landing_page.dart';
 import 'package:korazon/src/screens/singUpLogin/verify_email_page.dart';
 import 'package:korazon/src/widgets/colorfulSpinner.dart';
@@ -9,24 +10,29 @@ class IsSignedLogic extends StatelessWidget {
   const IsSignedLogic({super.key});
 
   Future<Widget> checkAuthStatus() async {
-    final user = FirebaseAuth.instance.currentUser;
+    try {
+      final user = FirebaseAuth.instance.currentUser;
 
-    if (user == null) {
-      return const LandingPage();
-    }
+      if (user == null) {
+        return const LandingPage();
+      }
 
-    // Reload to ensure latest emailVerified state
-    await user.reload();
-    final refreshedUser = FirebaseAuth.instance.currentUser!;
+      // Reload to ensure latest emailVerified state
+      await user.reload();
+      final refreshedUser = FirebaseAuth.instance.currentUser!;
 
-    if (refreshedUser.emailVerified) {
-      return const BasePage();
-    } else {
-      return VerifyEmailPage(
-        userEmail: refreshedUser.email,
-        isHost: false,
-        isLogin: true,
-      );
+      if (refreshedUser.emailVerified) {
+        return const BasePage();
+      } else {
+        return VerifyEmailPage(
+          userEmail: refreshedUser.email,
+          isHost: false,
+          isLogin: true,
+        );
+      }
+    } catch (e) {
+      debugPrint("❌ Error in checkAuthStatus: $e");
+      return const NoConnectionPage();
     }
   }
 
