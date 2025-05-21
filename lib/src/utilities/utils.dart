@@ -27,7 +27,7 @@ enum ErrorAction {
 
 enum EmailVerificationNextPage {
   basePage,
-  confirmIdentityPage,
+  hostConfirmIdentityPage,
   finishUserSetup,
 }
 

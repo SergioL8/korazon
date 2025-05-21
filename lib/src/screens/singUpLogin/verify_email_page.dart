@@ -182,9 +182,9 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
               MaterialPageRoute(builder: (context) => const BasePage()));
           break;
 
-        case EmailVerificationNextPage.confirmIdentityPage:
+        case EmailVerificationNextPage.hostConfirmIdentityPage:
           Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => const ConfirmIdentityPage()));
+              builder: (context) => const HostConfirmIdentityPage()));
           break;
 
         case EmailVerificationNextPage.finishUserSetup:

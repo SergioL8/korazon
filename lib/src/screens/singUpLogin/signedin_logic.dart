@@ -5,6 +5,7 @@ import 'package:korazon/src/screens/noConnectionPage.dart';
 import 'package:korazon/src/screens/singUpLogin/landing_page.dart';
 import 'package:korazon/src/screens/singUpLogin/verify_email_page.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
+import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/widgets/colorfulSpinner.dart';
 
 class IsSignedLogic extends StatelessWidget {
@@ -27,8 +28,7 @@ class IsSignedLogic extends StatelessWidget {
       } else {
         return VerifyEmailPage(
           userEmail: refreshedUser.email,
-          isHost: false,
-          isLogin: true,
+          nextPage: EmailVerificationNextPage.basePage,
         );
       }
     } catch (e) {

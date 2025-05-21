@@ -12,14 +12,14 @@ import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class ConfirmIdentityPage extends StatefulWidget {
-  const ConfirmIdentityPage({super.key});
+class HostConfirmIdentityPage extends StatefulWidget {
+  const HostConfirmIdentityPage({super.key});
 
   @override
-  State<ConfirmIdentityPage> createState() => _ConfirmIdentityPageState();
+  State<HostConfirmIdentityPage> createState() => _ConfirmIdentityPageState();
 }
 
-class _ConfirmIdentityPageState extends State<ConfirmIdentityPage> {
+class _ConfirmIdentityPageState extends State<HostConfirmIdentityPage> {
   final TextEditingController _pinController = TextEditingController();
   bool _isLoading = false;
   bool _error = false;

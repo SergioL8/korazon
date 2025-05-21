@@ -107,8 +107,7 @@ class SignUpScreen2State extends State<SignUpScreen2> {
       Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (context) => VerifyEmailPage(
                 userEmail: widget.email,
-                isHost: false,
-                isLogin: false,
+                nextPage: EmailVerificationNextPage.finishUserSetup,
               )));
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
