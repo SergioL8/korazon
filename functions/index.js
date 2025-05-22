@@ -45,7 +45,7 @@ exports.ResetPasswordEmail = onCall(async (req) => {
     let resetPasswordLink;
     try {
       resetPasswordLink = await admin.auth().generatePasswordResetLink(recipientEmail);
-      logger.info("🔗 Password reset link generated successfully.");
+      logger.info("🔗 Password reset link generated successfully: ${resetLinkError.message} ");
     } catch (resetLinkError) {
       logger.error(
           `❌ Failed to generate password reset link: ${resetLinkError.message}`,
