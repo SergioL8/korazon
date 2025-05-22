@@ -6,7 +6,8 @@ const admin = require("firebase-admin");
 require("dotenv").config(); // Add this at the top
 
 admin.initializeApp();
-const sendGridTemplateId = "d-3ee8b7adca1c445087e9200176f5bde2";
+const sendGridVerifyEmailTemplateId = "d-3ee8b7adca1c445087e9200176f5bde2";
+const sendGridResetPasswordTemplateId = "d-7505b8d3d4324f8893faa739eb9d2113";
 
 exports.ResetPasswordEmail = onCall(async (req) => {
   try {
@@ -57,7 +58,7 @@ exports.ResetPasswordEmail = onCall(async (req) => {
       to: recipientEmail,
       from: "korazon@korazonapp.com",
       name: "Korazon",
-      templateId: sendGridTemplateId,
+      templateId: sendGridResetPasswordTemplateId,
       subject: "Reset Your Password - Korazon", // Dynamic subject
       dynamic_template_data: {
         subject: "Reset Password - Korazon",
@@ -158,7 +159,7 @@ exports.VerificationEmail = onCall(async (req) => {
       to: recipientEmail,
       from: "korazon@korazonapp.com",
       name: "Korazon",
-      templateId: sendGridTemplateId,
+      templateId: sendGridVerifyEmailTemplateId,
       subject: "Verify Your Email - Korazon", // Dynamic subject
       dynamic_template_data: {
         subject: "Verify Your Email - Korazon",
