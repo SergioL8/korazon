@@ -35,6 +35,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   late String _generatedCode;
   late DateTime _codeGeneratedAt;
   final Duration _codeExpiryDuration = Duration(minutes: 5);
+  bool _loading = false;
 
   @override
   void initState() {
@@ -57,6 +58,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   /// Every time this function is called a new 6 digit verification code is generated and sent.
   /// Only the last code is valid, the previous ones are invalidated.
   Future<void> sendVerificationEmail() async {
+    _loading = true;
     debugPrint("📧 Sending verification email to ${widget.userEmail}");
 
     // Generate a random 6-digit code
@@ -83,77 +85,8 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       showErrorMessage(context, title: 'An error occurred');
       debugPrint("❌ Error calling Firebase Function: $error");
     }
+    _loading = false;
   }
-
-  /// Verifies the email after the user has entered the code successfully.
-  /// It gives the user's auth token directly to the cloud function
-  // Future<void> verifyEmailViaHttp() async {
-  //   final user = FirebaseAuth.instance.currentUser;
-  //   final idToken = await user?.getIdToken(); // no force refresh needed here
-
-  //   // We activate the cloud function that verifies the email directly with the user token
-  //   final response = await http.post(
-  //     Uri.parse(
-  //       'https://us-central1-korazon-dc77a.cloudfunctions.net/verifyUserEmailManuallyHttp',
-  //     ),
-  //     headers: {
-  //       'Authorization': 'Bearer $idToken',
-  //       'Content-Type': 'application/json',
-  //     },
-  //     body: '{}',
-  //   );
-
-  //   final data = jsonDecode(response.body);
-  //   // Decoded response
-
-  //   if (data['success'] == true) {
-  //     //await user?.reload();
-
-  //     // Check if the user is still on the page before showing the message
-  //     if (!mounted) return;
-  //     showConfirmationMessage(context, message: 'Email verified successfully');
-  //   } else {
-  //     if (!mounted) return;
-  //     showErrorMessage(context, title: 'An error occurred');
-  //     debugPrint("❌ Error verifying email: ${data['error']}");
-  //   }
-  // }
-
-  // // MANY THINGS TO CHANGE HERE: This needs to changed to when the user is
-  // // This should be a routing options
-  // Future<void> checkEmailVerified() async {
-  //   await FirebaseAuth.instance.currentUser?.reload();
-  //   if (!mounted) return;
-  //   setState(() {
-  //     _emailVerified =
-  //         FirebaseAuth.instance.currentUser?.emailVerified ?? false;
-  //     // emailVerified is a boolean that returns true if the user's email is verified
-  //   });
-  //   // If email is not verified, we do nothing, we keep waiting
-  //   if (!_emailVerified) {
-  //     return;
-  //   } else {
-  //     //_timer.cancel();
-  //     // Here is where the widget info is useful, we have 3 possible scenarios:
-
-  //     if (widget.isLogin == true) {
-  //       // 1. User has already created his account but left before verifying his/her email but
-  //       // is already logged in or it just logged in in the Landing page
-
-  //       Navigator.of(context).pushReplacement(
-  //           MaterialPageRoute(builder: (context) => const BasePage()));
-  //     } else if (widget.isHost == true) {
-  //       // 2. New Host creating his account
-
-  //       Navigator.of(context).push(MaterialPageRoute(
-  //           builder: (context) => const ConfirmIdentityPage()));
-  //     } else {
-  //       // 3. New User creating his account
-  //       Navigator.of(context).push(
-  //           MaterialPageRoute(builder: (context) => const FinishUserSetup()));
-  //     }
-  //   }
-  // }
 
   Future<void> verifyAndRouteUser() async {
     final user = FirebaseAuth.instance.currentUser;
@@ -308,6 +241,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                           "❌ Entered code $enteredCode does not match $_generatedCode");
                     }
                   },
+                  loading: _loading,
                 ),
 
                 SizedBox(

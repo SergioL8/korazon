@@ -17,6 +17,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   final _emailFormKey = GlobalKey<FormState>();
   final FocusNode _emailFocusNode = FocusNode();
   final TextEditingController _emailController = TextEditingController();
+  bool _loading = false;
 
   void navigateToLandingPage() {
     Navigator.of(context).pushReplacement(
@@ -25,9 +26,9 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
 
   Future<void> sendResetPasswordEmail({
     required String recipientEmail,
-    //required String name,
-    //required String verificationLink,
   }) async {
+    _loading = true;
+
     if (!_emailFormKey.currentState!.validate()) {
       showErrorMessage(context, title: 'Please enter a valid email address');
       return;
@@ -62,6 +63,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
         debugPrint("❌ Error calling Firebase Function: $error");
       }
     }
+    _loading = false;
   }
 
   @override
@@ -191,6 +193,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                       );
                     },
                     text: 'Reset Password',
+                    loading: _loading,
                   ),
 
                   // Use Spacer here so that the next widget is pushed to the bottom
