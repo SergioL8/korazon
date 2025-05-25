@@ -7,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
+import 'dart:async';
 
 class SignUpScreen2 extends StatefulWidget {
   const SignUpScreen2({super.key, required this.email, required this.password});
@@ -35,6 +36,8 @@ class SignUpScreen2State extends State<SignUpScreen2> {
 
   // variable declaration
   bool _siningUpLoading = false;
+  Timer? _debounce;
+  String? _usernameError;
 
   /// Function to sign up the user
   /// This function validates the fields and then signs up the user.
@@ -130,6 +133,18 @@ class SignUpScreen2State extends State<SignUpScreen2> {
     });
   }
 
+
+  // This function will check if the username already exists in the database
+  Future<bool> usernameExists(String username) async {
+    final query = await FirebaseFirestore.instance
+        .collection('users')
+        .where('username', isEqualTo: username.toLowerCase())
+        .limit(1)
+        .get();
+    return query.docs.isNotEmpty;
+  }
+
+
   // Initialize the listeners for the focus nodes
   @override
   void initState() {
@@ -139,6 +154,41 @@ class SignUpScreen2State extends State<SignUpScreen2> {
     });
     _lastNameFocusNode.addListener(() {
       setState(() {});
+    });
+  }
+
+
+  // check correct form of the username and that it does not already exist in the database
+  void _onUsernameChanged(String username) {
+
+    // Cancel any ongoing timer
+    _debounce?.cancel();
+
+    if (username.length < 6) {
+      setState(() {
+        _usernameError = 'Username must be at least 6 characters long';
+      });
+      return;
+    } else if (username.length > 30) {
+      setState(() {
+        _usernameError = 'Username must be at most 30 characters long';
+      });
+      return;
+    }
+
+    final regex = RegExp(r'^[a-z0-9_-]{6,30}$');
+    if (!regex.hasMatch(username)) {
+      setState(() {
+        _usernameError = 'Username can only contain a-z, 0-9 and _, - ';
+      });
+      return;
+    }
+
+    _debounce = Timer(Duration(milliseconds: 300), () async {
+      final exists = await usernameExists(username);
+      setState(() {
+        _usernameError = exists ? 'Username already taken' : null;
+      });
     });
   }
 
@@ -177,12 +227,28 @@ class SignUpScreen2State extends State<SignUpScreen2> {
               focusNode: _usernameFocusNode,
               style: whiteBody,
               cursorColor: Colors.white,
+              keyboardType: TextInputType.text,
+              textCapitalization: TextCapitalization.none,
+              onChanged: (value) {
+                final lower = value.toLowerCase();
+                if (value != lower) {
+                  // Update controller without triggering another change event
+                  _usernameController.value = _usernameController.value.copyWith(
+                    text: lower,
+                    selection: TextSelection.collapsed(offset: lower.length),
+                  );
+                }
+                _onUsernameChanged(lower);
+              }, // Call the function to check username
               decoration: InputDecoration(
                 filled: true,
                 fillColor: Colors.white.withOpacity(0.15),
                 labelText: 'Username',
+                errorText: _usernameError,
                 errorStyle: whiteBody.copyWith(
-                    fontWeight: FontWeight.w700, fontSize: 12),
+                  fontWeight: FontWeight.w700,
+                  fontSize: 12,
+                ),
                 labelStyle: whiteBody,
                 floatingLabelBehavior: FloatingLabelBehavior
                     .always, // Always show label at the top left
@@ -198,6 +264,19 @@ class SignUpScreen2State extends State<SignUpScreen2> {
                   borderRadius: BorderRadius.circular(15), // Rounded corners
                   borderSide: BorderSide(
                       color: Colors.white, width: 2), // Color when focused
+                ),
+                errorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  borderSide: const BorderSide(
+                    color: Colors.white,
+                  ),
+                ),
+                focusedErrorBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  borderSide: const BorderSide(
+                    color: Colors.white,
+                    width: 2,
+                  ),
                 ),
               ),
             ),

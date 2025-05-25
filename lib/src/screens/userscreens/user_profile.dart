@@ -8,7 +8,7 @@ import 'package:korazon/src/widgets/alertBox.dart';
 import 'package:korazon/src/widgets/profileEventCard.dart';
 import 'package:korazon/src/widgets/loading_place_holders.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:timelines/timelines.dart';
+import 'package:timelines_plus/timelines_plus.dart';
 import 'package:korazon/src/screens/userscreens/user_settings.dart';
 
 
