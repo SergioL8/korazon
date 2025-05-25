@@ -45,14 +45,13 @@ class SignUpScreen2State extends State<SignUpScreen2> {
   void signUpUser() async {
     if (_siningUpLoading) return; // check for double tap from the user
 
-    _siningUpLoading =
-        true; // update the variable but don't call setState becayse I don't want the UI to update if there are empty fields
+    _siningUpLoading = true; // update the variable but don't call setState becayse I don't want the UI to update if there are empty fields
 
     // check for empty fields
     if (_nameController.text.isEmpty ||
         _lastNameController.text.isEmpty ||
         _usernameController.text.isEmpty) {
-      showErrorMessage(context, title: 'Please fill all fields');
+      showErrorMessage(context, title: 'Please complete all fields');
       _siningUpLoading = false;
       return;
     }
@@ -62,8 +61,30 @@ class SignUpScreen2State extends State<SignUpScreen2> {
       return;
     }
 
-    setState(
-        () {}); // this will update the loading spinner as _signingUpLoading has been set to true above
+    // Check if the username is valid
+    if (_usernameController.text.length < 6) {
+      showErrorMessage(context,title: 'Username must be at least 6 characters long');
+      _siningUpLoading = false;
+      return;
+    } else if (_usernameController.text.length > 30) {
+      showErrorMessage(context, title: 'Username must be at most 30 characters long');
+      _siningUpLoading = false;
+      return;
+    }
+    final regex = RegExp(r'^[a-z0-9_-]{6,30}$');
+    if (!regex.hasMatch(_usernameController.text)) {
+      showErrorMessage(context, title: 'Username can only contain a-z, 0-9 and _, - ');
+      _siningUpLoading = false;
+      return;
+    }
+    bool usernameexists = await usernameExists(_usernameController.text);
+    if (usernameexists) {
+      showErrorMessage(context, title: 'Username already exists');
+      _siningUpLoading = false;
+      return;
+    }
+
+    setState(() {}); // this will update the loading spinner as _signingUpLoading has been set to true above
 
     try {
       UserCredential credentials = await FirebaseAuth.instance
@@ -164,6 +185,13 @@ class SignUpScreen2State extends State<SignUpScreen2> {
     // Cancel any ongoing timer
     _debounce?.cancel();
 
+    final regex = RegExp(r'^[a-z0-9_-]{6,30}$');
+    if (!regex.hasMatch(username)) {
+      setState(() {
+        _usernameError = 'Username can only contain a-z, 0-9 and _, - ';
+      });
+      return;
+    }
     if (username.length < 6) {
       setState(() {
         _usernameError = 'Username must be at least 6 characters long';
@@ -175,19 +203,16 @@ class SignUpScreen2State extends State<SignUpScreen2> {
       });
       return;
     }
-
-    final regex = RegExp(r'^[a-z0-9_-]{6,30}$');
-    if (!regex.hasMatch(username)) {
-      setState(() {
-        _usernameError = 'Username can only contain a-z, 0-9 and _, - ';
-      });
-      return;
-    }
+    
+    setState(() {
+      _usernameError = null; // Reset error if the username is valid before debouncing
+    });
+    
 
     _debounce = Timer(Duration(milliseconds: 300), () async {
       final exists = await usernameExists(username);
       setState(() {
-        _usernameError = exists ? 'Username already taken' : null;
+        _usernameError = exists ? 'Username already exists' : null;
       });
     });
   }

@@ -10,6 +10,7 @@ import 'package:korazon/src/widgets/gradient_border_button.dart';
 import 'package:korazon/src/widgets/selectAddressBox.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'dart:async';
 
 class HostRequiredDetails extends StatefulWidget {
   const HostRequiredDetails(
@@ -24,14 +25,19 @@ class HostRequiredDetails extends StatefulWidget {
 class _HostRequiredDetailsState extends State<HostRequiredDetails> {
   // variable declaration
   final orgNameController = TextEditingController();
+  final _usernameController = TextEditingController();
   final FocusNode orgNameFocusNode = FocusNode();
+  final FocusNode _usernameFocusNode = FocusNode();
   Uint8List? _imageController;
+  LocationModel? _selectedLocation;
+  String? _usernameError;
+  Timer? _debounce;
   bool infoAdded = false;
   bool isOrgNameFocused = false;
-  LocationModel? _selectedLocation;
   bool addressError = false;
   bool nameError = false;
   bool _signingUpLoading = false;
+  
 
   // call back function from the select address box
   void _onAddressSelected(LocationModel location) {
@@ -170,6 +176,57 @@ class _HostRequiredDetailsState extends State<HostRequiredDetails> {
     }
   }
 
+
+  // check correct form of the username and that it does not already exist in the database
+  void _onUsernameChanged(String username) {
+
+    // Cancel any ongoing timer
+    _debounce?.cancel();
+
+    final regex = RegExp(r'^[a-z0-9_-]{6,30}$');
+    if (!regex.hasMatch(username)) {
+      setState(() {
+        _usernameError = 'Username can only contain a-z, 0-9 and _, - ';
+      });
+      return;
+    }
+    if (username.length < 6) {
+      setState(() {
+        _usernameError = 'Username must be at least 6 characters long';
+      });
+      return;
+    } else if (username.length > 30) {
+      setState(() {
+        _usernameError = 'Username must be at most 30 characters long';
+      });
+      return;
+    }
+    
+    setState(() {
+      _usernameError = null; // Reset error if the username is valid before debouncing
+    });
+    
+
+    _debounce = Timer(Duration(milliseconds: 300), () async {
+      final exists = await usernameExists(username);
+      setState(() {
+        _usernameError = exists ? 'Username already exists' : null;
+      });
+    });
+  }
+
+  // This function will check if the username already exists in the database
+  Future<bool> usernameExists(String username) async {
+    final query = await FirebaseFirestore.instance
+        .collection('users')
+        .where('username', isEqualTo: username.toLowerCase())
+        .limit(1)
+        .get();
+    return query.docs.isNotEmpty;
+  }
+
+
+
   // widget that adds the profile picture
   Widget _addPicture() {
     return InkWell(
@@ -249,11 +306,11 @@ class _HostRequiredDetailsState extends State<HostRequiredDetails> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const SizedBox(height: 35),
+                    const SizedBox(height: 30),
                     SizedBox(
                       child: _addPicture(),
                     ),
-                    const SizedBox(height: 35),
+                    const SizedBox(height: 30),
                     TextFormField(
                       autocorrect: false, // Disable auto-correction
                       controller: orgNameController, // set the controller
@@ -302,7 +359,67 @@ class _HostRequiredDetailsState extends State<HostRequiredDetails> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 35),
+                    SizedBox(height: 20),
+                    TextFormField(
+                      autocorrect: false, // Disable auto-correction
+                      controller: _usernameController, // set the controller
+                      focusNode: _usernameFocusNode,
+                      style: whiteBody,
+                      cursorColor: Colors.white,
+                      keyboardType: TextInputType.text,
+                      textCapitalization: TextCapitalization.none,
+                      onChanged: (value) {
+                        final lower = value.toLowerCase();
+                        if (value != lower) {
+                          // Update controller without triggering another change event
+                          _usernameController.value = _usernameController.value.copyWith(
+                            text: lower,
+                            selection: TextSelection.collapsed(offset: lower.length),
+                          );
+                        }
+                        _onUsernameChanged(lower);
+                      }, // Call the function to check username
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.white.withOpacity(0.15),
+                        labelText: 'Username',
+                        errorText: _usernameError,
+                        errorStyle: whiteBody.copyWith(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 12,
+                        ),
+                        labelStyle: whiteBody,
+                        floatingLabelBehavior: FloatingLabelBehavior
+                            .always, // Always show label at the top left
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15), // rounded corners
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15), // Rounded corners
+                          borderSide:
+                              BorderSide(color: Colors.white), // Color when not focused
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15), // Rounded corners
+                          borderSide: BorderSide(
+                              color: Colors.white, width: 2), // Color when focused
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                          borderSide: const BorderSide(
+                            color: Colors.white,
+                          ),
+                        ),
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(15),
+                          borderSide: const BorderSide(
+                            color: Colors.white,
+                            width: 2,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20),
                     SelectAddressBox(
                       onAddressSelected: _onAddressSelected,
                       error: addressError,
@@ -314,7 +431,7 @@ class _HostRequiredDetailsState extends State<HostRequiredDetails> {
                       text: 'Create Account',
                       loading: _signingUpLoading,
                     ),
-                    const SizedBox(height: 35),
+                    const SizedBox(height: 45),
                   ],
                 ),
               ),
