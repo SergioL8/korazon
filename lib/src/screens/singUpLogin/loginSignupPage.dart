@@ -66,7 +66,6 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
             password: _passwordController.text,
           );
         }
-        
       }),
     );
   }
@@ -86,7 +85,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
     setState(() {
       isLoading = true;
     });
-    
+
     if (!_emailFormKey.currentState!.validate() ||
         !_passwordFormKey.currentState!.validate()) {
       isLoading = false;
@@ -112,8 +111,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
           MaterialPageRoute(
             builder: (context) => VerifyEmailPage(
               userEmail: _emailController.text,
-              isHost: false,
-              isLogin: true,
+              nextPage: EmailVerificationNextPage.basePage,
             ),
           ),
         );
@@ -242,7 +240,8 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                     ),
                     child: SingleChildScrollView(
                       child: ConstrainedBox(
-                        constraints: BoxConstraints(minHeight: screenHeight * 0.70),
+                        constraints:
+                            BoxConstraints(minHeight: screenHeight * 0.70),
                         child: IntrinsicHeight(
                           child: Column(
                             children: [
@@ -250,7 +249,8 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   IconButton(
-                                    onPressed: () => Navigator.of(context).pop(),
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(),
                                     icon: const Icon(
                                       Icons.arrow_back_ios_new_rounded,
                                       color: Colors.white,
@@ -261,18 +261,19 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                                     widget.parentPage == ParentPage.login
                                         ? "Login"
                                         : widget.parentPage == ParentPage.signup
-                                          ? "Sign Up"
-                                          : 'Crendentials',
-                                    style: widget.parentPage == ParentPage.createHostAcc
-                                      ? whiteSubtitle
-                                      : whiteTitle,
+                                            ? "Sign Up"
+                                            : 'Crendentials',
+                                    style: widget.parentPage ==
+                                            ParentPage.createHostAcc
+                                        ? whiteSubtitle
+                                        : whiteTitle,
                                   ),
                                   const Spacer(),
                                   const SizedBox(width: 48),
                                 ],
                               ),
                               const SizedBox(height: 50),
-                          
+
                               // Email form
                               Form(
                                 key: _emailFormKey,
@@ -303,9 +304,10 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                                       Icons.email_outlined,
                                       color: Colors.white,
                                     ),
-                                    hintText: widget.parentPage == ParentPage.createHostAcc
-                                      ? 'Frat\'s Email'
-                                      :  'example@colorad.edu',
+                                    hintText: widget.parentPage ==
+                                            ParentPage.createHostAcc
+                                        ? 'Frat\'s Email'
+                                        : 'example@colorad.edu',
                                     hintStyle: whiteBody,
                                     errorStyle: whiteBody.copyWith(
                                       fontWeight: FontWeight.w700,
@@ -344,7 +346,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                                 ),
                               ),
                               const SizedBox(height: 25),
-                          
+
                               // Password form
                               Form(
                                 key: _passwordFormKey,
@@ -370,8 +372,8 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                                     suffixIcon: InkWell(
                                       highlightColor: Colors.transparent,
                                       splashColor: Colors.transparent,
-                                      onTap: () =>
-                                          setState(() => obscureText = !obscureText),
+                                      onTap: () => setState(
+                                          () => obscureText = !obscureText),
                                       child: Icon(
                                         obscureText
                                             ? Icons.visibility_off
@@ -419,7 +421,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                                   ),
                                 ),
                               ),
-                          
+
                               if (login)
                                 Align(
                                   alignment: Alignment.centerLeft,
@@ -441,7 +443,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                                     ),
                                   ),
                                 ),
-                          
+
                               SizedBox(height: screenHeight * 0.05),
                               Spacer(),
                               GradientBorderButton(
@@ -454,7 +456,9 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                                 "Boulder, CO",
                                 style: whiteBody,
                               ),
-                              SizedBox(height: MediaQuery.of(context).viewInsets.bottom),
+                              SizedBox(
+                                  height:
+                                      MediaQuery.of(context).viewInsets.bottom),
                             ],
                           ),
                         ),

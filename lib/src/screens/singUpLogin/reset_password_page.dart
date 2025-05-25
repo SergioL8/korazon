@@ -13,11 +13,12 @@ class ResetPasswordPage extends StatefulWidget {
   State<ResetPasswordPage> createState() => _ResetPasswordPageState();
 }
 
-final _emailFormKey = GlobalKey<FormState>();
-final FocusNode _emailFocusNode = FocusNode();
-final TextEditingController _emailController = TextEditingController();
-
 class _ResetPasswordPageState extends State<ResetPasswordPage> {
+  final _emailFormKey = GlobalKey<FormState>();
+  final FocusNode _emailFocusNode = FocusNode();
+  final TextEditingController _emailController = TextEditingController();
+  bool _loading = false;
+
   void navigateToLandingPage() {
     Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => const LandingPage()));
@@ -25,9 +26,9 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
 
   Future<void> sendResetPasswordEmail({
     required String recipientEmail,
-    //required String name,
-    //required String verificationLink,
   }) async {
+    _loading = true;
+
     if (!_emailFormKey.currentState!.validate()) {
       showErrorMessage(context, title: 'Please enter a valid email address');
       return;
@@ -43,29 +44,34 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
 
         debugPrint('After calling ResetPasswordEmail');
 
-        if (result.data['success'] == true) {
-          showConfirmationMessage(context,
-              message: 'We have sent you a verification email');
-          debugPrint("✅ Email sent successfully to $recipientEmail!");
-        } else {
-          showErrorMessage(context,
-              title: 'An error occurred');
-          debugPrint("�� Failed to send email to $recipientEmail!");
-        }
-      // } on FirebaseFunctionsException catch (e) {
-      //   // This catches errors explicitly thrown by the callable function
-      //   // or by Firebase Functions backend.
-      //   debugPrint('❌ FirebaseFunctionsException: ${e.message}');
-      //   showErrorMessage(context,
-      //       title: e.message ?? 'A functions error occurred');
-      }
-       catch (error) {
+        // This helps if the keyboard is being closed at the same time as the confirmation or error message
+        // is being sent
+        Future.microtask(() {
+          if (!mounted) return;
+
+          if (result.data['success'] == true) {
+            showConfirmationMessage(context,
+                message: 'We have sent you a verification email');
+            debugPrint("✅ Email sent successfully to $recipientEmail!");
+          } else {
+            showErrorMessage(context, title: 'An error occurred');
+            debugPrint("❌ Failed to send email to $recipientEmail!");
+          }
+        });
+      } catch (error) {
         //showErrorMessage(context, title: 'An error occurred');
         debugPrint("❌ Error calling Firebase Function: $error");
       }
     }
+    _loading = false;
   }
 
+  @override
+  void dispose() {
+    _emailFocusNode.dispose();
+    _emailController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -187,6 +193,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                       );
                     },
                     text: 'Reset Password',
+                    loading: _loading,
                   ),
 
                   // Use Spacer here so that the next widget is pushed to the bottom

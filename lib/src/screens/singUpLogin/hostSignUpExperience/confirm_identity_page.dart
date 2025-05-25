@@ -5,20 +5,21 @@ import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/utilities/models/identityCodeModel.dart';
 import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
+import 'package:korazon/src/widgets/customPinInput.dart';
 import 'package:korazon/src/widgets/gradient_border_button.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class ConfirmIdentityPage extends StatefulWidget {
-  const ConfirmIdentityPage({super.key});
+class HostConfirmIdentityPage extends StatefulWidget {
+  const HostConfirmIdentityPage({super.key});
 
   @override
-  State<ConfirmIdentityPage> createState() => _ConfirmIdentityPageState();
+  State<HostConfirmIdentityPage> createState() => _ConfirmIdentityPageState();
 }
 
-class _ConfirmIdentityPageState extends State<ConfirmIdentityPage> {
+class _ConfirmIdentityPageState extends State<HostConfirmIdentityPage> {
   final TextEditingController _pinController = TextEditingController();
   bool _isLoading = false;
   bool _error = false;
@@ -35,90 +36,88 @@ class _ConfirmIdentityPageState extends State<ConfirmIdentityPage> {
   // and updates the code document to store who and when the code was used
 
   void checkCode(String code) async {
-  setState(() => _isLoading = true);
+    setState(() => _isLoading = true);
 
-  try {
-    // 1) Search for the code in the database
-    final codeQuery = await FirebaseFirestore.instance
-        .collection('codes')
-        .where('code', isEqualTo: code)
-        .limit(1)
-        .get();
+    try {
+      // 1) Search for the code in the database
+      final codeQuery = await FirebaseFirestore.instance
+          .collection('codes')
+          .where('code', isEqualTo: code)
+          .limit(1)
+          .get();
 
-    // 2) Check if no documents were found
-    if (codeQuery.docs.isEmpty) {
-      showErrorMessage(context, content: 'Invalid code');
-      return;
-    }
+      // 2) Check if no documents were found
+      if (codeQuery.docs.isEmpty) {
+        showErrorMessage(context, content: 'Invalid code');
+        return;
+      }
 
-    // 3) Extract the first document
-    final codeDocument = codeQuery.docs.first;
+      // 3) Extract the first document
+      final codeDocument = codeQuery.docs.first;
 
-    // 4) Convert the document to our model
-    final IdentityCodeModel? codeModel =
-        IdentityCodeModel.fromDocumentSnapshot(codeDocument);
+      // 4) Convert the document to our model
+      final IdentityCodeModel? codeModel =
+          IdentityCodeModel.fromDocumentSnapshot(codeDocument);
 
-    // If model creation failed, notify user
-    if (codeModel == null) {
-      showErrorMessage(context, content: 'Invalid code, contact support');
-      return;
-    }
+      // If model creation failed, notify user
+      if (codeModel == null) {
+        showErrorMessage(context, content: 'Invalid code, contact support');
+        return;
+      }
 
-    // 5) Check if user is signed in
-    final currentUser = FirebaseAuth.instance.currentUser?.uid;
-    if (currentUser == null) {
-      showErrorMessage(
-        context,
-        content: 'Error loading user. Please log out and log in again',
-        errorAction: ErrorAction.logout,
+      // 5) Check if user is signed in
+      final currentUser = FirebaseAuth.instance.currentUser?.uid;
+      if (currentUser == null) {
+        showErrorMessage(
+          context,
+          content: 'Error loading user. Please log out and log in again',
+          errorAction: ErrorAction.logout,
+        );
+        return;
+      }
+
+      // 6) Mark the code as used and log the user id
+      await FirebaseFirestore.instance
+          .collection('codes')
+          .doc(codeModel.documentID)
+          .update({
+        'used': true,
+        'dateUsed': DateTime.now(),
+        'fratUID': currentUser,
+      });
+
+      // 7) Mark the user as verified
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser)
+          .update({
+        'isVerifiedHost': true,
+      });
+
+      // TODO: Create and store a new random code for verification,
+      //       and email Korazon.dev with the new code.
+
+      // 8) Let's get out of this godamm page
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const BasePage()),
       );
-      return;
-    }
+    } on FirebaseException catch (firebaseError) {
+      debugPrint('Firebase error: ${firebaseError.message}');
+      showErrorMessage(context, content: 'An unexpected error occurred');
 
-    // 6) Mark the code as used and log the user id
-    await FirebaseFirestore.instance
-        .collection('codes')
-        .doc(codeModel.documentID)
-        .update({
-      'used': true,
-      'dateUsed': DateTime.now(),
-      'fratUID': currentUser,
-    });
-
-    // 7) Mark the user as verified
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(currentUser)
-        .update({
-      'isVerifiedHost': true,
-    });
-
-    // TODO: Create and store a new random code for verification,
-    //       and email Korazon.dev with the new code.
-
-    // 8) Let's get out of this godamm page 
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => const BasePage()),
-    );
-
-  } on FirebaseException catch (firebaseError) {
-
-    debugPrint('Firebase error: ${firebaseError.message}');
-    showErrorMessage(context, content: 'An unexpected error occurred');
-
-    // Handle specific Firebase errors
-  } catch (error, stacktrace) {
-    // Handle any generic errors, log them or send them to a monitoring service
-    debugPrint('Error checking code: $error\nStacktrace: $stacktrace');
-    showErrorMessage(context, content: 'An unexpected error occurred. Please try again.');
-  } finally {
-    // 9) Make sure to stop loading in every scenario
-    if (mounted) {
-      setState(() => _isLoading = false);
+      // Handle specific Firebase errors
+    } catch (error, stacktrace) {
+      // Handle any generic errors, log them or send them to a monitoring service
+      debugPrint('Error checking code: $error\nStacktrace: $stacktrace');
+      showErrorMessage(context,
+          content: 'An unexpected error occurred. Please try again.');
+    } finally {
+      // 9) Make sure to stop loading in every scenario
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -157,6 +156,7 @@ class _ConfirmIdentityPageState extends State<ConfirmIdentityPage> {
                         textAlign: TextAlign.center,
                       ),
                       SizedBox(height: screenHeight * 0.05),
+                      CustomPinInput(controller: _pinController),
                       PinCodeTextField(
                         // pin code field imported from pin_code_fields package
                         appContext: context,
@@ -179,15 +179,17 @@ class _ConfirmIdentityPageState extends State<ConfirmIdentityPage> {
                         pinTheme: PinTheme(
                           // theme of the individual boxes
                           shape: PinCodeFieldShape.box,
-                          borderRadius:
-                              BorderRadius.circular(10), // make the boxes rounded
+                          borderRadius: BorderRadius.circular(
+                              10), // make the boxes rounded
                           borderWidth: 0, // no border
                           inactiveFillColor: Colors.white.withOpacity(0.15),
                           activeFillColor: Colors.white.withOpacity(0.15),
                           selectedFillColor: Colors.white.withOpacity(0.15),
                           activeColor: _error ? Colors.red : Colors.transparent,
-                          inactiveColor: _error ? Colors.red : Colors.transparent,
-                          selectedColor: _error ? Colors.red : Colors.transparent,
+                          inactiveColor:
+                              _error ? Colors.red : Colors.transparent,
+                          selectedColor:
+                              _error ? Colors.red : Colors.transparent,
                         ),
                       ),
                       //! Needs change
@@ -201,7 +203,8 @@ class _ConfirmIdentityPageState extends State<ConfirmIdentityPage> {
                           style: whiteBody.copyWith(
                             decoration: TextDecoration.underline,
                             decorationColor: Colors.white, // Underline color
-                            decorationThickness: 1, // Thickness of the underline
+                            decorationThickness:
+                                1, // Thickness of the underline
                           ),
                         ),
                       ),
@@ -217,7 +220,7 @@ class _ConfirmIdentityPageState extends State<ConfirmIdentityPage> {
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 24),
-                  
+
                       GradientBorderButton(
                           loading: _isLoading,
                           onTap: () => checkCode(_pinController.text),
