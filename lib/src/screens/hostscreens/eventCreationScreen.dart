@@ -64,10 +64,10 @@ class EventCreationScreenState extends State<EventCreationScreen> {
   void _onAddressSelected(LocationModel location) {
     setState(() {
       _selectedLocation = location; // update the selected location
-      if (addressError) { // this variable is used to show an error in the address box. So we update it to false here if it was true and if the address is verified now
-        if (_selectedLocation!.verifiedAddress == true) {
-          addressError = false;
-        }
+      if (_selectedLocation!.verifiedAddress == true) {
+        addressError = false;
+      } else{
+        addressError = true; // if the address is not verified, we set the error to true
       }
     });
   }
@@ -95,9 +95,13 @@ class EventCreationScreenState extends State<EventCreationScreen> {
   /// 
   /// The function doesn't take any parameters and doesn't return anything. But the result is the event uploaded to firestore
   void postEvent() async {
-
+    debugPrint('Address Error: $addressError');
     // Dismiss the keyboard
     FocusScope.of(context).unfocus();
+
+    // ~~~~~~~~~~~~~~~ TRIM INPUTS ~~~~~~~~~~~~~~~~~~~
+    _titleController.text = _titleController.text.trim();
+    _descriptionController.text = _descriptionController.text.trim();
 
     // ~~~~~~~~~~~~~~~ CHECK REQUIRED FIELDS ~~~~~~~~~~~~~~~~~~~
     if (_titleController.text.isEmpty) {
@@ -110,6 +114,10 @@ class EventCreationScreenState extends State<EventCreationScreen> {
       return;
     }
 
+    if (addressError) {
+      showErrorMessage(context, content: 'Please select a valid address');
+      return;
+    }
     if (_selectedLocation == null) {
       setState(() {
         addressError = true;

@@ -35,15 +35,12 @@ class _TicketCreationScreenState extends State<TicketCreationScreen> {
 
 
   void _onDateTimeSelected(DateTime? startDateTime, DateTime? endDateTime) {
-    debugPrint('Start date time: $startDateTime');
-    debugPrint('End date time: $endDateTime');
     if (startDateTime == null) {
       _startTicketDateTimeController = null;
     } else{
       _startTicketDateTimeController = Timestamp.fromDate(startDateTime); // update the start date time controller
     }
     if (endDateTime == null) {
-      debugPrint('End date time is null');
       _enTicketdDateTimeController = null;
     } else {
       _enTicketdDateTimeController = Timestamp.fromDate(endDateTime); // update the end date time controller
@@ -55,6 +52,12 @@ class _TicketCreationScreenState extends State<TicketCreationScreen> {
 
     // Dismiss the keyboard
     FocusScope.of(context).unfocus();
+
+    // Trim the text fields
+    _ticketNameController.text = _ticketNameController.text.trim();
+    _ticketPriceController.text = _ticketPriceController.text.trim();
+    _ticketDescriptionController.text = _ticketDescriptionController.text.trim();
+    _ticketMaxCapacityController.text = _ticketMaxCapacityController.text.trim();
 
     if (_ticketNameController.text.isEmpty) {
       showErrorMessage(context, title:'Please enter a ticket name');
