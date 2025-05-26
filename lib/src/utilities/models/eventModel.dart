@@ -11,7 +11,7 @@ class TicketModel {
     this.ticketDescription,
     this.ticketEntryTimeStart,
     this.ticketEntryTimeEnd,
-    this.ticketCapacity = 9999999,
+    this.ticketCapacity,
     this.genderRestriction = 'all',
     this.ticketsSold,
   });
@@ -48,7 +48,7 @@ class TicketModel {
       ticketDescription: map['ticketDescription'] ?? '',
       ticketEntryTimeStart: map['ticketEntryTimeStart'],
       ticketEntryTimeEnd: map['ticketEntryTimeEnd'],
-      ticketCapacity: (map['ticketCapacity'] is num) ? (map['ticketCapacity'] as num).toInt() : 999999999,
+      ticketCapacity: (map['ticketCapacity'] is num) ? (map['ticketCapacity'] as num).toInt() : null,
       genderRestriction: map['genderRestriction'] ?? 'all',
       ticketsSold: (map['ticketsSold'] is num) ? (map['ticketsSold'] as num).toInt() : null,
     );
@@ -72,7 +72,7 @@ class EventModel {
     required this.hostName,
     required this.profilePicPath,
     required this.price,
-    required this.ticketsSold
+    required this.tickets,
   });
 
   final String documentID;
@@ -87,7 +87,7 @@ class EventModel {
   final String hostName;
   final String profilePicPath;
   final double price;
-  final List<String> ticketsSold;
+  final List<TicketModel> tickets;
 
 
   static EventModel? fromDocumentSnapshot(DocumentSnapshot doc) {
@@ -111,7 +111,9 @@ class EventModel {
       hostName: data['hostName'] ?? 'No host name',
       profilePicPath: data['profilePicPath'] ?? '',
       price: (data['price'] is num) ? (data['price'] as num).toDouble() : 0.0,
-      ticketsSold: List<String>.from(data['ticketsSold'] ?? []),
+      tickets: (data['tickets'] as List<dynamic>?)
+          ?.map((ticket) => TicketModel.fromMap(ticket as Map<String, dynamic>))
+          .toList() ?? [],
     );
   }
 }

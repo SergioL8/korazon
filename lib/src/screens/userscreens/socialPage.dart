@@ -166,7 +166,6 @@ class _SocialPageState extends State<SocialPage> {
                 'index': currentIndex,
                 'photoPath': tempEvent.photoPath,
                 'title': tempEvent.title,
-                'peopleYouMayKnow': tempEvent.ticketsSold,
               });
             });
             currentIndex++;

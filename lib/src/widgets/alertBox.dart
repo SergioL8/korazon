@@ -10,6 +10,7 @@ void showErrorMessage(
   String title = 'Something went wrong...',
   String content = '',
   errorAction = ErrorAction.none,
+  
 }) {
   showDialog(
     context: context,

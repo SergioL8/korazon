@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:korazon/src/screens/buyTicketPage.dart';
+import 'package:korazon/src/screens/event_details/display_tickets.dart';
 import 'package:korazon/src/screens/hostscreens/hostProfile.dart';
 import 'package:korazon/src/utilities/models/eventModel.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
@@ -222,11 +222,7 @@ class EventDetails extends StatelessWidget {
                                   ),
                                 ),
                                 context: context,
-                                builder: (ctx) => FractionallySizedBox(
-                                  heightFactor:
-                                      0.35, // Occupies 35% of the screen height
-                                  child: BuyTicketPage(event: event),
-                                ),
+                                builder: (ctx) => DisplayTickets(event: event)
                               );
                             },
                             child: const Text(
