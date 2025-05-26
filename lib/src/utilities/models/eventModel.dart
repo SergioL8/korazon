@@ -73,6 +73,7 @@ class EventModel {
     required this.profilePicPath,
     required this.price,
     required this.tickets,
+    required this.stripeConnectedCustomerId,
   });
 
   final String documentID;
@@ -88,6 +89,7 @@ class EventModel {
   final String profilePicPath;
   final double price;
   final List<TicketModel> tickets;
+  final String? stripeConnectedCustomerId;
 
 
   static EventModel? fromDocumentSnapshot(DocumentSnapshot doc) {
@@ -114,6 +116,7 @@ class EventModel {
       tickets: (data['tickets'] as List<dynamic>?)
           ?.map((ticket) => TicketModel.fromMap(ticket as Map<String, dynamic>))
           .toList() ?? [],
+      stripeConnectedCustomerId: data['stripeCustomerId'],
     );
   }
 }

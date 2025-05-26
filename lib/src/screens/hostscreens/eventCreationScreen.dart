@@ -171,6 +171,10 @@ class EventCreationScreenState extends State<EventCreationScreen> {
       showErrorMessage(context, content: 'Only verified users can post events', errorAction: ErrorAction.verify);
       return;
     }
+    if (user!.stripeConnectedCustomerId == null) {
+      showErrorMessage(context, content: 'You need to connect your Stripe account to post events', errorAction: ErrorAction.verify);
+      return;
+    }
 
     // compress the image (compressImage is a helper function that can be found under the utils folder)
     _photofile = await compressImage(_photofile!, 50);
@@ -206,6 +210,7 @@ class EventCreationScreenState extends State<EventCreationScreen> {
         'hostId': uid,
         'hostName': user!.name,
         'hostProfilePicUrl': user!.profilePicPath,
+        'stripeConnectedCustomerId': user!.stripeConnectedCustomerId,
       });
 
 

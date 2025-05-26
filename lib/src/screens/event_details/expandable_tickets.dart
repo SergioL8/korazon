@@ -8,7 +8,7 @@ import 'package:korazon/src/utilities/design_variables.dart';
 class ExpandableTicket extends StatefulWidget {
   final TicketModel ticket;
 
-  const ExpandableTicket({super.key, required this.ticket});
+  const ExpandableTicket({super.key, required this.ticket, required stripeConnectedCustomerId});
 
   @override
   State<ExpandableTicket> createState() => _ExpandableTicketState();

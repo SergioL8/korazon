@@ -18,6 +18,7 @@ class _DisplayTicketsState extends State<DisplayTickets> {
   @override
   Widget build(BuildContext context) {
     final List<TicketModel> tickets = widget.event.tickets;
+    final String? stripeConnectedCustomerId = widget.event.stripeConnectedCustomerId;
 
     // Dynamic heightFactor based on number of tickets
     double heightFactor;
@@ -70,7 +71,7 @@ class _DisplayTicketsState extends State<DisplayTickets> {
             // Always scrollable ticket list
             Expanded(
               child: ListView(
-                children: tickets.map((ticket) => ExpandableTicket(ticket: ticket)).toList(),
+                children: tickets.map((ticket) => ExpandableTicket(ticket: ticket, stripeConnectedCustomerId: stripeConnectedCustomerId,)).toList(),
               ),
             ),
           ],

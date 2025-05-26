@@ -11,7 +11,7 @@ class LocationModel {
     this.city,
     this.state,
     this.country,
-    this.postalCode,    
+    this.postalCode,
   });
 
   final String description;
@@ -78,6 +78,7 @@ class UserModel {
     required this.snapAcc,
     required this.location,
     required this.hostIdentityVerified,
+    required this.stripeConnectedCustomerId,
   });
 
   final String userID;
@@ -101,6 +102,7 @@ class UserModel {
   final String snapAcc;
   final LocationModel? location;
   final bool? hostIdentityVerified;
+  final String? stripeConnectedCustomerId;
 
 
   static UserModel? fromDocumentSnapshot(DocumentSnapshot doc) {
@@ -135,6 +137,7 @@ class UserModel {
         ? LocationModel.fromMap(data['location'] as Map<String, dynamic>)
         : null,
       hostIdentityVerified: data['hostIdentityVerified'] ?? false,
+      stripeConnectedCustomerId: data['stripeConnectedCustomerId'],
     );
   }
 }
