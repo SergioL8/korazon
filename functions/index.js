@@ -1,9 +1,12 @@
 const {onCall} = require("firebase-functions/v2/https");
+const { onRequest } = require("firebase-functions/v2/https");
+const { defineSecret } = require("firebase-functions/params");
 const functions = require("firebase-functions");
 const logger = require("firebase-functions/logger");
 const sgMail = require("@sendgrid/mail");
 const admin = require("firebase-admin");
-require("dotenv").config(); // Add this at the top
+require("dotenv").config();
+const stripeSecretKey = defineSecret("STRIPE_SECRET_KEY_TEST");
 
 admin.initializeApp();
 const sendGridVerifyEmailTemplateId = "d-3ee8b7adca1c445087e9200176f5bde2";
@@ -224,3 +227,72 @@ exports.verifyUserEmailManuallyHttp = functions.https.onRequest(async (req, res)
 });
 
 
+exports.createTicketPaymentIntent = functions.https.onRequest( {secrets: [stripeSecretKey],}, async (req, res) => {
+
+  // Verify it's a POST request
+  if (req.method !== 'POST') {
+    return res.status(405).send({ error: 'Method not allowed' });
+  }
+
+  // Import the stripe SDK and pass the secret key to it to create a Stripe object
+  const stripe = require("stripe")(stripeSecretKey.value());
+
+  try {
+    const {
+      amount, // Total amount (user pays)
+      korazonCut, // Korazon's cut
+      stripeConnectedAccountId, // Frat's stripe account ID
+      currency = 'usd',
+      ticketID,
+      attendeeUID,
+      hostUID,
+    } = req.body;
+
+    const metadata = {
+      attendeeUID: attendeeUID,
+      ticketID: ticketID,
+      hostID: hostUID
+    };
+
+    // Check user has a verified email
+    const attendeeUser = await admin.auth().getUser(attendeeUID);
+    if (!attendeeUser.emailVerified) {
+      return res.status(403).send({ error: 'User must verify their email before purchasing a ticket.' });
+    }
+
+    // Check host as identityVerified
+    const hostDoc = await admin.firestore().collection('users').doc(hostUID).get();
+    if (!hostDoc.exists || !hostDoc.data().hostIdentityVerified) {
+      return res.status(403).send({ error: 'Frat must complete identity verification before receiving payments.' });
+    }
+
+    if (
+      typeof amount !== 'number' || amount <= 50 || // 50 cents
+      typeof korazonCut !== 'number' || korazonCut < 0 ||
+      typeof stripeConnectedAccountId !== 'string' || !stripeConnectedAccountId.startsWith('acct_')
+    ) {
+      return res.status(400).send({ error: 'Invalid or missing payment parameters.' });
+    }
+
+    // Create the PaymentIntent with transfer to connected account
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount,
+      currency,
+      payment_method_types: ['card', 'link'], // card includes apple pay and google pay if configured
+      application_fee_amount: korazonCut,
+      transfer_data: {
+        destination: stripeConnectedAccountId,
+      },
+      metadata,
+    });
+
+    // Return clientSecret to app
+    return res.status(200).send({
+      clientSecret: paymentIntent.client_secret,
+    });
+
+  } catch (error) {
+    console.error('❌ Stripe PaymentIntent creation failed:', error);
+    return res.status(500).send({ error: error.message });
+  }
+});

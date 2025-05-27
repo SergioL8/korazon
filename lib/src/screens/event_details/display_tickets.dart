@@ -19,18 +19,18 @@ class _DisplayTicketsState extends State<DisplayTickets> {
   Widget build(BuildContext context) {
     final List<TicketModel> tickets = widget.event.tickets;
     final String? stripeConnectedCustomerId = widget.event.stripeConnectedCustomerId;
+    final String? hostID = widget.event.hostId;
 
     // Dynamic heightFactor based on number of tickets
     double heightFactor;
-    if (tickets.length == 1) {
-      heightFactor = 0.40;
-    } else if (tickets.length == 2) {
-      heightFactor = 0.60;
-    } else if (tickets.length == 3) {
-      heightFactor = 0.80;
-    } else {
-      heightFactor = 0.90;
-    }
+    // if (tickets.length == 1) {
+    //   heightFactor = 0.60;
+    // } else if (tickets.length == 2) {
+    //   heightFactor = 0.80;
+    // } else {
+    //   heightFactor = 0.95;
+    // }
+    heightFactor = 0.90;
 
     return FractionallySizedBox(
       heightFactor: heightFactor,
@@ -71,7 +71,7 @@ class _DisplayTicketsState extends State<DisplayTickets> {
             // Always scrollable ticket list
             Expanded(
               child: ListView(
-                children: tickets.map((ticket) => ExpandableTicket(ticket: ticket, stripeConnectedCustomerId: stripeConnectedCustomerId,)).toList(),
+                children: tickets.map((ticket) => ExpandableTicket(ticket: ticket, stripeConnectedCustomerId: stripeConnectedCustomerId, hostID: hostID,)).toList(),
               ),
             ),
           ],

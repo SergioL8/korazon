@@ -1,14 +1,25 @@
+import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:korazon/src/widgets/confirmationMessage.dart';
 import 'package:slide_to_act/slide_to_act.dart';
-import 'package:korazon/src/utilities/models/eventModel.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:korazon/src/utilities/utils.dart';
+import 'package:korazon/src/widgets/alertBox.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
+import 'package:korazon/src/utilities/models/eventModel.dart';
+
 
 
 class ExpandableTicket extends StatefulWidget {
-  final TicketModel ticket;
 
-  const ExpandableTicket({super.key, required this.ticket, required stripeConnectedCustomerId});
+  const ExpandableTicket({super.key, required this.ticket, required this.stripeConnectedCustomerId, required this.hostID});
+  
+  final TicketModel ticket;
+  final String? stripeConnectedCustomerId;
+  final String? hostID;
 
   @override
   State<ExpandableTicket> createState() => _ExpandableTicketState();
@@ -191,6 +202,86 @@ class _ExpandableTicketState extends State<ExpandableTicket> {
                               ],
                             ),
                           ),
+                          onSubmit: () async {
+                            // Get user's ID
+                            final uid = FirebaseAuth.instance.currentUser?.uid;
+                            if (uid == null) {
+                              showErrorMessage(context, content: 'There was an error loading your user, please logout and login again', errorAction: ErrorAction.logout);
+                              return;
+                            }
+                            
+                            // Compute the ticket price
+                            final ticketPrice = (widget.ticket.ticketPrice + 
+                              (widget.ticket.ticketPrice * 0.029) + 0.30 + // + 2.9% + $0.30 Stripe fee
+                              (widget.ticket.ticketPrice * 0.10)) * // + 10% KoraZon fee
+                              100; // Convert to cents
+                            
+                            // Compute korazon's cut
+                            final korazonCut = (widget.ticket.ticketPrice * 0.10) * 100; // Convert to cents
+
+                            try {
+                              // Call the backend to create a payment intent
+                              debugPrint('Type of amount: ${ticketPrice.runtimeType}, value: $ticketPrice');
+                              debugPrint('Type of korazonCut: ${korazonCut.runtimeType}, value: $korazonCut');
+                              debugPrint('Stripe Connected Account ID: ${widget.stripeConnectedCustomerId}');
+                              final response = await http.post(
+                                Uri.parse('https://us-central1-korazon-dc77a.cloudfunctions.net/createTicketPaymentIntent'),
+                                headers: {'Content-Type': 'application/json'},
+                                body: jsonEncode({
+                                  'amount': ticketPrice.round(),
+                                  'korazonCut': korazonCut.round(),
+                                  'stripeConnectedAccountId': widget.stripeConnectedCustomerId,
+                                  'ticketID': widget.ticket.ticketID,
+                                  'attendeeUID': uid,
+                                  'hostUID': widget.hostID,
+                                }),
+                              );
+
+                              // Check if the response is successful
+                              if (response.statusCode == 200) {
+                                final clientSecret = json.decode(response.body)['clientSecret'];
+                                debugPrint('ClientSecret received.');
+
+                                // Initialize the payment page
+                                await Stripe.instance.initPaymentSheet(
+                                  paymentSheetParameters: SetupPaymentSheetParameters(
+                                    paymentIntentClientSecret: clientSecret,
+                                    merchantDisplayName: 'Korazon',
+                                    style: ThemeMode.dark,
+                                  ),
+                                );
+
+                                try {
+                                  // Present the payment page
+                                  await Stripe.instance.presentPaymentSheet();
+                                  debugPrint('Payment completed successfully.');
+                                  showConfirmationMessage(context, message: 'Payment completed! Your ticket has been reserved.');
+
+                                  // TODO: Update Firestore to mark the ticket as purchased
+
+                                } on Exception catch (e) {
+                                  if (e is StripeException) {
+                                    showErrorMessage(context, content: e.error.localizedMessage ?? 'Something went wrong during payment.');
+                                    debugPrint('Stripe payment error: ${e.error.localizedMessage}');
+                                  } else {
+                                    showErrorMessage(context, content: 'An unexpected error occurred.');
+                                    debugPrint('Unexpected error: $e');
+                                  }
+                                  debugPrint('Stripe payment error: $e');
+                                }
+
+                              } else {
+                                showErrorMessage(context, content: 'There was an error creating your payment. Try again later.');
+                                debugPrint('Error creating payment intent: ${response.statusCode} - ${response.body}');
+                              }
+
+                            } catch (e) {
+                              showErrorMessage(context, content: 'Unexpected error. Please try again', errorAction: ErrorAction.none);
+                              debugPrint('Unexpected error: $e');
+                              return;
+                            }
+
+                          }
                         ),
                       ),
                       const SizedBox(height: 6),

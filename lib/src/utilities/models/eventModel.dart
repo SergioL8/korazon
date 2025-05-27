@@ -109,16 +109,14 @@ class EventModel {
       startDateTime: data['startDateTime'],
       endDateTime: data['endDateTime'],
       plus21: data['plus21'] ?? false,
-      hostId: data['hostId'] ?? '',
+      hostId: data['hostId'],
       hostName: data['hostName'] ?? 'No host name',
       profilePicPath: data['profilePicPath'] ?? '',
       price: (data['price'] is num) ? (data['price'] as num).toDouble() : 0.0,
       tickets: (data['tickets'] as List<dynamic>?)
           ?.map((ticket) => TicketModel.fromMap(ticket as Map<String, dynamic>))
           .toList() ?? [],
-      stripeConnectedCustomerId: data['stripeCustomerId'],
+      stripeConnectedCustomerId: data['stripeConnectedCustomerId'],
     );
   }
 }
-
-
