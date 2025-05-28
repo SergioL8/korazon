@@ -71,7 +71,7 @@ class _DisplayTicketsState extends State<DisplayTickets> {
             // Always scrollable ticket list
             Expanded(
               child: ListView(
-                children: tickets.map((ticket) => ExpandableTicket(ticket: ticket, stripeConnectedCustomerId: stripeConnectedCustomerId, hostID: hostID,)).toList(),
+                children: tickets.map((ticket) => ExpandableTicket(ticket: ticket, stripeConnectedCustomerId: stripeConnectedCustomerId, hostID: hostID, event: widget.event)).toList(),
               ),
             ),
           ],

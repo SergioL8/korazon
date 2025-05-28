@@ -127,9 +127,9 @@ class _SocialPageState extends State<SocialPage> {
       }
 
       // Load tickets array
-      setState(() {
-        eventUids = user.tickets;
-      });
+      // setState(() {
+      //   eventUids = user.tickets;
+      // });
 
       // Start from index = 2 because the first two are your default socialList entries
       int currentIndex = 1;

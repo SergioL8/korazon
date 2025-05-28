@@ -54,6 +54,35 @@ class LocationModel {
 }
 
 
+class UserTicketsModel {
+  UserTicketsModel({
+    required this.eventId,
+    required this.ticketId,
+    required this.purchasedAt,
+  });
+
+  final String eventId;
+  final String ticketId;
+  final Timestamp purchasedAt;
+
+  Map<String, dynamic> toMap() {
+    return {
+      'eventId': eventId,
+      'ticketId': ticketId,
+      'purchasedAt': purchasedAt,
+    };
+  }
+
+  factory UserTicketsModel.fromMap(Map<String, dynamic> map) {
+    return UserTicketsModel(
+      eventId: map['eventId'] ?? '',
+      ticketId: map['ticketId'] ?? '',
+      purchasedAt: map['purchasedAt'] as Timestamp,
+    );
+  }
+}
+
+
 class UserModel {
 
   UserModel({
@@ -61,7 +90,7 @@ class UserModel {
     required this.username,
     required this.email,
     required this.isHost,
-    required this.isVerifiedHost,
+    required this.isVerifiedHost, // we have two of these???
     required this.name,
     required this.lastName,
     required this.gender,
@@ -77,7 +106,7 @@ class UserModel {
     required this.instaAcc,
     required this.snapAcc,
     required this.location,
-    required this.hostIdentityVerified,
+    required this.hostIdentityVerified, // we have two of these???
     required this.stripeConnectedCustomerId,
   });
 
@@ -93,7 +122,7 @@ class UserModel {
   final String academicYear;
   final String bio;
   final String qrCode;
-  final List<String> tickets;
+  final List<UserTicketsModel> tickets;
   final List<String> createdEvents;
   final String profilePicPath;
   final List<String> followers;
@@ -126,7 +155,9 @@ class UserModel {
       academicYear: data['academicYear'] ?? 'No academic year',
       bio: data['bio'] ?? '',
       qrCode: data['qrCode'] ?? '',
-      tickets: List<String>.from(data['tickets'] ?? []),
+      tickets: (data['tickets'] as List<dynamic>?)
+        ?.map((e) => UserTicketsModel.fromMap(e as Map<String, dynamic>))
+        .toList() ?? [],
       createdEvents: List<String>.from(data['createdEvents'] ?? []),
       profilePicPath: data['profilePicPath'] ?? '',
       followers: List<String>.from(data['followers'] ?? []),

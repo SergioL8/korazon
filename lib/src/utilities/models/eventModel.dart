@@ -13,7 +13,8 @@ class TicketModel {
     this.ticketEntryTimeEnd,
     this.ticketCapacity,
     this.genderRestriction = 'all',
-    this.ticketsSold,
+    this.ticketHolders,
+    this.userWithTicketsOnHold,
   });
 
   final String ticketID;
@@ -24,7 +25,8 @@ class TicketModel {
   final Timestamp? ticketEntryTimeEnd;
   final int? ticketCapacity;
   final String genderRestriction;
-  final int? ticketsSold;
+  final List<String>? ticketHolders;
+  final List<String>? userWithTicketsOnHold;
 
   Map<String, dynamic> toMap() {
     return {
@@ -36,7 +38,8 @@ class TicketModel {
       'ticketEntryTimeEnd': ticketEntryTimeEnd,
       'ticketCapacity': ticketCapacity,
       'genderRestriction': genderRestriction,
-      'ticketsSold': ticketsSold,
+      'ticketHolders': ticketHolders ?? [],
+      'userWithTicketsOnHold': userWithTicketsOnHold ?? [],
     };
   }
 
@@ -50,7 +53,12 @@ class TicketModel {
       ticketEntryTimeEnd: map['ticketEntryTimeEnd'],
       ticketCapacity: (map['ticketCapacity'] is num) ? (map['ticketCapacity'] as num).toInt() : null,
       genderRestriction: map['genderRestriction'] ?? 'all',
-      ticketsSold: (map['ticketsSold'] is num) ? (map['ticketsSold'] as num).toInt() : null,
+      ticketHolders: (map['ticketHolders'] as List<dynamic>?)
+          ?.map((holder) => holder as String)
+          .toList() ?? [],
+      userWithTicketsOnHold: (map['userWithTicketsOnHold'] as List<dynamic>?)
+          ?.map((holder) => holder as String)
+          .toList() ?? [],
     );
   }
 }
@@ -71,9 +79,9 @@ class EventModel {
     required this.hostId,
     required this.hostName,
     required this.profilePicPath,
-    required this.price,
     required this.tickets,
     required this.stripeConnectedCustomerId,
+    required this.eventTicketHolders,
   });
 
   final String documentID;
@@ -87,9 +95,9 @@ class EventModel {
   final String hostId;
   final String hostName;
   final String profilePicPath;
-  final double price;
   final List<TicketModel> tickets;
   final String? stripeConnectedCustomerId;
+  final List<String>? eventTicketHolders;
 
 
   static EventModel? fromDocumentSnapshot(DocumentSnapshot doc) {
@@ -112,11 +120,11 @@ class EventModel {
       hostId: data['hostId'],
       hostName: data['hostName'] ?? 'No host name',
       profilePicPath: data['profilePicPath'] ?? '',
-      price: (data['price'] is num) ? (data['price'] as num).toDouble() : 0.0,
       tickets: (data['tickets'] as List<dynamic>?)
           ?.map((ticket) => TicketModel.fromMap(ticket as Map<String, dynamic>))
           .toList() ?? [],
       stripeConnectedCustomerId: data['stripeConnectedCustomerId'],
+      eventTicketHolders: (data['eventTicketHolders'] as List<dynamic>?)?.map((holder) => holder as String).toList() ?? [],
     );
   }
 }

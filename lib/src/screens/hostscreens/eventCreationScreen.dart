@@ -233,7 +233,7 @@ class EventCreationScreenState extends State<EventCreationScreen> {
           TicketModel(
             ticketID: 'firstTicket',
             ticketName: 'General Admission',
-            ticketPrice: 0.00,
+            ticketPrice: 0.00,          
           )
         ];
         _dateTimeWidgetKey++;

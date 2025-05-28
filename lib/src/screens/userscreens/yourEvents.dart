@@ -65,7 +65,7 @@ class _YourEventsState extends State<YourEvents> {
         setState(() { // the qrCode widgets needs the user info, so once we have the info we can se the loading state to false
           _qrCodeLoading = false;
         });
-        eventUids = usermodel!.tickets;
+        eventUids = usermodel!.tickets.map((ticket) => ticket.eventId).toList();
         qrCodeBase64 = usermodel!.qrCode;
       });
 

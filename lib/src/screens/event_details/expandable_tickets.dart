@@ -1,13 +1,14 @@
 import 'dart:convert';
 import 'package:intl/intl.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:korazon/src/widgets/confirmationMessage.dart';
 import 'package:slide_to_act/slide_to_act.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/utilities/models/eventModel.dart';
 
@@ -15,11 +16,12 @@ import 'package:korazon/src/utilities/models/eventModel.dart';
 
 class ExpandableTicket extends StatefulWidget {
 
-  const ExpandableTicket({super.key, required this.ticket, required this.stripeConnectedCustomerId, required this.hostID});
+  const ExpandableTicket({super.key, required this.ticket, required this.stripeConnectedCustomerId, required this.hostID, required this.event});
   
   final TicketModel ticket;
-  final String? stripeConnectedCustomerId;
+  final String? stripeConnectedCustomerId; // host's Stripe Connected Account ID
   final String? hostID;
+  final EventModel event;
 
   @override
   State<ExpandableTicket> createState() => _ExpandableTicketState();
@@ -28,11 +30,12 @@ class ExpandableTicket extends StatefulWidget {
 
 class _ExpandableTicketState extends State<ExpandableTicket> {
   bool isExpanded = false;
+  bool paymentSuccessful = false;
   @override
   Widget build(BuildContext context) {
     int? remaining = widget.ticket.ticketCapacity == null
         ? null
-        : (widget.ticket.ticketCapacity! - (widget.ticket.ticketsSold ?? 0));
+        : (widget.ticket.ticketCapacity! - (widget.ticket.ticketHolders!.length));
 
     return Container(
       margin: const EdgeInsets.only(bottom: 20),
@@ -170,21 +173,39 @@ class _ExpandableTicketState extends State<ExpandableTicket> {
                           style: whiteBody,
                         ),
                       const SizedBox(height: 16),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: SlideAction(
-                          height: 30,
+                      paymentSuccessful
+                        ? Center(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.black.withValues(alpha: 0.55),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(2.0),
+                                child: const Icon(
+                                  Icons.check,
+                                  color: Colors.white,
+                                  weight: 10.00,
+                                ),
+                              ),
+                            ),
+                          )
+                        : SlideAction(
+                          height: 28,
                           sliderButtonIconSize: 15,
                           sliderButtonIconPadding: 7,
-                          text: widget.ticket.ticketPrice == 0.00
-                            ? '> > > Slide to RSVP > > >'
-                            : '> > > Slide to buy > > >',
-                          textStyle: whiteBody,
                           outerColor: Colors.transparent.withValues(alpha: 0.5),
                           borderRadius: 8,
+                          submittedIcon: Padding(
+                            padding: const EdgeInsets.all(6.0),
+                            child: const CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                            ),
+                          ),
                           sliderButtonIcon: Container(
-                            width: 28,  // wider than height
-                            height: 20, // shorter height
+                            width: 25,  // wider than height
+                            height: 19, // shorter height
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(8),
@@ -209,6 +230,11 @@ class _ExpandableTicketState extends State<ExpandableTicket> {
                               showErrorMessage(context, content: 'There was an error loading your user, please logout and login again', errorAction: ErrorAction.logout);
                               return;
                             }
+
+                            // Check if the user is already a ticket holder
+
+                            // Check if the user is aleady an event ticket holder
+
                             
                             // Compute the ticket price
                             final ticketPrice = (widget.ticket.ticketPrice + 
@@ -219,11 +245,67 @@ class _ExpandableTicketState extends State<ExpandableTicket> {
                             // Compute korazon's cut
                             final korazonCut = (widget.ticket.ticketPrice * 0.10) * 100; // Convert to cents
 
+                            // ~~~~~~~~~~~~~ Begin availability transaction ~~~~~~~~~~~~~
+                            final eventReference = FirebaseFirestore.instance.collection('events').doc(widget.event.documentID);
+                            
+                            try {
+                              await FirebaseFirestore.instance.runTransaction((tx) async { // create the transaction
+                                final snap = await tx.get(eventReference); // get the event document snapshot
+
+                                // Check if the event exists
+                                if (!snap.exists) {
+                                  throw Exception('Event does not exist');
+                                }
+
+                                // Check if tickets exist for this event and pull them from the snapshot
+                                final data = snap.data();
+                                if (data == null || !data.containsKey('tickets')) {
+                                  throw Exception('No tickets available for this event');
+                                }
+                                final tickets = List<Map<String, dynamic>>.from(data['tickets'] ?? []);
+
+                                // Find the ticket by documentID
+                                final index = tickets.indexWhere((t) => t['documentID'] == widget.ticket.ticketID);
+                                if (index == -1) {
+                                  throw Exception('Ticket not found');
+                                }
+
+                                // Get the users that have bought or have this ticket on hold
+                                final ticket = Map<String, dynamic>.from(tickets[index]);
+                                final holders = List<String>.from(ticket['ticketHolders'] ?? <String>[]);
+                                final pending = List<String>.from(ticket['userWithTicketsOnHold'] ?? <String>[]);
+
+                                // Already on hold?
+                                if (pending.contains(uid) || holders.contains(uid)) {
+                                  throw Exception('You already hold this ticket');
+                                }
+
+                                // Check if the ticket is sold out
+                                final capacity = ticket['ticketCapacity'] as int?;
+                                if (capacity != null &&
+                                    holders.length + pending.length >= capacity) {
+                                  throw Exception('Sold out');
+                                }
+
+                                // Reserve seat
+                                pending.add(uid);
+                                ticket['userWithTicketsOnHold'] = pending;
+                                tickets[index] = ticket;
+
+                                tx.update(eventReference, {'tickets': tickets});
+                              });
+                            } catch (e) {
+                              showErrorMessage(context,
+                                  content: e.toString().contains('Sold out')
+                                      ? 'Sold out. Please choose another ticket.'
+                                      : 'Unable to reserve ticket. Try again.');
+                              return; // Abort payment flow
+                            }
+                            // ----- End availability transaction -----
+
+
                             try {
                               // Call the backend to create a payment intent
-                              debugPrint('Type of amount: ${ticketPrice.runtimeType}, value: $ticketPrice');
-                              debugPrint('Type of korazonCut: ${korazonCut.runtimeType}, value: $korazonCut');
-                              debugPrint('Stripe Connected Account ID: ${widget.stripeConnectedCustomerId}');
                               final response = await http.post(
                                 Uri.parse('https://us-central1-korazon-dc77a.cloudfunctions.net/createTicketPaymentIntent'),
                                 headers: {'Content-Type': 'application/json'},
@@ -255,10 +337,55 @@ class _ExpandableTicketState extends State<ExpandableTicket> {
                                   // Present the payment page
                                   await Stripe.instance.presentPaymentSheet();
                                   debugPrint('Payment completed successfully.');
-                                  showConfirmationMessage(context, message: 'Payment completed! Your ticket has been reserved.');
+                                  setState(() {
+                                    paymentSuccessful = true;
+                                  });
 
-                                  // TODO: Update Firestore to mark the ticket as purchased
+                                  // ---- Finalize ticket purchase in one transaction ----
+                                  await FirebaseFirestore.instance.runTransaction((tx) async {
+                                    // Get the event document snapshot and check if it exists
+                                    final snap = await tx.get(eventReference);
+                                    if (!snap.exists) throw Exception('Event missing during finalize.');
 
+                                    // Get the data and check the tickets if it contains the tickets list
+                                    final data = snap.data();
+                                    if (data == null || !data.containsKey('tickets')) throw Exception('Tickets missing during finalize.');
+                                    final tickets = List<Map<String, dynamic>>.from(data['tickets'] ?? []);
+
+                                    // Find the ticket by documentID
+                                    final idx = tickets.indexWhere((t) => t['documentID'] == widget.ticket.ticketID);
+                                    if (idx == -1) throw Exception('Ticket not found during finalize.');
+
+                                    // Get the ticket and its holders
+                                    final ticket  = Map<String, dynamic>.from(tickets[idx]);
+                                    final pending = List<String>.from(ticket['userWithTicketsOnHold'] ?? <String>[]);
+                                    final holders = List<String>.from(ticket['ticketHolders'] ?? <String>[]);
+
+                                    // Remove from pending (if still present) and add to holders
+                                    pending.remove(uid);
+                                    if (!holders.contains(uid)) holders.add(uid);
+
+                                    ticket['userWithTicketsOnHold'] = pending;
+                                    ticket['ticketHolders'] = holders;
+                                    tickets[idx] = ticket;
+
+                                    // Update both tickets array and eventTicketHolders atomically
+                                    tx.update(eventReference, {
+                                      'tickets'             : tickets,
+                                      'eventTicketHolders'  : FieldValue.arrayUnion([uid]),
+                                    });
+
+                                    final userRef = FirebaseFirestore.instance.collection('users').doc(uid);
+                                    tx.update(userRef, {
+                                      'tickets': FieldValue.arrayUnion([
+                                        {
+                                          'eventId'    : widget.event.documentID,
+                                          'ticketId'   : widget.ticket.ticketID,
+                                          'purchasedAt': Timestamp.now(),
+                                        }
+                                      ])
+                                    });
+                                  });
                                 } on Exception catch (e) {
                                   if (e is StripeException) {
                                     showErrorMessage(context, content: e.error.localizedMessage ?? 'Something went wrong during payment.');
@@ -279,19 +406,68 @@ class _ExpandableTicketState extends State<ExpandableTicket> {
                               showErrorMessage(context, content: 'Unexpected error. Please try again', errorAction: ErrorAction.none);
                               debugPrint('Unexpected error: $e');
                               return;
+                            } finally {
+                              if (!paymentSuccessful) {
+                                // Remove the user from pending holds
+                                try {
+                                  await FirebaseFirestore.instance.runTransaction((tx) async {
+                                    // Get the event document snapshot and check if it exists
+                                    final snap = await tx.get(eventReference);
+                                    if (!snap.exists) return; 
+
+                                    // Get the data and check if it contains the tickets list
+                                    final data = snap.data();
+                                    if (data == null || !data.containsKey('tickets')) return;
+
+                                    // Pull the tickets from the data
+                                    final tickets = List<Map<String, dynamic>>.from(data['tickets'] ?? []);
+
+                                    // Find the ticket by documentID
+                                    final idx = tickets.indexWhere((t) => t['documentID'] == widget.ticket.ticketID);
+                                    if (idx == -1) return;
+                                    final ticket = Map<String, dynamic>.from(tickets[idx]);
+
+                                    // Get the list of users with tickets on hold and remove the current user
+                                    final pending = List<String>.from(ticket['userWithTicketsOnHold'] ?? <String>[]);
+                                    pending.remove(uid);
+
+                                    // Update the ticket with the new list of users on hold
+                                    ticket['userWithTicketsOnHold'] = pending;
+                                    tickets[idx] = ticket;
+                                    tx.update(eventReference, {'tickets': tickets});
+                                  });
+                                } catch (_) {
+                                  // Silently fail since it will be handled by the webhook
+                                }
+                            }
                             }
 
-                          }
+                          },
+                          child: Shimmer.fromColors(
+                            baseColor: Colors.white,
+                            highlightColor: Colors.grey.shade400,
+                            child: Text(
+                              widget.ticket.ticketPrice == 0.00
+                                  ? '> > > Slide to RSVP > > >'
+                                  : '> > > Slide to buy > > >',
+                              style: whiteBody.copyWith(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
                       const SizedBox(height: 6),
                       if (widget.ticket.ticketPrice != 0.00)
                         Center(
                           child: Text(
-                            ' (You won\'t be charged yet)',
+                            paymentSuccessful
+                              ? 'Purchase complete. Your ticket will show in your profile soon.'
+                              : ' (You won\'t be charged yet)',
                             style: whiteBody.copyWith(
                               fontSize: 12,
-                            )
+                            ),
+                            textAlign: TextAlign.center,
                           ),
                         )
                     ],
