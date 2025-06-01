@@ -11,10 +11,7 @@ import 'package:korazon/src/widgets/alertBox.dart';
 import 'package:korazon/src/utilities/models/userModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-
-
 class FinishUserSetup extends StatefulWidget {
-
   const FinishUserSetup({super.key});
 
   @override
@@ -22,7 +19,6 @@ class FinishUserSetup extends StatefulWidget {
 }
 
 class _FinishUserSetupState extends State<FinishUserSetup> {
-
   // variable declaration
   final _instaGramController = TextEditingController();
   final _bioController = TextEditingController();
@@ -34,13 +30,11 @@ class _FinishUserSetupState extends State<FinishUserSetup> {
   final uid = FirebaseAuth.instance.currentUser?.uid;
   bool _isLoading = false; // LOADING NEEDS TO BE IMPLEMENTED
 
-
-
-
   Widget _addPicture() {
     return InkWell(
       onTap: () async {
-        Uint8List? memoryImage = await selectImage(context); // function from utils
+        Uint8List? memoryImage =
+            await selectImage(context); // function from utils
         if (memoryImage != null) {
           setState(() {
             _imageController = memoryImage;
@@ -56,48 +50,53 @@ class _FinishUserSetupState extends State<FinishUserSetup> {
           height: 306.66,
           width: 230,
           decoration: BoxDecoration(
-            image: _imageController == null ?
-              DecorationImage( // dynamically show a place holder or the selected image
-                image: AssetImage('assets/images/addImagePlaceHolder.jpeg'),
-                fit: BoxFit.cover,
-              ) : DecorationImage(
-                image: MemoryImage(_imageController!),
-                fit: BoxFit.cover,
-              ),
+            image: _imageController == null
+                ? DecorationImage(
+                    // dynamically show a place holder or the selected image
+                    image: AssetImage('assets/images/addImagePlaceHolder.jpeg'),
+                    fit: BoxFit.cover,
+                  )
+                : DecorationImage(
+                    image: MemoryImage(_imageController!),
+                    fit: BoxFit.cover,
+                  ),
           ),
         ),
       ),
     );
   }
 
-
-
   // function to jump to the base page without uploading any new data
   void skipPage() {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const BasePage()
-      )
+    // This removes the entire page stack and replaces it with the BasePage
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (context) => const BasePage()),
+      (Route<dynamic> route) => false,
     );
   }
 
-  
   // function to submit the profile completion
   void submitProfileCompletion() async {
-
     String? refPath;
-    
+
     if (uid == null) {
-      showErrorMessage(context, content: 'There was an error loading your user, please logout and login again', errorAction: ErrorAction.logout);
+      showErrorMessage(context,
+          content:
+              'There was an error loading your user, please logout and login again',
+          errorAction: ErrorAction.logout);
       return;
     }
-    
-    var userDocument = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+
+    var userDocument =
+        await FirebaseFirestore.instance.collection('users').doc(uid).get();
 
     user = UserModel.fromDocumentSnapshot(userDocument);
-    
+
     if (user == null) {
-      showErrorMessage(context, content: 'There was an error loading your user, please logout and login again', errorAction: ErrorAction.logout);
+      showErrorMessage(context,
+          content:
+              'There was an error loading your user, please logout and login again',
+          errorAction: ErrorAction.logout);
       return;
     }
 
@@ -113,18 +112,23 @@ class _FinishUserSetupState extends State<FinishUserSetup> {
       _imageController = await compressImage(_imageController!, 50);
 
       // specify the path and name of the image
-      Reference storageRef = FirebaseStorage.instance.ref(); // create storage reference (basically the root of the storage bucket on the cloud)
-      Reference fileRef = storageRef.child('images/usersPictures/$uid/${uid}_profilePic1_${DateTime.now()}.png');
+      Reference storageRef = FirebaseStorage.instance
+          .ref(); // create storage reference (basically the root of the storage bucket on the cloud)
+      Reference fileRef = storageRef.child(
+          'images/usersPictures/$uid/${uid}_profilePic1_${DateTime.now()}.png');
 
       // save the image to firebase storage
-      UploadTask imageUploadTask = fileRef.putData(_imageController!); // here uploadtask is a variable that stores information about how the upload is going
+      UploadTask imageUploadTask = fileRef.putData(
+          _imageController!); // here uploadtask is a variable that stores information about how the upload is going
 
       // This line will wait the execution of the function until the upload has completed (success or failure).
       TaskSnapshot imageTaskSnapshot = await imageUploadTask;
 
       // check for success or failure of the image upload
       if (imageTaskSnapshot.state != TaskState.success) {
-        showErrorMessage(context, content: 'There was an error uploading the image. Please try again');
+        showErrorMessage(context,
+            content:
+                'There was an error uploading the image. Please try again');
       } else {
         refPath = fileRef.fullPath;
       }
@@ -145,16 +149,20 @@ class _FinishUserSetupState extends State<FinishUserSetup> {
     if (bio.isNotEmpty) {
       updateData['bio'] = bio;
     }
-    
+
     // upload the data to the database if any data has been added
     if (updateData.isNotEmpty) {
       try {
-        await FirebaseFirestore.instance.collection('users').doc(uid).update(updateData);
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(uid)
+            .update(updateData);
       } catch (e) {
-        showErrorMessage(context, content: 'There was an error saving your profile. Please try again');
+        showErrorMessage(context,
+            content:
+                'There was an error saving your profile. Please try again');
       }
     }
-
 
     // clear controllers
     _bioController.clear();
@@ -165,130 +173,149 @@ class _FinishUserSetupState extends State<FinishUserSetup> {
       _isLoading = false;
     });
 
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const BasePage()
-      )
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (context) => const BasePage()),
+      (Route<dynamic> route) => false,
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: backgroundColorBM,
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top + 10, left: 30, right: 30, bottom: 20),
-          child: SizedBox(
-            width: double.infinity,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  'Complete your profile',
-                  style: whiteSubtitle,
-                ),
-                SizedBox(height: 15),
-                SizedBox(
-                  child: _addPicture(),
-                ),
-                SizedBox(height: 30),
-                Row(
-                  children: [
-                    ShaderMask(
-                      shaderCallback: (Rect bounds) {
-                        return linearGradient.createShader(bounds);
-                      },
-                      child: FaIcon(
+        backgroundColor: backgroundColorBM,
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.only(
+                top: MediaQuery.of(context).padding.top + 10,
+                left: 30,
+                right: 30,
+                bottom: 20),
+            child: SizedBox(
+              width: double.infinity,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    'Complete your profile',
+                    style: whiteSubtitle,
+                  ),
+                  SizedBox(height: 15),
+                  SizedBox(
+                    child: _addPicture(),
+                  ),
+                  SizedBox(height: 30),
+                  Row(
+                    children: [
+                      ShaderMask(
+                        shaderCallback: (Rect bounds) {
+                          return linearGradient.createShader(bounds);
+                        },
+                        child: FaIcon(
                           FontAwesomeIcons.instagram,
                           size: 40,
                           color: Colors.white,
-                        ), 
-                    ),
-                    SizedBox(width: 10),
-                    Expanded(
-                      child: TextFormField(
-                        autocorrect: false, // Disable auto-correction
-                        controller: _instaGramController, // set the controller
-                        focusNode: _instaGramFocusNode,
-                        style: whiteBody,
-                        cursorColor: Colors.white,
-                        onChanged: (value) {
-                          setState(() {
-                            infoAdded = _instaGramController.text.isNotEmpty || _bioController.text.isNotEmpty || _imageController != null;
-                          });
-                        },
-                        decoration: InputDecoration(
-                          filled: true,
-                          isDense: true,
-                          fillColor: Colors.white.withOpacity(0.15),
-                          labelText: 'insta acc.',
-                          labelStyle: whiteBody,
-                          floatingLabelBehavior: FloatingLabelBehavior.always, // Always show label at the top left
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15), // rounded corners
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15), // Rounded corners
-                            borderSide: BorderSide(color: Colors.white), // Color when not focused
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15), // Rounded corners
-                            borderSide: BorderSide(color: Colors.white, width: 2), // Color when focused
+                        ),
+                      ),
+                      SizedBox(width: 10),
+                      Expanded(
+                        child: TextFormField(
+                          autocorrect: false, // Disable auto-correction
+                          controller:
+                              _instaGramController, // set the controller
+                          focusNode: _instaGramFocusNode,
+                          style: whiteBody,
+                          cursorColor: Colors.white,
+                          onChanged: (value) {
+                            setState(() {
+                              infoAdded =
+                                  _instaGramController.text.isNotEmpty ||
+                                      _bioController.text.isNotEmpty ||
+                                      _imageController != null;
+                            });
+                          },
+                          decoration: InputDecoration(
+                            filled: true,
+                            isDense: true,
+                            fillColor: Colors.white.withOpacity(0.15),
+                            labelText: 'insta acc.',
+                            labelStyle: whiteBody,
+                            floatingLabelBehavior: FloatingLabelBehavior
+                                .always, // Always show label at the top left
+                            border: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.circular(15), // rounded corners
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.circular(15), // Rounded corners
+                              borderSide: BorderSide(
+                                  color:
+                                      Colors.white), // Color when not focused
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius:
+                                  BorderRadius.circular(15), // Rounded corners
+                              borderSide: BorderSide(
+                                  color: Colors.white,
+                                  width: 2), // Color when focused
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                TextFormField(
-                  maxLines: 2,
-                  autocorrect: false, // Disable auto-correction
-                  controller: _bioController, // set the controller
-                  focusNode: _bioFocusNode,
-                  style: whiteBody,
-                  cursorColor: Colors.white,
-                  onChanged: (value) {
-                    setState(() {
-                      infoAdded = _instaGramController.text.isNotEmpty || _bioController.text.isNotEmpty || _imageController != null;
-                    });
-                  },
-                  decoration: InputDecoration(
-                    filled: true,
-                    isDense: true,
-                    fillColor: Colors.white.withOpacity(0.15),
-                    labelText: 'Your Bio',
-                    labelStyle: whiteBody,
-                    floatingLabelBehavior: FloatingLabelBehavior.always, // Always show label at the top left
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15), // rounded corners
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15), // Rounded corners
-                      borderSide: BorderSide(color: Colors.white), // Color when not focused
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15), // Rounded corners
-                      borderSide: BorderSide(color: Colors.white, width: 2), // Color when focused
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  TextFormField(
+                    maxLines: 2,
+                    autocorrect: false, // Disable auto-correction
+                    controller: _bioController, // set the controller
+                    focusNode: _bioFocusNode,
+                    style: whiteBody,
+                    cursorColor: Colors.white,
+                    onChanged: (value) {
+                      setState(() {
+                        infoAdded = _instaGramController.text.isNotEmpty ||
+                            _bioController.text.isNotEmpty ||
+                            _imageController != null;
+                      });
+                    },
+                    decoration: InputDecoration(
+                      filled: true,
+                      isDense: true,
+                      fillColor: Colors.white.withOpacity(0.15),
+                      labelText: 'Your Bio',
+                      labelStyle: whiteBody,
+                      floatingLabelBehavior: FloatingLabelBehavior
+                          .always, // Always show label at the top left
+                      border: OutlineInputBorder(
+                        borderRadius:
+                            BorderRadius.circular(15), // rounded corners
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius:
+                            BorderRadius.circular(15), // Rounded corners
+                        borderSide: BorderSide(
+                            color: Colors.white), // Color when not focused
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius:
+                            BorderRadius.circular(15), // Rounded corners
+                        borderSide: BorderSide(
+                            color: Colors.white,
+                            width: 2), // Color when focused
+                      ),
                     ),
                   ),
-                ),
-
-                SizedBox(height: 20),
-
-                GradientBorderButton(
-                  onTap: infoAdded ? submitProfileCompletion : skipPage,
-                  text: infoAdded ? 'Save' : 'Skip',
-                  loading: _isLoading,
-                ),
-              ],
+                  SizedBox(height: 20),
+                  GradientBorderButton(
+                    onTap: infoAdded ? submitProfileCompletion : skipPage,
+                    text: infoAdded ? 'Save' : 'Skip',
+                    loading: _isLoading,
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-      )
-    );
+        ));
   }
 }
- 

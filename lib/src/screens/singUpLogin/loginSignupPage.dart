@@ -283,22 +283,24 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                                   focusNode: _emailFocusNode,
                                   cursorColor: Colors.white,
                                   validator: (value) {
-                                    if (value == null || value.isEmpty) {
+                                    if (value == null || value.trim().isEmpty) {
                                       return 'Please enter your email address.';
                                     }
 
+                                    final trimmedValue = value.trim();
+                                    // Depending on the parent page, we validate the email format differently
+                                    // login and create host account can be any email
+                                    // signup must be @colorado.edu
                                     if (widget.parentPage ==
-                                            ParentPage.signup ||
-                                        widget.parentPage ==
-                                            ParentPage.createHostAcc) {
+                                        ParentPage.signup) {
                                       if (!RegExp(r'^[\w\.\-]+@colorado\.edu$')
-                                          .hasMatch(value)) {
+                                          .hasMatch(trimmedValue)) {
                                         return 'Please use your @colorado.edu email address.';
                                       }
                                     } else {
                                       if (!RegExp(
                                               r'^[\w\.\-]+@[\w\-]+\.[a-zA-Z]{2,}$')
-                                          .hasMatch(value)) {
+                                          .hasMatch(trimmedValue)) {
                                         return 'Please enter a valid email address.';
                                       }
                                     }
@@ -367,11 +369,17 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                                   focusNode: _passwordFocusNode,
                                   cursorColor: Colors.white,
                                   obscureText: obscureText,
+
+                                  // First we trim the value before validating
                                   validator: (val) {
-                                    if (val != null && val.contains(' ')) {
+                                    final trimmedValue = val?.trim();
+
+                                    if (trimmedValue != null &&
+                                        trimmedValue.contains(' ')) {
                                       return 'Password cannot contain spaces.';
                                     }
-                                    if (val == null || val.length < 6) {
+                                    if (trimmedValue == null ||
+                                        trimmedValue.length < 6) {
                                       return 'Password must be at least 6 characters long.';
                                     }
                                     return null;

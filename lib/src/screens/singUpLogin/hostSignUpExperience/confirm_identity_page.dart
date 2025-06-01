@@ -7,8 +7,6 @@ import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
 import 'package:korazon/src/widgets/customPinInput.dart';
 import 'package:korazon/src/widgets/gradient_border_button.dart';
-import 'package:pin_code_fields/pin_code_fields.dart';
-import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -22,7 +20,6 @@ class HostConfirmIdentityPage extends StatefulWidget {
 class _ConfirmIdentityPageState extends State<HostConfirmIdentityPage> {
   final TextEditingController _pinController = TextEditingController();
   bool _isLoading = false;
-  bool _error = false;
 
   // Dispose controllers
   @override
@@ -98,8 +95,9 @@ class _ConfirmIdentityPageState extends State<HostConfirmIdentityPage> {
       //       and email Korazon.dev with the new code.
 
       // 8) Let's get out of this godamm page
-      Navigator.of(context).pushReplacement(
+      Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => const BasePage()),
+        (Route<dynamic> route) => false,
       );
     } on FirebaseException catch (firebaseError) {
       debugPrint('Firebase error: ${firebaseError.message}');
@@ -159,9 +157,11 @@ class _ConfirmIdentityPageState extends State<HostConfirmIdentityPage> {
                       CustomPinInput(controller: _pinController),
                       Spacer(),
                       GestureDetector(
-                        onTap: () => Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(
-                                builder: (context) => const BasePage())),
+                        onTap: () => Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                              builder: (context) => const BasePage()),
+                          (Route<dynamic> route) => false,
+                        ),
                         child: Text(
                           'Skip identity verification',
                           style: whiteBody.copyWith(

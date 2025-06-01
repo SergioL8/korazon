@@ -111,8 +111,11 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
 
       switch (widget.nextPage) {
         case EmailVerificationNextPage.basePage:
-          Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => const BasePage()));
+          // Navigate to the base page and remove all previous pages from the stack
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => const BasePage()),
+            (Route<dynamic> route) => false,
+          );
           break;
 
         case EmailVerificationNextPage.hostConfirmIdentityPage:
