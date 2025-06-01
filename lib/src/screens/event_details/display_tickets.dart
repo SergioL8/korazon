@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:korazon/src/screens/event_details/expandable_tickets.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/utilities/models/eventModel.dart';
+import 'package:korazon/src/screens/event_details/expandable_tickets.dart';
 
 
 class DisplayTickets extends StatefulWidget {
@@ -20,6 +21,7 @@ class _DisplayTicketsState extends State<DisplayTickets> {
     final List<TicketModel> tickets = widget.event.tickets;
     final String? stripeConnectedCustomerId = widget.event.stripeConnectedCustomerId;
     final String? hostID = widget.event.hostId;
+    final uid = FirebaseAuth.instance.currentUser?.uid;
 
     // Dynamic heightFactor based on number of tickets
     double heightFactor;
@@ -71,7 +73,7 @@ class _DisplayTicketsState extends State<DisplayTickets> {
             // Always scrollable ticket list
             Expanded(
               child: ListView(
-                children: tickets.map((ticket) => ExpandableTicket(ticket: ticket, stripeConnectedCustomerId: stripeConnectedCustomerId, hostID: hostID, event: widget.event)).toList(),
+                children: tickets.map((ticket) => ExpandableTicket(ticket: ticket, stripeConnectedCustomerId: stripeConnectedCustomerId, hostID: hostID, uid: uid, event: widget.event)).toList(),
               ),
             ),
           ],

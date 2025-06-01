@@ -19,6 +19,7 @@ enum ErrorAction {
   none,
   logout,
   verify,
+  cont,
 }
 // This enum is used to determine the parent page of the Email verification page,
 // I thought it made sense to create a new enum instead of using the parentPage enum

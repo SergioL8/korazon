@@ -7,6 +7,7 @@ const sgMail = require("@sendgrid/mail");
 const admin = require("firebase-admin");
 require("dotenv").config();
 const stripeSecretKey = defineSecret("STRIPE_SECRET_KEY_TEST");
+const stripeSigningSecret = defineSecret("STRIPE_SIGNING_SECRET_TEST");
 
 admin.initializeApp();
 const sendGridVerifyEmailTemplateId = "d-3ee8b7adca1c445087e9200176f5bde2";
@@ -245,13 +246,14 @@ exports.createTicketPaymentIntent = functions.https.onRequest( {secrets: [stripe
       currency = 'usd',
       ticketID,
       attendeeUID,
+      eventID,
       hostUID,
     } = req.body;
 
     const metadata = {
-      attendeeUID: attendeeUID,
+      eventID: eventID,
       ticketID: ticketID,
-      hostID: hostUID
+      attendeeUID: attendeeUID,
     };
 
     // Check user has a verified email
@@ -285,6 +287,7 @@ exports.createTicketPaymentIntent = functions.https.onRequest( {secrets: [stripe
       },
       metadata,
     });
+    console.log('In create payment intent, metadata passed: ', metadata)
 
     // Return clientSecret to app
     return res.status(200).send({
@@ -295,4 +298,172 @@ exports.createTicketPaymentIntent = functions.https.onRequest( {secrets: [stripe
     console.error('❌ Stripe PaymentIntent creation failed:', error);
     return res.status(500).send({ error: error.message });
   }
+});
+
+
+
+// functions/index.js  (add near the bottom)
+
+// Import helpers once at top of file (if not already):
+// const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY_TEST);
+// Store Signing Secret in Functions environment or Secret Manager
+
+/**
+ * Stripe Webhook – receives POSTs from Stripe,
+ * verifies the signature, and gives us the event JSON.
+ *
+ * NOTE: do *not* add body-parsing middleware here;
+ * Firebase provides rawBody automatically.
+ */
+exports.stripeWebhook = functions.https.onRequest(
+  { secrets: [stripeSecretKey, stripeSigningSecret] },
+  async (req, res) => {
+    const stripe = require('stripe')(stripeSecretKey.value());
+    const signingSecret = stripeSigningSecret.value();
+  // 1. Only accept POST
+  if (req.method !== 'POST') {
+    return res.status(405).send('Method Not Allowed');
+  }
+
+  let event; // initialize the verified Stripe event object
+  const sig = req.headers['stripe-signature']; // get the stripe signature
+
+  try {
+    // 2.Convert athen untrusted HTTP POST into a verified, typed Stripe event 
+    event = stripe.webhooks.constructEvent(
+      req.rawBody,
+      sig,
+      signingSecret
+    );
+  } catch (err) {
+    console.error('⚠️  Webhook signature verification failed:', err.message);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  // At this point `event` is trusted JSON from Stripe
+  console.log(`✅ Received ${event.type} for ${event.id}`);
+
+  switch(event.type) {
+    // ────────── Payment succeeded ──────────
+    case 'payment_intent.succeeded': {
+      const paymentIntent = event.data.object; 
+
+      // Check that metadata was attached when the PaymentIntent was created
+      const { eventID, ticketID, attendeeUID } = paymentIntent.metadata || {};
+      if (!eventID || !ticketID || !attendeeUID) {
+        console.log('Metadata: ', paymentIntent.metadata)
+        logger.error('❌ Missing metadata on payment_intent.succeeded');
+        break;
+      }
+
+      // Docuemnts of event and user that will be be updated in the trasaction
+      const eventRef = admin.firestore().collection('events').doc(eventID);
+      const userRef  = admin.firestore().collection('users').doc(attendeeUID);
+
+      // run transaction
+      await admin.firestore().runTransaction(async (tx) => {
+        
+        // Get the event document and check it was loaded correctly
+        const snap = await tx.get(eventRef);
+        if (!snap.exists) throw new Error('Event missing during finalize.');
+
+        // Get the document data and check that the tickets array exists
+        const data = snap.data();
+        if (!data || !Array.isArray(data.tickets)) {
+          throw new Error('Tickets missing during finalize.');
+        }
+
+        const tickets = [...data.tickets]; // shallow copy
+        const idx = tickets.findIndex(t => t.documentID === ticketID); // get the ticket to be purchased (passed in the metadata)
+        if (idx === -1) throw new Error('Ticket not found during finalize.');
+
+        // Shallow copy to not modify original data
+        const ticket = { ...tickets[idx] };
+        const pending = new Set(ticket.userWithTicketsOnHold || []);
+        const holders = new Set(ticket.ticketHolders || []);
+
+        // Remove the user from the userWithTicketOnHold array and add it to users with tickets
+        pending.delete(attendeeUID);
+        holders.add(attendeeUID);
+
+        // Updat the ticket values
+        ticket.userWithTicketsOnHold = Array.from(pending);
+        ticket.ticketHolders         = Array.from(holders);
+        tickets[idx] = ticket; // Upda the list of tickets
+
+        // Make the firestore update to the event's document
+        tx.update(eventRef, {
+          tickets,
+          eventTicketHolders: admin.firestore.FieldValue.arrayUnion(attendeeUID),
+        });
+
+        // Make the firestore update to the user's document
+        tx.update(userRef, {
+          tickets: admin.firestore.FieldValue.arrayUnion({
+            eventID,
+            ticketId: ticketID,
+            purchasedAt: admin.firestore.Timestamp.now(),
+          }),
+        });
+      });
+
+      logger.info(`🎟️ Ticket ${ticketID} allocated to ${attendeeUID}`);
+      break;
+    }
+
+    // ────────── Payment cancelled / failed ──────────
+    case 'payment_intent.canceled':
+    case 'payment_intent.payment_failed': {
+      const paymentIntent = event.data.object;
+
+      // Check that the necessary metadata arrived with the call
+      const { eventID, ticketID, attendeeUID } = paymentIntent.metadata || {};
+      if (!eventID || !ticketID || !attendeeUID) {
+        logger.warn('⚠️ Missing metadata on failed/canceled intent');
+        break;
+      }
+
+      // Get the event document reference to update
+      const eventRef = admin.firestore().collection('events').doc(eventID);
+
+      // Run transaction
+      await admin.firestore().runTransaction(async (tx) => {
+        
+        // Get the event document, if it doesn't exists then no need to remove anything
+        const snap = await tx.get(eventRef);
+        if (!snap.exists) return; // nothing to clean
+
+        // Check that the document contains data
+        const data = snap.data();
+        if (!data || !Array.isArray(data.tickets)) return;
+
+        // Get the ticket, if the ticket doesn't exists, nothing to update
+        const tickets = [...data.tickets];
+        const idx = tickets.findIndex(t => t.documentID === ticketID);
+        if (idx === -1) return;
+
+        // Get the ticket and make a copy of it
+        const ticket = { ...tickets[idx] };
+        const pending = new Set(ticket.userWithTicketsOnHold || []);
+
+        // Delet the ticket with the hold
+        pending.delete(attendeeUID);
+
+        // Copy the updated list back to the ticket
+        ticket.userWithTicketsOnHold = Array.from(pending);
+
+        // Update the tickets array
+        tickets[idx] = ticket;
+
+        // Update the document with the new list of tickets
+        tx.update(eventRef, { tickets });
+      });
+
+      logger.info(`↩️ Hold released for ${attendeeUID} on ${ticketID}`);
+      break;
+    }
+  }
+
+  // Respond quickly; you’ll fill in logic later
+  res.status(200).send('Received');
 });
