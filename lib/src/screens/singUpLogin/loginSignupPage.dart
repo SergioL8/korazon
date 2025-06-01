@@ -283,15 +283,26 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                                   focusNode: _emailFocusNode,
                                   cursorColor: Colors.white,
                                   validator: (value) {
-                                    // if (widget.parentPage == ParentPage.signup) {
-                                    //   if (value == null || !RegExp(r'^[^\s@]+@colorado\.edu$').hasMatch(value)) {
-                                    //     return 'Please enter a valid @colorado.edu email address';
-                                    //   }
-                                    // } else {
-                                    //   if (value == null || !RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(value)) {
-                                    //     return 'Please enter a valid email address';
-                                    //   }
-                                    // }
+                                    if (value == null || value.isEmpty) {
+                                      return 'Please enter your email address.';
+                                    }
+
+                                    if (widget.parentPage ==
+                                            ParentPage.signup ||
+                                        widget.parentPage ==
+                                            ParentPage.createHostAcc) {
+                                      if (!RegExp(r'^[\w\.\-]+@colorado\.edu$')
+                                          .hasMatch(value)) {
+                                        return 'Please use your @colorado.edu email address.';
+                                      }
+                                    } else {
+                                      if (!RegExp(
+                                              r'^[\w\.\-]+@[\w\-]+\.[a-zA-Z]{2,}$')
+                                          .hasMatch(value)) {
+                                        return 'Please enter a valid email address.';
+                                      }
+                                    }
+
                                     return null;
                                   },
                                   onChanged: (_) =>

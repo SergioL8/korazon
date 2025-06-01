@@ -157,42 +157,6 @@ class _ConfirmIdentityPageState extends State<HostConfirmIdentityPage> {
                       ),
                       SizedBox(height: screenHeight * 0.05),
                       CustomPinInput(controller: _pinController),
-                      PinCodeTextField(
-                        // pin code field imported from pin_code_fields package
-                        appContext: context,
-                        length: 6, // length of the pin code
-                        controller: _pinController,
-                        keyboardType: TextInputType.text,
-                        animationType: AnimationType
-                            .fade, // animation of numbers when they are entered
-                        textStyle: whiteBody,
-                        textCapitalization: TextCapitalization
-                            .characters, // set the keyboard to uppercase
-                        enableActiveFill: true, // enable fill in the boxes
-                        inputFormatters: [
-                          // force the input to be uppercase when entered
-                          TextInputFormatter.withFunction((oldValue, newValue) {
-                            return newValue.copyWith(
-                                text: newValue.text.toUpperCase());
-                          }),
-                        ],
-                        pinTheme: PinTheme(
-                          // theme of the individual boxes
-                          shape: PinCodeFieldShape.box,
-                          borderRadius: BorderRadius.circular(
-                              10), // make the boxes rounded
-                          borderWidth: 0, // no border
-                          inactiveFillColor: Colors.white.withOpacity(0.15),
-                          activeFillColor: Colors.white.withOpacity(0.15),
-                          selectedFillColor: Colors.white.withOpacity(0.15),
-                          activeColor: _error ? Colors.red : Colors.transparent,
-                          inactiveColor:
-                              _error ? Colors.red : Colors.transparent,
-                          selectedColor:
-                              _error ? Colors.red : Colors.transparent,
-                        ),
-                      ),
-                      //! Needs change
                       Spacer(),
                       GestureDetector(
                         onTap: () => Navigator.of(context).pushReplacement(

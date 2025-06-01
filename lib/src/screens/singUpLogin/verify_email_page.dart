@@ -259,7 +259,11 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                         ),
                       ),
                       // Code has to match and not be expired currently 5 minutes for expiration
-                      onTap: () => sendVerificationEmail()),
+                      onTap: () {
+                        _pinController.clear();
+
+                        sendVerificationEmail();
+                      }),
                 ),
                 SizedBox(height: 6),
                 // Spacer(),

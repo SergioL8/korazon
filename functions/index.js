@@ -163,9 +163,10 @@ exports.VerificationEmail = onCall(async (req) => {
       subject: "Verify Your Email - Korazon", // Dynamic subject
       dynamic_template_data: {
         subject: "Verify Your Email - Korazon",
-        headerText: "Verify Your Email",
-        body1: `We've received a request to verify your email. Your code is: ${verificationCode}`,
-        body2: "Your Korazon account is almost ready.",
+        //headerText: "Verify Your Email",
+        body1: `We've received a request to verify your email. Your code is:`,
+        code: verificationCode,
+        body2: "Your Korazon account is almost ready",
         //buttonText: "Verify Email",
       }
     };
