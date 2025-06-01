@@ -45,7 +45,6 @@ app.*.map.json
 /android/app/release
 android/app/.cxx/
 
-
 # API KEY
 .env
 functions/.env
