@@ -5,8 +5,12 @@ import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/utilities/utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-
-void showErrorMessage(BuildContext context, {String title = 'Something went wrong...', String content = '', errorAction = ErrorAction.none, }) {
+void showErrorMessage(
+  BuildContext context, {
+  String title = 'Something went wrong...',
+  String content = '',
+  errorAction = ErrorAction.none,
+}) {
   showDialog(
     context: context,
     builder: (BuildContext context) => AlertDialog(
@@ -14,7 +18,9 @@ void showErrorMessage(BuildContext context, {String title = 'Something went wron
       title: Row(
         children: [
           Icon(Icons.heart_broken, color: korazonColor),
-          const SizedBox(width: 8,),
+          const SizedBox(
+            width: 8,
+          ),
           Expanded(
             child: Text(
               title,
@@ -28,40 +34,46 @@ void showErrorMessage(BuildContext context, {String title = 'Something went wron
           ),
         ],
       ),
-      content: content == '' ? null 
-      : Text(
-        content,
-        style: const TextStyle(
-          fontSize: 16,
-          color: secondaryColor,
-          fontWeight: FontWeight.w400,
-        ),
-      ),
+      content: content == ''
+          ? null
+          : Text(
+              content,
+              style: const TextStyle(
+                fontSize: 16,
+                color: secondaryColor,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
       actions: [
         ElevatedButton(
           style: ButtonStyle(
             backgroundColor: WidgetStatePropertyAll<Color>(korazonColor),
-            shape: WidgetStatePropertyAll<OutlinedBorder>(RoundedRectangleBorder(
+            shape:
+                WidgetStatePropertyAll<OutlinedBorder>(RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
             )),
           ),
-          onPressed: errorAction == ErrorAction.logout ? () async {
-            await FirebaseAuth.instance.signOut();
-            // if (!mounted) return;
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (context) => const LandingPage(),
-              ),
-            );
-          } : errorAction == ErrorAction.verify ? () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => const ConfirmIdentityPage(),
-              ),
-            );          }
-          :() {
-            Navigator.of(context).pop();
-          },
+          onPressed: errorAction == ErrorAction.logout
+              ? () async {
+                  await FirebaseAuth.instance.signOut();
+                  // if (!mounted) return;
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                      builder: (context) => const LandingPage(),
+                    ),
+                  );
+                }
+              : errorAction == ErrorAction.verify
+                  ? () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const HostConfirmIdentityPage(),
+                        ),
+                      );
+                    }
+                  : () {
+                      Navigator.of(context).pop();
+                    },
           child: Text(
             errorAction == ErrorAction.logout ? 'Log Out' : 'Close',
             style: TextStyle(

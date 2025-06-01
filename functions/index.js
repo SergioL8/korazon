@@ -1,12 +1,13 @@
 const {onCall} = require("firebase-functions/v2/https");
-// const {onRequest} = require("firebase-functions/v2/https");
+const functions = require("firebase-functions");
 const logger = require("firebase-functions/logger");
 const sgMail = require("@sendgrid/mail");
 const admin = require("firebase-admin");
 require("dotenv").config(); // Add this at the top
 
 admin.initializeApp();
-const sendGridTemplateId = "d-3ee8b7adca1c445087e9200176f5bde2";
+const sendGridVerifyEmailTemplateId = "d-3ee8b7adca1c445087e9200176f5bde2";
+const sendGridResetPasswordTemplateId = "d-7505b8d3d4324f8893faa739eb9d2113";
 
 exports.ResetPasswordEmail = onCall(async (req) => {
   try {
@@ -43,9 +44,8 @@ exports.ResetPasswordEmail = onCall(async (req) => {
     // Step 2: Generate a Firebase reset password link
     let resetPasswordLink;
     try {
-      resetPasswordLink = await admin.auth().generatePasswordResetLink(
-      );
-      logger.info("🔗 Password reset link generated successfully.");
+      resetPasswordLink = await admin.auth().generatePasswordResetLink(recipientEmail);
+      logger.info("🔗 Password reset link generated successfully: ${resetLinkError.message} ");
     } catch (resetLinkError) {
       logger.error(
           `❌ Failed to generate password reset link: ${resetLinkError.message}`,
@@ -56,9 +56,9 @@ exports.ResetPasswordEmail = onCall(async (req) => {
     // Step 3: Prepare and send email via SendGrid
     const msg = {
       to: recipientEmail,
-      from: "Korazon@korazonapp.com",
+      from: "korazon@korazonapp.com",
       name: "Korazon",
-      templateId: sendGridTemplateId,
+      templateId: sendGridResetPasswordTemplateId,
       subject: "Reset Your Password - Korazon", // Dynamic subject
       dynamic_template_data: {
         subject: "Reset Password - Korazon",
@@ -109,7 +109,8 @@ exports.VerificationEmail = onCall(async (req) => {
     sgMail.setApiKey(sendGridKey);
 
     // Extract recipient email from request data
-    const {recipientEmail} = req.data;
+    const { recipientEmail, verificationCode } = req.data;
+
 
     if (!recipientEmail) {
       logger.error("❌ Missing required email data.");
@@ -130,7 +131,7 @@ exports.VerificationEmail = onCall(async (req) => {
     }
 
     // Step 2: Generate a Firebase email verification link
-    let verifyEmailLink;
+    //let verifyEmailLink;
     const actionCodeSettings = {
       url: `https://korazonapp.com/verify?email=${encodeURIComponent(recipientEmail)}`,
       handleCodeInApp: true,
@@ -156,20 +157,17 @@ exports.VerificationEmail = onCall(async (req) => {
     // Step 3: Prepare and send email via SendGrid
     const msg = {
       to: recipientEmail,
-      from: "Korazon@korazonapp.com",
+      from: "korazon@korazonapp.com",
       name: "Korazon",
-      templateId: sendGridTemplateId,
+      templateId: sendGridVerifyEmailTemplateId,
       subject: "Verify Your Email - Korazon", // Dynamic subject
       dynamic_template_data: {
         subject: "Verify Your Email - Korazon",
-        headerText: "Verify Your Email", // New header variable
-        body1:
-          "We've received a request to verify your email. " +
-          "Click the button below to continue.",
+        headerText: "Verify Your Email",
+        body1: `We've received a request to verify your email. Your code is: ${verificationCode}`,
         body2: "Your Korazon account is almost ready.",
-        actionLink: verifyEmailLink, // The verification link generated above
-        buttonText: "Verify Email", // New button text variable
-      },
+        //buttonText: "Verify Email",
+      }
     };
 
     try {
@@ -194,4 +192,35 @@ exports.VerificationEmail = onCall(async (req) => {
     };
   }
 });
+
+exports.verifyUserEmailManuallyHttp = functions.https.onRequest(async (req, res) => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader?.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Missing or invalid Authorization header' });
+  }
+
+  const idToken = authHeader.split('Bearer ')[1];
+
+  try {
+    const decoded = await admin.auth().verifyIdToken(idToken);
+    const uid = decoded.uid;
+    const email = decoded.email;
+
+    await admin.auth().updateUser(uid, {
+      emailVerified: true,
+    });
+
+    await admin.firestore().collection('users').doc(uid).set({
+      verified: true,
+      verifiedAt: admin.firestore.FieldValue.serverTimestamp(),
+    }, { merge: true });
+
+    res.status(200).json({ success: true, message: `✅ Email for ${email} marked as verified.` });
+  } catch (error) {
+    console.error('❌ Error verifying user manually via HTTP:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 

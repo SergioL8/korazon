@@ -8,7 +8,6 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'dart:convert';
 
-
 // This enum is used to determine if the user is in the scan page or the analytics page
 // It is used to render the correct icon button and the correct onTap action when selecting an event in these pages
 enum HostAction {
@@ -20,6 +19,15 @@ enum ErrorAction {
   none,
   logout,
   verify,
+}
+// This enum is used to determine the parent page of the Email verification page,
+// I thought it made sense to create a new enum instead of using the parentPage enum
+// Because it is 3 specific pages
+
+enum EmailVerificationNextPage {
+  basePage,
+  hostConfirmIdentityPage,
+  finishUserSetup,
 }
 
 // Used to let certain pages like event details where they have been called
@@ -41,10 +49,10 @@ enum DateTimeUse {
   ticket,
 }
 
-
 // for picking up image from galleryc
 
-pickImage(ImageSource source) async { //To instanciate this: Uint8List image = await pickImage(ImageSource.gallery);
+pickImage(ImageSource source) async {
+  //To instanciate this: Uint8List image = await pickImage(ImageSource.gallery);
   final ImagePicker imagePicker = ImagePicker();
   XFile? file = await imagePicker.pickImage(source: source);
   if (file != null) {
@@ -71,12 +79,10 @@ showSnackBar(BuildContext context, String text) {
   );
 }
 
-
-
-/// This function prompts the user a menu ("Dialog") for the user to select wheter the image 
+/// This function prompts the user a menu ("Dialog") for the user to select wheter the image
 /// he is going to submit will come from the camera or the gallery
-/// 
-/// The result is that when the user has selected that image, it will now be a Uint8List 
+///
+/// The result is that when the user has selected that image, it will now be a Uint8List
 /// stored as _photofile
 Future<Uint8List?> selectImage(BuildContext context) async {
   return showDialog<Uint8List?>(
@@ -85,67 +91,67 @@ Future<Uint8List?> selectImage(BuildContext context) async {
         return SimpleDialog(
           title: const Text('Create a Post'),
           children: [
-            SimpleDialogOption( // the camera button
+            SimpleDialogOption(
+              // the camera button
               padding: const EdgeInsets.all(20),
               child: Text('Take Photo'),
               onPressed: () async {
-                Uint8List file = await pickImage(ImageSource.camera); //pickimage is a function from utils.
-                debugPrintStack(label: 'Stack trace before popping with camera image');
-                Navigator.of(context).pop(file); // Pop with the file (basically return the file but while closing the dialog)
-                
+                Uint8List file = await pickImage(
+                    ImageSource.camera); //pickimage is a function from utils.
+                debugPrintStack(
+                    label: 'Stack trace before popping with camera image');
+                Navigator.of(context).pop(
+                    file); // Pop with the file (basically return the file but while closing the dialog)
               },
             ),
-            SimpleDialogOption( // the gallery button
+            SimpleDialogOption(
+              // the gallery button
               padding: const EdgeInsets.all(20),
               child: Text('From Gallery'),
               onPressed: () async {
-                Uint8List file = await pickImage(ImageSource.gallery); //pickimage is a function from utils.
-                Navigator.of(context).pop(file); // Pop with the file (basically return the file but while closing the dialog)
-                
+                Uint8List file = await pickImage(
+                    ImageSource.gallery); //pickimage is a function from utils.
+                Navigator.of(context).pop(
+                    file); // Pop with the file (basically return the file but while closing the dialog)
               },
             ),
-            SimpleDialogOption( // this is the cancel button
+            SimpleDialogOption(
+                // this is the cancel button
                 padding: const EdgeInsets.all(20),
                 child: Text('Cancel'),
                 onPressed: () {
-                  Navigator.of(context).pop(null); //closes the dialog when pressed somewhere else and return null
+                  Navigator.of(context).pop(
+                      null); //closes the dialog when pressed somewhere else and return null
                 }),
           ],
         );
       });
 }
 
-
-
 /// Compresses the image to reduce the size
-/// 
+///
 /// Parameters: [image] image to be compressed and [quality] integer between 0 and 100 to set the quality of the image
-/// 
+///
 /// Output: Compressed image as Uint8List
 Future<Uint8List> compressImage(Uint8List image, int quality) async {
-    final result = await FlutterImageCompress.compressWithList(
-      image,
-      minHeight: 720,
-      minWidth: 720,
-      quality: quality,
-      rotate: 0,
-    );
+  final result = await FlutterImageCompress.compressWithList(
+    image,
+    minHeight: 720,
+    minWidth: 720,
+    quality: quality,
+    rotate: 0,
+  );
 
-    return result;
+  return result;
 }
 
-
-
 /// This function retrieves an image from the storage
-/// 
+///
 /// Input: the path to the image in the storage
 /// Output: the image as a Uint8List
-Future<Uint8List?> getImage(imagePath) async{
-
+Future<Uint8List?> getImage(imagePath) async {
   if (imagePath == '') {
-
     return null;
-
   } else {
     // get the storage reference
     Reference storageRef = FirebaseStorage.instance.ref();
@@ -159,22 +165,20 @@ Future<Uint8List?> getImage(imagePath) async{
   }
 }
 
-
-
-
-
 Future<String?> createQRCode(String uid) async {
-
   final timestamp = DateTime.now().millisecondsSinceEpoch.toString();
   final qrData = '$uid,$timestamp';
 
-  final qrValidationResult = QrValidator.validate( // validate data and produce the qrCode
-    data: qrData,
-    version: QrVersions.auto, // set the version to auto
-    errorCorrectionLevel: QrErrorCorrectLevel.L // set the correction levle to low so the qr is as small as possible
-  );
+  final qrValidationResult = QrValidator.validate(
+      // validate data and produce the qrCode
+      data: qrData,
+      version: QrVersions.auto, // set the version to auto
+      errorCorrectionLevel: QrErrorCorrectLevel
+          .L // set the correction levle to low so the qr is as small as possible
+      );
 
-  if (qrValidationResult.status != QrValidationStatus.valid) { // validate qr code
+  if (qrValidationResult.status != QrValidationStatus.valid) {
+    // validate qr code
     return null;
   }
 
@@ -183,7 +187,8 @@ Future<String?> createQRCode(String uid) async {
   // Create a QrPainter to render the QR code as an image
   final painter = QrPainter.withQr(
     eyeStyle: QrEyeStyle(
-      eyeShape: QrEyeShape.square, // You can change this to QrEyeShape.circle for rounded eyes
+      eyeShape: QrEyeShape
+          .square, // You can change this to QrEyeShape.circle for rounded eyes
       color: korazonColor, // Color of the eyes
     ),
     qr: qrCode,
@@ -191,9 +196,11 @@ Future<String?> createQRCode(String uid) async {
   );
 
   // Convert the QR code to image data
-  final picData = await painter.toImageData(500, format: ui.ImageByteFormat.png); // format the qrcode as a png with format 
-  
-  final uint8List =  picData?.buffer.asUint8List(); // convert to uint8lsit to store
+  final picData = await painter.toImageData(500,
+      format: ui.ImageByteFormat.png); // format the qrcode as a png with format
+
+  final uint8List =
+      picData?.buffer.asUint8List(); // convert to uint8lsit to store
 
   // Convert the Uint8List to a base64 string
   if (uint8List != null) {
@@ -201,5 +208,4 @@ Future<String?> createQRCode(String uid) async {
   } else {
     return null;
   }
-
 }

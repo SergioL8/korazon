@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:korazon/src/screens/singUpLogin/landing_page.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:korazon/src/screens/singUpLogin/signedin_logic.dart';
-
 
 class UserSettings extends StatelessWidget {
   const UserSettings({super.key});
@@ -14,8 +13,11 @@ class UserSettings extends StatelessWidget {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         leading: IconButton(
-          onPressed: () => Navigator.of(context).pop(), 
-          icon: Icon(Icons.arrow_back_ios_new, color: Colors.white,)),
+            onPressed: () => Navigator.of(context).pop(),
+            icon: Icon(
+              Icons.arrow_back_ios_new,
+              color: Colors.white,
+            )),
         backgroundColor: backgroundColorBM,
         title: Text(
           'User Settings',
@@ -32,13 +34,20 @@ class UserSettings extends StatelessWidget {
               children: [
                 ElevatedButton(
                   style: ButtonStyle(
-                    backgroundColor: WidgetStatePropertyAll<Color>(const Color.fromARGB(255, 181, 22, 11)),
-                    minimumSize: WidgetStatePropertyAll<Size>(const Size(double.infinity, 45)),
+                    backgroundColor: WidgetStatePropertyAll<Color>(
+                        const Color.fromARGB(255, 181, 22, 11)),
+                    minimumSize: WidgetStatePropertyAll<Size>(
+                        const Size(double.infinity, 45)),
                   ),
                   onPressed: () {
                     FirebaseAuth.instance.signOut();
-                    Navigator.of(context).pop();
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => const isSignedLogic()),);
+                    // This has to be a push replacement because their is no use in having a previous stack
+                    // after logging out because you need to log in again to use any of the pages anyway
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                          // Navigate to the landing page instead of IsSignedLogic because it is the only option now
+                          builder: (context) => const LandingPage()),
+                    );
                   },
                   child: Text(
                     "Log Out",
