@@ -95,7 +95,7 @@ class _ConfirmIdentityPageState extends State<HostConfirmIdentityPage> {
       //       and email Korazon.dev with the new code.
 
       // 8) Let's get out of this godamm page
-      Navigator.of(context).pushAndRemoveUntil(
+      Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => const BasePage()),
         (Route<dynamic> route) => false,
       );
@@ -157,7 +157,8 @@ class _ConfirmIdentityPageState extends State<HostConfirmIdentityPage> {
                       CustomPinInput(controller: _pinController),
                       Spacer(),
                       GestureDetector(
-                        onTap: () => Navigator.of(context).pushAndRemoveUntil(
+                        onTap: () => Navigator.of(context, rootNavigator: true)
+                            .pushAndRemoveUntil(
                           MaterialPageRoute(
                               builder: (context) => const BasePage()),
                           (Route<dynamic> route) => false,

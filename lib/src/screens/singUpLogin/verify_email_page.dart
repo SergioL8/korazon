@@ -58,7 +58,10 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   /// Every time this function is called a new 6 digit verification code is generated and sent.
   /// Only the last code is valid, the previous ones are invalidated.
   Future<void> sendVerificationEmail() async {
-    _loading = true;
+    setState(() {
+      _loading = true;
+    });
+
     debugPrint("📧 Sending verification email to ${widget.userEmail}");
 
     // Generate a random 6-digit code
@@ -85,7 +88,11 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       showErrorMessage(context, title: 'An error occurred');
       debugPrint("❌ Error calling Firebase Function: $error");
     }
-    _loading = false;
+    if (mounted) {
+      setState(() {
+        _loading = false;
+      });
+    }
   }
 
   Future<void> verifyAndRouteUser() async {

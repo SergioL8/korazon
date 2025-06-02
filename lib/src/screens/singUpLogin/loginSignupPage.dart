@@ -370,7 +370,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                                   cursorColor: Colors.white,
                                   obscureText: obscureText,
 
-                                  // First we trim the value before validating
+                                  // We only care about spaces if they are in the middle of the password not at the end
                                   validator: (val) {
                                     final trimmedValue = val?.trim();
 
@@ -384,6 +384,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                                     }
                                     return null;
                                   },
+
                                   onChanged: (_) =>
                                       _passwordFormKey.currentState!.validate(),
                                   style: whiteBody,

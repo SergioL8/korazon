@@ -69,7 +69,7 @@ class _FinishUserSetupState extends State<FinishUserSetup> {
   // function to jump to the base page without uploading any new data
   void skipPage() {
     // This removes the entire page stack and replaces it with the BasePage
-    Navigator.of(context).pushAndRemoveUntil(
+    Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
       MaterialPageRoute(builder: (context) => const BasePage()),
       (Route<dynamic> route) => false,
     );
@@ -173,7 +173,7 @@ class _FinishUserSetupState extends State<FinishUserSetup> {
       _isLoading = false;
     });
 
-    Navigator.of(context).pushAndRemoveUntil(
+    Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
       MaterialPageRoute(builder: (context) => const BasePage()),
       (Route<dynamic> route) => false,
     );
