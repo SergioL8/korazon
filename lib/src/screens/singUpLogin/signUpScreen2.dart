@@ -215,6 +215,7 @@ class SignUpScreen2State extends State<SignUpScreen2> {
                     controller: _nameController, // set the controller
                     focusNode: _nameFocusNode,
                     style: whiteBody,
+                    textCapitalization: TextCapitalization.words,
                     cursorColor: Colors.white,
                     decoration: InputDecoration(
                       filled: true,
@@ -251,6 +252,7 @@ class SignUpScreen2State extends State<SignUpScreen2> {
                     controller: _lastNameController, // set the controller
                     focusNode: _lastNameFocusNode,
                     style: whiteBody,
+                    textCapitalization: TextCapitalization.words,
                     cursorColor: Colors.white,
                     decoration: InputDecoration(
                       filled: true,

@@ -127,35 +127,31 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     if (data['success'] == true) {
       showConfirmationMessage(context, message: 'Email verified successfully');
 
+      // Optional: stop loading BEFORE navigating
+      if (mounted) setState(() => _loading = false);
+
       switch (widget.nextPage) {
         case EmailVerificationNextPage.basePage:
-          // Navigate to the base page and remove all previous pages from the stack
           Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => const BasePage()),
             (Route<dynamic> route) => false,
           );
-          break;
+          return;
 
         case EmailVerificationNextPage.hostConfirmIdentityPage:
           Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => const HostConfirmIdentityPage()));
-          break;
+          return;
 
         case EmailVerificationNextPage.finishUserSetup:
           Navigator.of(context).push(
               MaterialPageRoute(builder: (context) => const FinishUserSetup()));
-          break;
+          return;
       }
-
-      // 🔄 Reload silently (not blocking UX)
-      FirebaseAuth.instance.currentUser?.reload();
     } else {
       showErrorMessage(context, title: 'An error occurred');
       debugPrint("❌ Error verifying email: ${data['error']}");
     }
-    setState(() {
-      _loading = false;
-    });
   }
 
   @override
