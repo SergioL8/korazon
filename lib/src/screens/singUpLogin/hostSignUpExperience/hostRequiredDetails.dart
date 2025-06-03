@@ -154,19 +154,19 @@ class _HostRequiredDetailsState extends State<HostRequiredDetails> {
     } on FirebaseAuthException catch (e) {
       // catch any errors that may occur during the creation of the user
       if (e.code == 'email-already-in-use') {
-        showErrorMessage(context,
-            content: 'This email address is already in use. Please log in.');
+        showErrorMessage(context, content: 'This email address is already in use. Please log in.');
+        setState(() {  _signingUpLoading = false; });
       } else if (e.code == 'invalid-email') {
-        showErrorMessage(context,
-            content: 'This email address is invalid. Please try again.');
+        showErrorMessage(context, content: 'This email address is invalid. Please try again.');
+        setState(() {  _signingUpLoading = false; });
       } else {
-        showErrorMessage(context,
-            content: 'Error creating user. Please try again later');
+        showErrorMessage(context, content: 'Error creating user. Please try again later');
+        setState(() {  _signingUpLoading = false; });
       }
     } catch (e) {
       // catch any other errors that may occur
-      showErrorMessage(context,
-          content: 'Error creating user. Please try again later');
+      showErrorMessage(context, content: 'Error creating user. Please try again later');
+      setState(() {  _signingUpLoading = false; });
     }
   }
 

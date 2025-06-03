@@ -53,8 +53,7 @@ class _ConfirmIdentityPageState extends State<HostConfirmIdentityPage> {
       final codeDocument = codeQuery.docs.first;
 
       // 4) Convert the document to our model
-      final IdentityCodeModel? codeModel =
-          IdentityCodeModel.fromDocumentSnapshot(codeDocument);
+      final IdentityCodeModel? codeModel = IdentityCodeModel.fromDocumentSnapshot(codeDocument);
 
       // If model creation failed, notify user
       if (codeModel == null) {
@@ -99,6 +98,7 @@ class _ConfirmIdentityPageState extends State<HostConfirmIdentityPage> {
         MaterialPageRoute(builder: (context) => const BasePage()),
         (Route<dynamic> route) => false,
       );
+      return;
     } on FirebaseException catch (firebaseError) {
       debugPrint('Firebase error: ${firebaseError.message}');
       showErrorMessage(context, content: 'An unexpected error occurred');
@@ -154,7 +154,7 @@ class _ConfirmIdentityPageState extends State<HostConfirmIdentityPage> {
                         textAlign: TextAlign.center,
                       ),
                       SizedBox(height: screenHeight * 0.05),
-                      CustomPinInput(controller: _pinController),
+                      CustomPinInput(controller: _pinController, useNumericKeyboard: false,),
                       Spacer(),
                       GestureDetector(
                         onTap: () => Navigator.of(context, rootNavigator: true)
@@ -188,7 +188,10 @@ class _ConfirmIdentityPageState extends State<HostConfirmIdentityPage> {
 
                       GradientBorderButton(
                           loading: _isLoading,
-                          onTap: () => checkCode(_pinController.text),
+                          onTap: () {
+                            if (!mounted) return;
+                            checkCode(_pinController.text);
+                          },
                           text:
                               'Verify Code'), // Use () => to pass the function reference
                       SizedBox(

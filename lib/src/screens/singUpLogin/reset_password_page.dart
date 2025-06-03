@@ -27,8 +27,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   Future<void> sendResetPasswordEmail({
     required String recipientEmail,
   }) async {
-    _loading = true;
-
+    setState(() { _loading = true; });
+    
     if (!_emailFormKey.currentState!.validate()) {
       showErrorMessage(context, title: 'Please enter a valid email address');
       return;
@@ -63,7 +63,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
         debugPrint("❌ Error calling Firebase Function: $error");
       }
     }
-    _loading = false;
+    setState(() { _loading = false; });
+   
   }
 
   @override

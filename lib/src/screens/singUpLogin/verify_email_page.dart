@@ -58,9 +58,6 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   /// Every time this function is called a new 6 digit verification code is generated and sent.
   /// Only the last code is valid, the previous ones are invalidated.
   Future<void> sendVerificationEmail() async {
-    setState(() {
-      _loading = true;
-    });
 
     debugPrint("📧 Sending verification email to ${widget.userEmail}");
 
@@ -96,6 +93,10 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   }
 
   Future<void> verifyAndRouteUser() async {
+    if (_loading) return; // Prevent multiple taps while loading
+
+    setState(() { _loading = true; });
+
     final user = FirebaseAuth.instance.currentUser;
     final idToken = await user?.getIdToken();
 
@@ -123,25 +124,27 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
             MaterialPageRoute(builder: (context) => const BasePage()),
             (Route<dynamic> route) => false,
           );
-          break;
+          return;
 
         case EmailVerificationNextPage.hostConfirmIdentityPage:
           Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => const HostConfirmIdentityPage()));
-          break;
+          return;
 
         case EmailVerificationNextPage.finishUserSetup:
           Navigator.of(context).push(
               MaterialPageRoute(builder: (context) => const FinishUserSetup()));
-          break;
+          return;
       }
 
       // 🔄 Reload silently (not blocking UX)
-      FirebaseAuth.instance.currentUser?.reload();
+      // I'm not sure if this is needed here, but you have to return just after pushing to avoid calling methods that have been diposed
+      FirebaseAuth.instance.currentUser?.reload(); 
     } else {
       showErrorMessage(context, title: 'An error occurred');
       debugPrint("❌ Error verifying email: ${data['error']}");
     }
+    setState(() { _loading = false; });
   }
 
   @override
@@ -232,6 +235,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                 GradientBorderButton(
                   text: 'Continue',
                   onTap: () {
+                    if (!mounted) return;
                     final enteredCode = _pinController.text.trim();
 
                     if (_isCodeExpired()) {
@@ -270,8 +274,8 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                       ),
                       // Code has to match and not be expired currently 5 minutes for expiration
                       onTap: () {
+                        if (!mounted) return;
                         _pinController.clear();
-
                         sendVerificationEmail();
                       }),
                 ),

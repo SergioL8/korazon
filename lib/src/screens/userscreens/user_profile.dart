@@ -8,7 +8,7 @@ import 'package:korazon/src/widgets/alertBox.dart';
 import 'package:korazon/src/widgets/profileEventCard.dart';
 import 'package:korazon/src/widgets/loading_place_holders.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:timelines/timelines.dart';
+import 'package:timelines_plus/timelines_plus.dart';
 import 'package:korazon/src/screens/userscreens/user_settings.dart';
 
 
@@ -411,43 +411,43 @@ class _UserProfileState extends State<UserProfile> {
 
 
           // ----------------- Your Events Section ---------------------
-          SliverToBoxAdapter(
-            child: _loadingEvents ? Padding(
-              padding: const EdgeInsets.all(25.0),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: SizedBox(
-                  height: MediaQuery.of(context).size.width * 4/3,
-                  child: LoadingImagePlaceHolder()
-                ),
-              ),
-            ) :
-            Timeline.tileBuilder(
-              physics: NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              builder: TimelineTileBuilder.connected(
-                itemCount: events.length,
-                contentsBuilder: (context, index) {
-                  final event = events[index];
-                  if (event == null) {
-                    return Container();
-                  }
-                  return ProfileEventCard(document: event);
-                },
-                connectorBuilder: (context, index, connectorType) {
-                  return const SolidLineConnector(color: korazonColorBM, thickness: 2.5,);
-                },
-                indicatorBuilder: (context, index) {
-                return const DotIndicator(
-                  size:8.0,
-                  color: korazonColorBM, // or any color you prefer
-                );
-              },
-              nodePositionBuilder: (context, index) => 0.03,
-              indicatorPositionBuilder: (context, index) => 0.1
-              )
-            )
-          ),
+          // SliverToBoxAdapter(
+          //   child: _loadingEvents ? Padding(
+          //     padding: const EdgeInsets.all(25.0),
+          //     child: ClipRRect(
+          //       borderRadius: BorderRadius.circular(16),
+          //       child: SizedBox(
+          //         height: MediaQuery.of(context).size.width * 4/3,
+          //         child: LoadingImagePlaceHolder()
+          //       ),
+          //     ),
+          //   ) :
+          //   Timeline.tileBuilder(
+          //     physics: NeverScrollableScrollPhysics(),
+          //     shrinkWrap: true,
+          //     builder: TimelineTileBuilder.connected(
+          //       itemCount: events.length,
+          //       contentsBuilder: (context, index) {
+          //         final event = events[index];
+          //         if (event == null) {
+          //           return Container();
+          //         }
+          //         return ProfileEventCard(document: event);
+          //       },
+          //       connectorBuilder: (context, index, connectorType) {
+          //         return const SolidLineConnector(color: korazonColorBM, thickness: 2.5,);
+          //       },
+          //       indicatorBuilder: (context, index) {
+          //       return const DotIndicator(
+          //         size:8.0,
+          //         color: korazonColorBM, // or any color you prefer
+          //       );
+          //     },
+          //     nodePositionBuilder: (context, index) => 0.03,
+          //     indicatorPositionBuilder: (context, index) => 0.1
+          //     )
+          //   )
+          // ),
         ],
       )
     );
