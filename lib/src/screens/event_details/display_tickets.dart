@@ -23,16 +23,7 @@ class _DisplayTicketsState extends State<DisplayTickets> {
     final String? hostID = widget.event.hostId;
     final uid = FirebaseAuth.instance.currentUser?.uid;
 
-    // Dynamic heightFactor based on number of tickets
-    double heightFactor;
-    // if (tickets.length == 1) {
-    //   heightFactor = 0.60;
-    // } else if (tickets.length == 2) {
-    //   heightFactor = 0.80;
-    // } else {
-    //   heightFactor = 0.95;
-    // }
-    heightFactor = 0.90;
+    double heightFactor = 0.90;
 
     return FractionallySizedBox(
       heightFactor: heightFactor,

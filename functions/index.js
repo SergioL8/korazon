@@ -467,3 +467,87 @@ exports.stripeWebhook = functions.https.onRequest(
   // Respond quickly; you’ll fill in logic later
   res.status(200).send('Received');
 });
+
+
+
+exports.freeTicketTransaction = functions.https.onRequest(async (req, res) => {
+  // --- (A) Authenticate the user manually via ID token: ---
+  const authHeader = req.headers.authorization || "";
+  if (!authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ error: "Missing Authorization header." });
+  }
+  let decoded;
+  try {
+    const idToken = authHeader.split("Bearer ")[1];
+    decoded = await admin.auth().verifyIdToken(idToken);
+  } catch (err) {
+    return res.status(401).json({ error: "Invalid or expired ID token." });
+  }
+  const attendeeUID = decoded.uid;
+
+  // --- (B) Parse and validate eventID/ticketID from the request body: ---
+  const { eventID, ticketID } = req.body || {};
+  if (typeof eventID !== "string" || typeof ticketID !== "string") {
+    return res.status(400).json({ error: "eventID and ticketID must be provided." });
+  }
+
+  // --- (C) Run the exact same transaction you had in Dart, now in JS: ---
+  const db = admin.firestore();
+  const eventRef = db.collection("events").doc(eventID);
+  const userRef = db.collection("users").doc(attendeeUID);
+
+  try {
+    await db.runTransaction(async (tx) => {
+      const snap = await tx.get(eventRef);
+      if (!snap.exists) throw new Error("Event missing during finalize.");
+
+      const data = snap.data();
+      if (!data || !Array.isArray(data.tickets)) {
+        throw new Error("Tickets missing during finalize.");
+      }
+      const tickets = [...data.tickets];
+      const idx = tickets.findIndex((t) => t.documentID === ticketID);
+      if (idx === -1) throw new Error("Ticket not found during finalize.");
+
+      // Copy and update the specific ticket
+      const ticket = { ...tickets[idx] };
+      const pending = Array.isArray(ticket.userWithTicketsOnHold)
+        ? [...ticket.userWithTicketsOnHold]
+        : [];
+      const holders = Array.isArray(ticket.ticketHolders)
+        ? [...ticket.ticketHolders]
+        : [];
+
+      // Remove from pending and add to holders
+      const pIndex = pending.indexOf(attendeeUID);
+      if (pIndex !== -1) pending.splice(pIndex, 1);
+      if (!holders.includes(attendeeUID)) holders.push(attendeeUID);
+
+      ticket.userWithTicketsOnHold = pending;
+      ticket.ticketHolders = holders;
+      tickets[idx] = ticket;
+
+      // Update event doc
+      tx.update(eventRef, {
+        tickets: tickets,
+        eventTicketHolders: admin.firestore.FieldValue.arrayUnion(attendeeUID),
+      });
+
+      // Update user doc
+      tx.update(userRef, {
+        tickets: admin.firestore.FieldValue.arrayUnion({
+          eventId: eventID,
+          ticketId: ticketID,
+          purchasedAt: admin.firestore.Timestamp.now(),
+        }),
+      });
+    });
+
+    // --- (D) If it succeeds, send back a 200 response: ---
+    return res.status(200).json({ success: true });
+  } catch (err) {
+    // Any thrown error inside the transaction ends up here:
+    console.error("Free ticket transaction failed:", err);
+    return res.status(400).json({ error: err.message });
+  }
+});

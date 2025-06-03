@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:intl/intl.dart';
-import 'package:korazon/src/widgets/rsvp_confirmation.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -10,6 +9,7 @@ import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:korazon/src/widgets/rsvp_confirmation.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/utilities/models/eventModel.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -101,51 +101,57 @@ class _ExpandableTicketState extends State<ExpandableTicket> {
   }
 
 
-  Future<void> _firestoreTicketTransaction(DocumentReference<Map<String, dynamic>> eventReference, uid) async {
-    await FirebaseFirestore.instance.runTransaction((tx) async {
-      // Get the event document snapshot and check if it exists
-      final snap = await tx.get(eventReference);
-      if (!snap.exists) throw Exception('Event missing during finalize.');
+  Future<bool> _firestoreTicketTransaction(DocumentReference<Map<String, dynamic>> eventReference, uid) async {
+    try {
+      await FirebaseFirestore.instance.runTransaction((tx) async {
+        // Get the event document snapshot and check if it exists
+        final snap = await tx.get(eventReference);
+        if (!snap.exists) throw Exception('Event missing during finalize.');
 
-      // Get the data and check the tickets if it contains the tickets list
-      final data = snap.data();
-      if (data == null || !data.containsKey('tickets')) throw Exception('Tickets missing during finalize.');
-      final tickets = List<Map<String, dynamic>>.from(data['tickets'] ?? []);
+        // Get the data and check the tickets if it contains the tickets list
+        final data = snap.data();
+        if (data == null || !data.containsKey('tickets')) throw Exception('Tickets missing during finalize.');
+        final tickets = List<Map<String, dynamic>>.from(data['tickets'] ?? []);
 
-      // Find the ticket by documentID
-      final idx = tickets.indexWhere((t) => t['documentID'] == widget.ticket.ticketID);
-      if (idx == -1) throw Exception('Ticket not found during finalize.');
+        // Find the ticket by documentID
+        final idx = tickets.indexWhere((t) => t['documentID'] == widget.ticket.ticketID);
+        if (idx == -1) throw Exception('Ticket not found during finalize.');
 
-      // Get the ticket and its holders
-      final ticket  = Map<String, dynamic>.from(tickets[idx]);
-      final pending = List<String>.from(ticket['userWithTicketsOnHold'] ?? <String>[]);
-      final holders = List<String>.from(ticket['ticketHolders'] ?? <String>[]);
+        // Get the ticket and its holders
+        final ticket  = Map<String, dynamic>.from(tickets[idx]);
+        final pending = List<String>.from(ticket['userWithTicketsOnHold'] ?? <String>[]);
+        final holders = List<String>.from(ticket['ticketHolders'] ?? <String>[]);
 
-      // Remove from pending (if still present) and add to holders
-      pending.remove(uid);
-      if (!holders.contains(uid)) holders.add(uid);
+        // Remove from pending (if still present) and add to holders
+        pending.remove(uid);
+        if (!holders.contains(uid)) holders.add(uid);
 
-      ticket['userWithTicketsOnHold'] = pending;
-      ticket['ticketHolders'] = holders;
-      tickets[idx] = ticket;
+        ticket['userWithTicketsOnHold'] = pending;
+        ticket['ticketHolders'] = holders;
+        tickets[idx] = ticket;
 
-      // Update both tickets array and eventTicketHolders atomically
-      tx.update(eventReference, {
-        'tickets'             : tickets,
-        'eventTicketHolders'  : FieldValue.arrayUnion([uid]),
+        // Update both tickets array and eventTicketHolders atomically
+        tx.update(eventReference, {
+          'tickets'             : tickets,
+          'eventTicketHolders'  : FieldValue.arrayUnion([uid]),
+        });
+
+        final userRef = FirebaseFirestore.instance.collection('users').doc(uid);
+        tx.update(userRef, {
+          'tickets': FieldValue.arrayUnion([
+            {
+              'eventId'    : widget.event.documentID,
+              'ticketId'   : widget.ticket.ticketID,
+              'purchasedAt': Timestamp.now(),
+            }
+          ])
+        });
       });
-
-      final userRef = FirebaseFirestore.instance.collection('users').doc(uid);
-      tx.update(userRef, {
-        'tickets': FieldValue.arrayUnion([
-          {
-            'eventId'    : widget.event.documentID,
-            'ticketId'   : widget.ticket.ticketID,
-            'purchasedAt': Timestamp.now(),
-          }
-        ])
-      });
-    });
+      return true;
+    } catch (_) {
+      return false; // If any error occurs, return false
+    }
+    
   }
 
 
@@ -498,13 +504,19 @@ class _ExpandableTicketState extends State<ExpandableTicket> {
                             // ====================== FREE TICKET BRANCH ======================
                             if (widget.ticket.ticketPrice == 0.00) {
                               try {
+                                bool success = false;
                                 await showRsvpConfirmation(
                                   context,
-                                  () async => _firestoreTicketTransaction(eventReference, uid),
+                                  () async {
+                                    success = await _firestoreTicketTransaction(eventReference, uid);
+                                  }
+                                  // _claimFreeTicketViaCloudFunction(eventID: widget.event.documentID, ticketID: widget.ticket.ticketID),
                                 );
-                                setState(() => _paymentSuccessful = true);
+                                setState(() => _paymentSuccessful = success);
+                                if (!_paymentSuccessful) { _removeHolds(eventReference, uid); } // Remove the user from pending holds
                               } catch (e) {
                                 showErrorMessage(context, content: 'Could not finalise your RSVP. Please try again.');
+                                _removeHolds(eventReference, uid); // Remove the user from pending holds
                               }
                               return; // DONE HERE
                             }
