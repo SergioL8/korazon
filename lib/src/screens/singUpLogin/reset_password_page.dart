@@ -49,7 +49,14 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
         Future.microtask(() {
           if (!mounted) return;
 
-          if (result.data['success'] == true) {
+          // If the user is not found we want to let the user know
+          if (result.data['userNotFound'] == true) {
+            showErrorMessage(
+              context,
+              title: 'No account found with that email address.',
+            );
+            debugPrint("⚠️ User not found: $recipientEmail");
+          } else if (result.data['success'] == true) {
             showConfirmationMessage(context,
                 message: 'We have sent you a verification email');
             debugPrint("✅ Email sent successfully to $recipientEmail!");
@@ -61,9 +68,10 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       } catch (error) {
         //showErrorMessage(context, title: 'An error occurred');
         debugPrint("❌ Error calling Firebase Function: $error");
+      } finally {
+        setState(() => _loading = false);
       }
     }
-    _loading = false;
   }
 
   @override

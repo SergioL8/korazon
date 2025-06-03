@@ -38,14 +38,17 @@ exports.ResetPasswordEmail = onCall(async (req) => {
       logger.info(`👤 User found: ${displayName}`);
     } catch (authError) {
       logger.warn(`⚠️ User not found in Firebase Auth: ${authError.message}`);
-      // Continue execution even if user is not found
-    }
+      return {
+        success: false,
+        message: "❌ User not found",
+        userNotFound: true, 
+      };    }
 
     // Step 2: Generate a Firebase reset password link
     let resetPasswordLink;
     try {
       resetPasswordLink = await admin.auth().generatePasswordResetLink(recipientEmail);
-      logger.info("🔗 Password reset link generated successfully: ${resetLinkError.message} ");
+      logger.info("🔗 Password reset link generated successfully");
     } catch (resetLinkError) {
       logger.error(
           `❌ Failed to generate password reset link: ${resetLinkError.message}`,
@@ -80,6 +83,7 @@ exports.ResetPasswordEmail = onCall(async (req) => {
       return {
         success: true,
         message: "✅ Email sent successfully!",
+        userNotFound: false,
       };
     } catch (sendGridError) {
       logger.error("❌ Failed to send email:", sendGridError.message);
@@ -93,6 +97,7 @@ exports.ResetPasswordEmail = onCall(async (req) => {
     return {
       success: false,
       error: `❌ Error: ${error.message}`,
+      userNotFound: false, // or null, if you want to signal "not relevant"
     };
   }
 });
