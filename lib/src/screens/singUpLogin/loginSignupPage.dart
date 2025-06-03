@@ -103,8 +103,9 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
       await checkEmailVerified();
 
       if (_emailVerified) {
-        Navigator.of(context).pushReplacement(
+        Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const BasePage()),
+          (Route<dynamic> route) => false,
         );
       } else {
         Navigator.of(context).push(
@@ -372,16 +373,20 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
 
                                   // We only care about spaces if they are in the middle of the password not at the end
                                   validator: (val) {
-                                    final trimmedValue = val?.trim();
+                                    final trimmed = val?.trim();
 
-                                    if (trimmedValue != null &&
-                                        trimmedValue.contains(' ')) {
+                                    if (trimmed == null || trimmed.isEmpty) {
+                                      return 'Please enter a password.';
+                                    }
+
+                                    if (trimmed.contains(' ')) {
                                       return 'Password cannot contain spaces.';
                                     }
-                                    if (trimmedValue == null ||
-                                        trimmedValue.length < 6) {
+
+                                    if (trimmed.length < 6) {
                                       return 'Password must be at least 6 characters long.';
                                     }
+
                                     return null;
                                   },
 

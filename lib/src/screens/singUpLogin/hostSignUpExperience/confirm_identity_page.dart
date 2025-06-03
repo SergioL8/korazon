@@ -45,7 +45,7 @@ class _ConfirmIdentityPageState extends State<HostConfirmIdentityPage> {
 
       // 2) Check if no documents were found
       if (codeQuery.docs.isEmpty) {
-        showErrorMessage(context, content: 'Invalid code');
+        showErrorMessage(context, content: 'Invalid code, contact support');
         return;
       }
 
@@ -59,6 +59,11 @@ class _ConfirmIdentityPageState extends State<HostConfirmIdentityPage> {
       // If model creation failed, notify user
       if (codeModel == null) {
         showErrorMessage(context, content: 'Invalid code, contact support');
+        return;
+      }
+
+      if (codeModel.used) {
+        showErrorMessage(context, content: 'Invalid code, already used');
         return;
       }
 
@@ -154,7 +159,10 @@ class _ConfirmIdentityPageState extends State<HostConfirmIdentityPage> {
                         textAlign: TextAlign.center,
                       ),
                       SizedBox(height: screenHeight * 0.05),
-                      CustomPinInput(controller: _pinController),
+                      CustomPinInput(
+                        controller: _pinController,
+                        useNumericKeyboard: false,
+                      ),
                       Spacer(),
                       GestureDetector(
                         onTap: () => Navigator.of(context, rootNavigator: true)
@@ -188,9 +196,23 @@ class _ConfirmIdentityPageState extends State<HostConfirmIdentityPage> {
 
                       GradientBorderButton(
                           loading: _isLoading,
-                          onTap: () => checkCode(_pinController.text),
-                          text:
-                              'Verify Code'), // Use () => to pass the function reference
+                          onTap: () {
+                            // We are going to check for full code completion to avoid unnecessary firebase queries
+                            final enteredCode = _pinController.text.trim();
+
+                            if (enteredCode.length != 6) {
+                              showErrorMessage(
+                                context,
+                                title: 'Incomplete Code',
+                                content:
+                                    'Please enter the 6-character verification code.',
+                              );
+                              return;
+                            }
+
+                            checkCode(enteredCode);
+                          },
+                          text: 'Verify Code'),
                       SizedBox(
                         height: screenHeight * 0.1,
                       ),

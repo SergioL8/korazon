@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-
 // -------------- Final Design Variables ------------
 
 // Colors:
@@ -17,13 +16,9 @@ const mainGradient = SweepGradient(
     Color.fromRGBO(255, 18, 129, 1),
     Color.fromARGB(255, 162, 0, 138),
     Color.fromRGBO(219, 0, 131, 1),
-
   ],
-  stops: [
-    0.05, 0.20, 0.35, 0.6, 0.95, 0.99],
+  stops: [0.05, 0.20, 0.35, 0.6, 0.95, 0.99],
 );
-
-
 
 const borderGradient = SweepGradient(
   colors: [
@@ -41,7 +36,18 @@ const borderGradient = SweepGradient(
     Color.fromARGB(255, 213, 11, 102),
   ],
   stops: [
-    0.05, 0.1, 0.23, 0.40, 0.50, 0.52, 0.60, 0.65, 0.80, 0.85, 0.95, 0.99
+    0.05,
+    0.1,
+    0.23,
+    0.40,
+    0.50,
+    0.52,
+    0.60,
+    0.65,
+    0.80,
+    0.85,
+    0.95,
+    0.99
   ],
 );
 
@@ -54,50 +60,17 @@ const linearGradient = LinearGradient(
   ],
 );
 
-
-
 // Text Styles:
 var whiteSubtitle = GoogleFonts.josefinSans(
-    fontSize: 23,
-    fontWeight: FontWeight.w600,
-    color: Colors.white
-);
+    fontSize: 23, fontWeight: FontWeight.w600, color: Colors.white);
 
 var whiteBody = GoogleFonts.josefinSans(
-    fontSize: 16,
-    fontWeight: FontWeight.w500,
-    color: Colors.white
-);
+    fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white);
 
 var whiteTitle = GoogleFonts.josefinSans(
-    fontSize: 34,
-    fontWeight: FontWeight.w800,
-    color: Colors.white
-);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    fontSize: 34, fontWeight: FontWeight.w800, color: Colors.white);
 
 // -------------Old Design Variables (don't use for new development)---------------
-
 
 // Colors
 const korazonColorOld = Color.fromRGBO(250, 177, 177, 1);
@@ -110,38 +83,27 @@ const secondaryColorLP = Color.fromRGBO(3, 0, 54, 0.8);
 const dividerColor = Colors.grey;
 
 const allowGreen = Color.fromARGB(255, 23, 177, 30);
-const denyRed =  Color.fromARGB(255, 177, 23, 23);
-
+const denyRed = Color.fromARGB(255, 177, 23, 23);
 
 // Colors balck mode
 const korazonColorBM = Color.fromARGB(255, 226, 130, 229);
 
-
-// Radius 
+// Radius
 
 // border radius of the event cards is 16
 
 // Text Styles
 const titleTextStyle = TextStyle(
-  fontSize: 24,
-  fontWeight: FontWeight.w800,
-  color: secondaryColor,
-  fontFamily: primaryFont
-);
-
-
+    fontSize: 24,
+    fontWeight: FontWeight.w800,
+    color: secondaryColor,
+    fontFamily: primaryFont);
 
 const buttonBlackText = TextStyle(
-  fontSize: 16,
-  fontWeight: FontWeight.w500,
-  color: secondaryColor,
-  fontFamily: primaryFont
-);
-
-
-
-
-
+    fontSize: 16,
+    fontWeight: FontWeight.w500,
+    color: secondaryColor,
+    fontFamily: primaryFont);
 
 const double barThickness = 0.5;
 
@@ -150,4 +112,4 @@ const primaryFont = 'Pacifico';
 const double primaryFontSize = 16;
 const primaryFontWeight = FontWeight.w800;
 const double primaryBorderWidth = 4;
-const double navBarElevation = 20;  
+const double navBarElevation = 20;
