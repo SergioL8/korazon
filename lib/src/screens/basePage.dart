@@ -71,7 +71,12 @@ class _BasePage extends State<BasePage> {
       isHost = user.isHost;
     });
 
-    if (user.isHost && !user.isVerifiedHost) {
+    // To redirect a host to the host confirm identity page we want to first check if the user is a host
+    // and if they are not verified, and if the page they just came from is not the host confirm identity page
+
+    if (user.isHost &&
+        !user.isVerifiedHost &&
+        ParentPage.hostConfirmIdentityPage != widget.parentPage) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
         Navigator.of(context).push(

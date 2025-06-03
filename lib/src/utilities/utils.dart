@@ -43,6 +43,7 @@ enum ParentPage {
   login,
   signup,
   createHostAcc,
+  hostConfirmIdentityPage,
 }
 
 // for picking up image from galleryc
