@@ -13,7 +13,7 @@ import 'package:korazon/src/utilities/models/eventModel.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:korazon/src/widgets/loading_place_holders.dart';
 import 'package:korazon/src/screens/event_details/display_tickets.dart';
-import 'package:korazon/src/widgets/static_map.dart';
+import 'package:korazon/src/screens/event_details/static_map.dart';
 
 
 
