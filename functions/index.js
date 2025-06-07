@@ -6,6 +6,9 @@ const logger = require("firebase-functions/logger");
 const sgMail = require("@sendgrid/mail");
 const admin = require("firebase-admin");
 require("dotenv").config();
+const axios = require('axios');
+const { SecretManagerServiceClient } = require('@google-cloud/secret-manager');
+const secretClient = new SecretManagerServiceClient();
 const stripeSecretKey = defineSecret("STRIPE_SECRET_KEY_TEST");
 const stripeSigningSecret = defineSecret("STRIPE_SIGNING_SECRET_TEST");
 
@@ -549,5 +552,79 @@ exports.freeTicketTransaction = functions.https.onRequest(async (req, res) => {
     // Any thrown error inside the transaction ends up here:
     console.error("Free ticket transaction failed:", err);
     return res.status(400).json({ error: err.message });
+  }
+});
+
+
+
+
+// Static Map Image endpoint: returns a PNG of a marker at the given lat/lng
+exports.getStaticMapImage = onRequest(async (req, res) => {
+  try {
+    // Get arguments and check that lat and lon were provided
+    const { lat, lng, zoom = '15', width = '300', height = '200' } = req.query;
+    if (!lat || !lng) {
+      return res.status(400).send('Missing lat or lng parameter');
+    }
+
+    // Retrieve API key from Secret Manager
+    const [version] = await secretClient.accessSecretVersion({ name: `projects/korazon-dc77a/secrets/google-maps-staticmap-api-key/versions/latest`, });
+    const apiKey = version.payload.data.toString('utf8');
+
+    // Build the Static Maps URL
+    const mapUrl = [
+      'https://maps.googleapis.com/maps/api/staticmap',
+      `?center=${lat},${lng}`,
+      `&zoom=${zoom}`,
+      `&size=${width}x${height}`,
+      `&markers=color:0xFF177C%7C${lat},${lng}`,
+      `&key=${apiKey}`,
+
+      // hide everything
+      '&style=feature:all|element:labels|visibility:off',
+      '&style=feature:all|element:labels.icon|visibility:off',
+      '&style=feature:poi|visibility:off',
+      '&style=feature:transit|visibility:off',
+      '&style=feature:water|visibility:off',
+      '&style=feature:administrative|visibility:off',
+      '&style=feature:landscape|visibility:off',
+      
+      // ensure map geometry still visible
+      '&style=feature:all|element:geometry|visibility:on',
+
+      // show only road names
+      '&style=feature:road|element:labels.text.fill|visibility:on',
+      '&style=feature:road|element:labels.text.stroke|visibility:on',
+
+      // Dark-mode styling:
+      '&style=feature:all|element:geometry|color:0x121212',
+      '&style=feature:water|element:geometry|color:0x0f0f0f',
+      '&style=feature:landscape|element:geometry|color:0x181818',
+      '&style=feature:road.highway|element:geometry|color:0x3a3a3a',
+      '&style=feature:road.arterial|element:geometry|color:0x343434',
+      '&style=feature:road.local|element:geometry|color:0x2e2e2e',
+      '&style=feature:road|element:labels.text.fill|color:0xffffff',
+      '&style=feature:road|element:labels.text.stroke|color:0x121212',
+      '&style=feature:all|element:labels.icon|visibility:off',
+      '&style=feature:poi|visibility:off',
+      '&style=feature:transit|visibility:off',
+      '&style=feature:administrative|visibility:off',
+
+    ].join('');
+
+    // Fetch the image bytes
+    const response = await axios.get(mapUrl, { responseType: 'arraybuffer' });
+
+    console.log('Response: ', response);
+
+    // Set caching headers
+    res.set('Content-Type', 'image/png');
+    res.set('Cache-Control', 'public, max-age=3600, s-maxage=86400');
+
+    // Send the image
+    res.status(200).send(response.data);
+  } catch (error) {
+    console.error('Error fetching static map image:', error);
+    res.status(500).send('Internal Server Error');
   }
 });

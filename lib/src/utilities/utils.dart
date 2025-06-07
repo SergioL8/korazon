@@ -152,6 +152,7 @@ Future<Uint8List> compressImage(Uint8List image, int quality) async {
 /// Output: the image as a Uint8List
 Future<Uint8List?> getImage(imagePath) async {
   if (imagePath == '') {
+    print('Image path empty');
     return null;
   } else {
     // get the storage reference

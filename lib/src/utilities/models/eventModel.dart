@@ -78,7 +78,7 @@ class EventModel {
     required this.plus21,
     required this.hostId,
     required this.hostName,
-    required this.profilePicPath,
+    required this.hostProfilePicPath,
     required this.tickets,
     required this.stripeConnectedCustomerId,
     required this.eventTicketHolders,
@@ -94,7 +94,7 @@ class EventModel {
   final bool plus21;
   final String hostId;
   final String hostName;
-  final String profilePicPath;
+  final String hostProfilePicPath;
   final List<TicketModel> tickets;
   final String? stripeConnectedCustomerId;
   final List<String>? eventTicketHolders;
@@ -119,7 +119,7 @@ class EventModel {
       plus21: data['plus21'] ?? false,
       hostId: data['hostId'],
       hostName: data['hostName'] ?? 'No host name',
-      profilePicPath: data['profilePicPath'] ?? '',
+      hostProfilePicPath: data['hostProfilePicPath'] ?? '',
       tickets: (data['tickets'] as List<dynamic>?)
           ?.map((ticket) => TicketModel.fromMap(ticket as Map<String, dynamic>))
           .toList() ?? [],

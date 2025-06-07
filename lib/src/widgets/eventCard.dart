@@ -43,12 +43,12 @@ class _EventCardState extends State<EventCard> {
         return InkWell(
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => EventDetails(
-                event: event,
-                imageData: snapshot.data,
-                formattedDate: formattedDate,
-                formattedTime: formattedTime,
-              ),
+              builder: (context) {
+                return EventDetails(
+                  event: event,
+                  imageData: snapshot.data,
+                );
+              } 
             ),
           ),
 
@@ -120,9 +120,7 @@ class _EventCardState extends State<EventCard> {
                             ),
                             child: CircleAvatar(
                               backgroundColor: korazonColor,
-                              backgroundImage: event.profilePicPath != ''
-                                  ? NetworkImage(event.profilePicPath)
-                                  : AssetImage(
+                              backgroundImage: AssetImage(
                                       'assets/images/no_profile_picture.webp',
                                     ) as ImageProvider,
                               radius: 20, // Adjust to fit inside the container

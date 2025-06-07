@@ -1458,6 +1458,9 @@ PODS:
   - SDWebImageWebPCoder (0.14.6):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.17)
+  - sqflite_darwin (0.0.4):
+    - Flutter
+    - FlutterMacOS
   - Stripe (24.7.0):
     - StripeApplePay (= 24.7.0)
     - StripeCore (= 24.7.0)
@@ -1528,6 +1531,7 @@ DEPENDENCIES:
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - mobile_scanner (from `.symlinks/plugins/mobile_scanner/darwin`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
+  - sqflite_darwin (from `.symlinks/plugins/sqflite_darwin/darwin`)
   - stripe_ios (from `.symlinks/plugins/stripe_ios/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
 
@@ -1594,6 +1598,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/mobile_scanner/darwin"
   path_provider_foundation:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
+  sqflite_darwin:
+    :path: ".symlinks/plugins/sqflite_darwin/darwin"
   stripe_ios:
     :path: ".symlinks/plugins/stripe_ios/ios"
   url_launcher_ios:
@@ -1640,6 +1646,7 @@ SPEC CHECKSUMS:
   RecaptchaInterop: 11e0b637842dfb48308d242afc3f448062325aba
   SDWebImage: f84b0feeb08d2d11e6a9b843cb06d75ebf5b8868
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
+  sqflite_darwin: 5a7236e3b501866c1c9befc6771dfd73ffb8702d
   Stripe: 8a03a78bfa16b197f9fac51e42670ac563b34388
   stripe_ios: 0f0884084e2e8b49df838f8fed2129b42c3516b9
   StripeApplePay: 3c1b43d9b5130f6b714863bf8c9482c24168ab27

@@ -150,9 +150,8 @@ class EventCreationScreenState extends State<EventCreationScreen> {
     
     
 
-    setState(() {
-      _isLoading = true; // set the loading spinner to true
-    });
+    setState(() { _isLoading = true; }); // set the loading spinner to true
+    
 
     if (uid == null) {
       showErrorMessage(context, content: 'There was an error loading your user, please logout and login again', errorAction: ErrorAction.logout);
@@ -165,14 +164,17 @@ class EventCreationScreenState extends State<EventCreationScreen> {
 
     if (user == null) {
       showErrorMessage(context, content: 'There was an error loading your user, please logout and login again', errorAction: ErrorAction.logout);
+      setState(() { _isLoading = false; });
       return;
     }
     if (user!.isVerifiedHost == false) {
       showErrorMessage(context, content: 'Only verified users can post events', errorAction: ErrorAction.verify);
+      setState(() { _isLoading = false; });
       return;
     }
     if (user!.stripeConnectedCustomerId == null) {
       showErrorMessage(context, content: 'You need to connect your Stripe account to post events', errorAction: ErrorAction.verify);
+      setState(() { _isLoading = false; });
       return;
     }
 
@@ -192,6 +194,8 @@ class EventCreationScreenState extends State<EventCreationScreen> {
     // check for success or failure of the image upload
     if (imageTaskSnapshot.state != TaskState.success) {
       showErrorMessage(context, content: 'There was an error uploading the image. Please try again');
+      setState(() { _isLoading = false; });
+      return;
     }
 
     try {
@@ -209,7 +213,7 @@ class EventCreationScreenState extends State<EventCreationScreen> {
         // Host variables
         'hostId': uid,
         'hostName': user!.name,
-        'hostProfilePicUrl': user!.profilePicPath,
+        'hostProfilePicPath': user!.profilePicPath,
         'stripeConnectedCustomerId': user!.stripeConnectedCustomerId,
       });
 
