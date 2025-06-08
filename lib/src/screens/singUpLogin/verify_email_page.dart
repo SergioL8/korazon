@@ -70,11 +70,14 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       final HttpsCallable callable =
           FirebaseFunctions.instance.httpsCallable('VerificationEmail');
 
+      debugPrint('Widge.userEmail: ${widget.userEmail}');
       final result = await callable.call({
         "recipientEmail": widget.userEmail,
         "verificationCode": _generatedCode,
       });
 
+      if (!mounted) return;
+      debugPrint(('Result from Firebase Function: ${result.data}'));
       if (result.data['success'] == true) {
         showConfirmationMessage(
           context,
@@ -117,6 +120,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     if (data['success'] == true) {
       showConfirmationMessage(context, message: 'Email verified successfully');
 
+      FocusScope.of(context).unfocus(); // pop keyboard and unfocus to cancel any pending TextField callbacks
       switch (widget.nextPage) {
         case EmailVerificationNextPage.basePage:
           // Navigate to the base page and remove all previous pages from the stack
@@ -139,20 +143,22 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
 
       // 🔄 Reload silently (not blocking UX)
       // I'm not sure if this is needed here, but you have to return just after pushing to avoid calling methods that have been diposed
-      FirebaseAuth.instance.currentUser?.reload(); 
+      // FirebaseAuth.instance.currentUser?.reload(); 
     } else {
       showErrorMessage(context, title: 'An error occurred');
       debugPrint("❌ Error verifying email: ${data['error']}");
     }
-    setState(() { _loading = false; });
+    if (mounted) {
+      setState(() { _loading = false; });
+    }
   }
 
-  @override
-  void dispose() {
-    //_timer.cancel();
-    _pinController.dispose();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   //_timer.cancel();
+  //   _pinController.dispose();
+  //   super.dispose();
+  // }
 
   void navigateToLandingPage() {
     Navigator.of(context)

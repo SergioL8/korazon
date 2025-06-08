@@ -22,11 +22,11 @@ class _ConfirmIdentityPageState extends State<HostConfirmIdentityPage> {
   bool _isLoading = false;
 
   // Dispose controllers
-  @override
-  void dispose() {
-    _pinController.dispose();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   _pinController.dispose();
+  //   super.dispose();
+  // }
 
   // this function checks if the code is valid,
   // updates the user's document to mark the account as verified
@@ -45,6 +45,7 @@ class _ConfirmIdentityPageState extends State<HostConfirmIdentityPage> {
 
       // 2) Check if no documents were found
       if (codeQuery.docs.isEmpty) {
+        if (!mounted) return;
         showErrorMessage(context, content: 'Invalid code');
         return;
       }
@@ -57,6 +58,7 @@ class _ConfirmIdentityPageState extends State<HostConfirmIdentityPage> {
 
       // If model creation failed, notify user
       if (codeModel == null) {
+        if (!mounted) return;
         showErrorMessage(context, content: 'Invalid code, contact support');
         return;
       }
@@ -64,6 +66,7 @@ class _ConfirmIdentityPageState extends State<HostConfirmIdentityPage> {
       // 5) Check if user is signed in
       final currentUser = FirebaseAuth.instance.currentUser?.uid;
       if (currentUser == null) {
+        if (!mounted) return;
         showErrorMessage(
           context,
           content: 'Error loading user. Please log out and log in again',
@@ -94,17 +97,20 @@ class _ConfirmIdentityPageState extends State<HostConfirmIdentityPage> {
       //       and email Korazon.dev with the new code.
 
       // 8) Let's get out of this godamm page
+      FocusScope.of(context).unfocus(); // pop keyboard and unfocus to cancel any pending TextField callbacks
       Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => const BasePage()),
         (Route<dynamic> route) => false,
       );
       return;
     } on FirebaseException catch (firebaseError) {
+      if (!mounted) return;
       debugPrint('Firebase error: ${firebaseError.message}');
       showErrorMessage(context, content: 'An unexpected error occurred');
 
       // Handle specific Firebase errors
     } catch (error, stacktrace) {
+      if (!mounted) return;
       // Handle any generic errors, log them or send them to a monitoring service
       debugPrint('Error checking code: $error\nStacktrace: $stacktrace');
       showErrorMessage(context,
@@ -154,11 +160,13 @@ class _ConfirmIdentityPageState extends State<HostConfirmIdentityPage> {
                         textAlign: TextAlign.center,
                       ),
                       SizedBox(height: screenHeight * 0.05),
-                      CustomPinInput(controller: _pinController, useNumericKeyboard: false,),
+                      CustomPinInput(
+                        controller: _pinController,
+                        useNumericKeyboard: false,
+                      ),
                       Spacer(),
                       GestureDetector(
-                        onTap: () => Navigator.of(context, rootNavigator: true)
-                            .pushAndRemoveUntil(
+                        onTap: () => Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
                           MaterialPageRoute(
                               builder: (context) => const BasePage()),
                           (Route<dynamic> route) => false,

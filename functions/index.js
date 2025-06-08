@@ -98,6 +98,7 @@ exports.ResetPasswordEmail = onCall(async (req) => {
 });
 
 exports.VerificationEmail = onCall(async (req) => {
+  logger.info('Incoming data payload:', req.data);
   try {
     // Retrieve API key from environment variables
     const sendGridKey = process.env.SENDGRID_API_KEY;
