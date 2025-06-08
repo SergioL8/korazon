@@ -79,7 +79,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
 
       final result = await callable.call({
         "recipientEmail": widget.userEmail,
-        "verificationCode": _generatedCode,
+        "code": _generatedCode,
       });
 
       if (result.data['success'] == true) {

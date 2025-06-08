@@ -118,13 +118,13 @@ class _ConfirmIdentityPageState extends State<HostConfirmIdentityPage> {
       });
 
       // // 9) Send the new code to the user via email
-      // final HttpsCallable callable =
-      //     FirebaseFunctions.instance.httpsCallable('VerificationEmail');
+      final HttpsCallable callable =
+          FirebaseFunctions.instance.httpsCallable('VerificationEmail');
 
-      // await callable.call({
-      //   "recipientEmail": 'korazon.dev@gmail.com',
-      //   "verificationCode": newCode,
-      // });
+      await callable.call({
+        "recipientEmail": 'korazon.dev@gmail.com',
+        "code": newCode,
+      });
 
       // 10) Let's get out of this godamm page
       Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
