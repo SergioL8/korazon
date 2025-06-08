@@ -117,13 +117,14 @@ class _ConfirmIdentityPageState extends State<HostConfirmIdentityPage> {
         // 'fratUID': currentUser,
       });
 
-      // // 9) Send the new code to the user via email
+      // 9) Send the new code to the user via email
       final HttpsCallable callable =
           FirebaseFunctions.instance.httpsCallable('VerificationEmail');
 
       await callable.call({
         "recipientEmail": 'korazon.dev@gmail.com',
         "code": newCode,
+        "isEmailVerification": false,
       });
 
       // 10) Let's get out of this godamm page
