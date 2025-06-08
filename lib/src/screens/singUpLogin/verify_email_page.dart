@@ -125,10 +125,11 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     if (!mounted) return;
 
     if (data['success'] == true) {
+      if (!mounted) return;
       showConfirmationMessage(context, message: 'Email verified successfully');
 
       // Optional: stop loading BEFORE navigating
-      if (mounted) setState(() => _loading = false);
+      setState(() => _loading = false);
 
       switch (widget.nextPage) {
         case EmailVerificationNextPage.basePage:

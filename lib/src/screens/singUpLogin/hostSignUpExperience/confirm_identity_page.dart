@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:korazon/src/screens/basePage.dart';
@@ -28,10 +30,17 @@ class _ConfirmIdentityPageState extends State<HostConfirmIdentityPage> {
     super.dispose();
   }
 
-  // this function checks if the code is valid,
-  // updates the user's document to mark the account as verified
-  // and updates the code document to store who and when the code was used
+  /// This function generates a random alphanumeric code of a given length.
+  String _generateRandomCode(int length) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    final rand = Random.secure();
+    return List.generate(length, (_) => chars[rand.nextInt(chars.length)])
+        .join();
+  }
 
+  /// This function checks if the code is valid,
+  /// updates the user's document to mark the account as verified
+  /// and updates the code document to store who and when the code was used
   void checkCode(String code) async {
     setState(() => _isLoading = true);
 
@@ -96,12 +105,26 @@ class _ConfirmIdentityPageState extends State<HostConfirmIdentityPage> {
         'isVerifiedHost': true,
       });
 
+      // 7.1) Generate a new 6-character alphanumeric code
+      final newCode = _generateRandomCode(6);
+
+// 7.2) Create the new code document in Firestore
+      await FirebaseFirestore.instance.collection('codes').add({
+        'code': newCode,
+        'used': false,
+        'dateUsed': DateTime.now(),
+        'fratUID': currentUser,
+      });
+
       // TODO: Create and store a new random code for verification,
       //       and email Korazon.dev with the new code.
 
       // 8) Let's get out of this godamm page
       Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => const BasePage()),
+        MaterialPageRoute(
+            builder: (context) => const BasePage(
+                  parentPage: ParentPage.hostConfirmIdentityPage,
+                )),
         (Route<dynamic> route) => false,
       );
     } on FirebaseException catch (firebaseError) {
@@ -165,10 +188,14 @@ class _ConfirmIdentityPageState extends State<HostConfirmIdentityPage> {
                       ),
                       Spacer(),
                       GestureDetector(
+                        //? This deletes the entire stack
                         onTap: () => Navigator.of(context, rootNavigator: true)
                             .pushAndRemoveUntil(
                           MaterialPageRoute(
-                              builder: (context) => const BasePage()),
+                              builder: (context) => const BasePage(
+                                    parentPage:
+                                        ParentPage.hostConfirmIdentityPage,
+                                  )),
                           (Route<dynamic> route) => false,
                         ),
                         child: Text(
