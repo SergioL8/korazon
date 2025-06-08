@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:korazon/src/utilities/models/userModel.dart';
 
-
-
 class TicketModel {
   TicketModel({
     required this.ticketID,
@@ -69,6 +67,8 @@ class EventModel {
 
   EventModel({
     required this.documentID,
+
+    // Event information
     required this.title,
     required this.description,
     required this.location,
@@ -76,12 +76,17 @@ class EventModel {
     required this.startDateTime,
     required this.endDateTime,
     required this.plus21,
+
+    // Host information
     required this.hostId,
     required this.hostName,
     required this.hostProfilePicPath,
-    required this.tickets,
     required this.stripeConnectedCustomerId,
+
+    // Tickets and atendees
+    required this.tickets,
     required this.eventTicketHolders,
+    required this.attendees,
   });
 
   final String documentID;
@@ -98,6 +103,7 @@ class EventModel {
   final List<TicketModel> tickets;
   final String? stripeConnectedCustomerId;
   final List<String>? eventTicketHolders;
+  final List<String>? attendees;
 
 
   static EventModel? fromDocumentSnapshot(DocumentSnapshot doc) {
@@ -125,6 +131,7 @@ class EventModel {
           .toList() ?? [],
       stripeConnectedCustomerId: data['stripeConnectedCustomerId'],
       eventTicketHolders: (data['eventTicketHolders'] as List<dynamic>?)?.map((holder) => holder as String).toList() ?? [],
+      attendees: (data['attendees'] as List<dynamic>?)?.map((holder) => holder as String).toList() ?? [],
     );
   }
 }

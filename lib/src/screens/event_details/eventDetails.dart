@@ -12,8 +12,10 @@ import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/utilities/models/eventModel.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:korazon/src/widgets/loading_place_holders.dart';
-import 'package:korazon/src/screens/event_details/display_tickets.dart';
 import 'package:korazon/src/screens/event_details/static_map.dart';
+import 'package:korazon/src/screens/event_details/guest_list.dart';
+import 'package:korazon/src/screens/event_details/display_tickets.dart';
+
 
 
 
@@ -219,7 +221,7 @@ class _EventDetailsState extends State<EventDetails> {
                       child: Container(
                         color: backgroundColorBM,
                         width: MediaQuery.of(context).size.width,
-                        height: 900,
+                        // height: 900,
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                           child: Column(
@@ -297,6 +299,7 @@ class _EventDetailsState extends State<EventDetails> {
                                 ),
                                 SizedBox(height: 12),
 
+                              // ================ Event Description ================
                               Text(
                                 'Location',
                                 style: whiteSubtitle
@@ -322,9 +325,17 @@ class _EventDetailsState extends State<EventDetails> {
                                   eventId: _currentEvent.documentID,
                                   width: MediaQuery.of(context).size.width - 32,
                                   height: (MediaQuery.of(context).size.width - 32) * (2/3)
-
                                 ),
                               ),
+                              SizedBox(height: 12),
+
+                              // ================ Attending users ================
+                              Text(
+                                'Guest List',
+                                style: whiteSubtitle
+                              ),
+                              GuestList(guestList: _currentEvent.attendees ?? []),
+
                             ],
                           ),
                         ),
@@ -408,11 +419,12 @@ class DiagonalClipperBlackPanel extends CustomClipper<Path> {
     final double H = size.height;
     final double r = cornerRadius;
 
-    // 1) Compute raw points B=(0.60W, 0) and C=(0.60W+offset, 0.08H).
+
+    // 1) Compute raw points B=(0.60W, 0) and C=(0.60W+offset, gapHeight).
     final double xB = 0.60 * W;
     final double yB = 0.0;
     final double xC = xB + diagonalDepthOffset;
-    final double yC = diagonalYFraction * H;
+    final double yC = 74.0;
 
     // 2) Unit‐vector along diagonal BC:
     final double dx = xC - xB;             // = diagonalDepthOffset
@@ -451,9 +463,9 @@ class DiagonalClipperBlackPanel extends CustomClipper<Path> {
 
     // ===== Corner C (obtuse between diagonal ↖ and small-horz →) =====
     path.arcToPoint(
-      Offset(xC + tB, yC),
+      Offset(xC + r, yC),
       radius: Radius.circular(r),
-      clockwise: false,   // <–– flip to false so the arc goes “inside” the obtuse angle 
+      clockwise: false,
     );
 
     // ===== Edge C→D (small horizontal) – stop r short of D =====
@@ -537,6 +549,8 @@ class DiagonalClipperTicketsButton extends CustomClipper<Path> {
     final double ux = dx / L; // diagonal’s x‐component
     final double uy = dy / L; // diagonal’s y‐component
 
+    // uy = 65 / (diagonalDepth**2 + 65**2)
+
     // 2) Compute interior angles for the two “non-right” corners:
     //
     //    Bottom-left (BL) corner is between:
@@ -559,6 +573,7 @@ class DiagonalClipperTicketsButton extends CustomClipper<Path> {
     //    Thus phi_TL = acos( ux ).
     final double phiTL = acos(ux);
     final double tTL = r / tan(phiTL / 2);
+    // tTL = r / (tan( acos(diagonalDepth / (diagonalDepth**2 + 65**2)) / 2))
 
     final Path path = Path();
 
