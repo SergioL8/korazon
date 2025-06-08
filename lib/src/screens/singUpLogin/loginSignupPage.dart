@@ -284,28 +284,20 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                                   focusNode: _emailFocusNode,
                                   cursorColor: Colors.white,
                                   validator: (value) {
-                                    if (value == null || value.trim().isEmpty) {
-                                      return 'Please enter your email address.';
-                                    }
-
-                                    final trimmedValue = value.trim();
-                                    // Depending on the parent page, we validate the email format differently
-                                    // login and create host account can be any email
-                                    // signup must be @colorado.edu
                                     if (widget.parentPage ==
                                         ParentPage.signup) {
-                                      if (!RegExp(r'^[\w\.\-]+@colorado\.edu$')
-                                          .hasMatch(trimmedValue)) {
-                                        return 'Please use your @colorado.edu email address.';
+                                      if (value == null ||
+                                          !RegExp(r'^[^\s@]+@colorado\.edu$')
+                                              .hasMatch(value)) {
+                                        return 'Please enter a valid @colorado.edu email address';
                                       }
                                     } else {
-                                      if (!RegExp(
-                                              r'^[\w\.\-]+@[\w\-]+\.[a-zA-Z]{2,}$')
-                                          .hasMatch(trimmedValue)) {
-                                        return 'Please enter a valid email address.';
+                                      if (value == null ||
+                                          !RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$')
+                                              .hasMatch(value)) {
+                                        return 'Please enter a valid email address';
                                       }
                                     }
-
                                     return null;
                                   },
                                   onChanged: (_) =>
@@ -373,20 +365,12 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
 
                                   // We only care about spaces if they are in the middle of the password not at the end
                                   validator: (val) {
-                                    final trimmed = val?.trim();
-
-                                    if (trimmed == null || trimmed.isEmpty) {
-                                      return 'Please enter a password.';
-                                    }
-
-                                    if (trimmed.contains(' ')) {
+                                    if (val != null && val.contains(' ')) {
                                       return 'Password cannot contain spaces.';
                                     }
-
-                                    if (trimmed.length < 6) {
+                                    if (val == null || val.length < 6) {
                                       return 'Password must be at least 6 characters long.';
                                     }
-
                                     return null;
                                   },
 
