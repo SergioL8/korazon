@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:korazon/src/screens/singUpLogin/landing_page.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
 import 'package:korazon/src/widgets/confirmationMessage.dart';
@@ -20,8 +19,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   bool _loading = false;
 
   void navigateToLandingPage() {
-    Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const LandingPage()));
+    Navigator.of(context).pop();
   }
 
   Future<void> sendResetPasswordEmail({
