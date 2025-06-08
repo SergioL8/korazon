@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:korazon/src/screens/basePage.dart';
@@ -105,21 +106,27 @@ class _ConfirmIdentityPageState extends State<HostConfirmIdentityPage> {
         'isVerifiedHost': true,
       });
 
-      // 7.1) Generate a new 6-character alphanumeric code
+      // 8.1) Generate a new 6-character alphanumeric code
       final newCode = _generateRandomCode(6);
 
-// 7.2) Create the new code document in Firestore
+      // 8.2) Create the new code document in Firestore
       await FirebaseFirestore.instance.collection('codes').add({
         'code': newCode,
         'used': false,
-        'dateUsed': DateTime.now(),
-        'fratUID': currentUser,
+        // 'dateUsed': DateTime.now(),
+        // 'fratUID': currentUser,
       });
 
-      // TODO: Create and store a new random code for verification,
-      //       and email Korazon.dev with the new code.
+      // // 9) Send the new code to the user via email
+      // final HttpsCallable callable =
+      //     FirebaseFunctions.instance.httpsCallable('VerificationEmail');
 
-      // 8) Let's get out of this godamm page
+      // await callable.call({
+      //   "recipientEmail": 'korazon.dev@gmail.com',
+      //   "verificationCode": newCode,
+      // });
+
+      // 10) Let's get out of this godamm page
       Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
         MaterialPageRoute(
             builder: (context) => const BasePage(

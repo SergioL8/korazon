@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-
 class LocationModel {
   LocationModel({
     required this.description,
@@ -11,7 +10,7 @@ class LocationModel {
     this.city,
     this.state,
     this.country,
-    this.postalCode,    
+    this.postalCode,
   });
 
   final String description;
@@ -22,7 +21,7 @@ class LocationModel {
   final String? city;
   final String? state;
   final String? country;
-  final String? postalCode;  
+  final String? postalCode;
 
   Map<String, dynamic> toMap() {
     return {
@@ -53,9 +52,7 @@ class LocationModel {
   }
 }
 
-
 class UserModel {
-
   UserModel({
     required this.userID,
     required this.username,
@@ -77,7 +74,6 @@ class UserModel {
     required this.instaAcc,
     required this.snapAcc,
     required this.location,
-    required this.hostIdentityVerified,
   });
 
   final String userID;
@@ -100,11 +96,8 @@ class UserModel {
   final String instaAcc;
   final String snapAcc;
   final LocationModel? location;
-  final bool? hostIdentityVerified;
-
 
   static UserModel? fromDocumentSnapshot(DocumentSnapshot doc) {
-
     final data = doc.data() as Map<String, dynamic>?;
 
     if (data == null || data.isEmpty) {
@@ -131,10 +124,9 @@ class UserModel {
       profilePicturesPath: List<String>.from(data['profilePicturesPath'] ?? []),
       instaAcc: data['instaAcc'] ?? '',
       snapAcc: data['snapAcc'] ?? '',
-      location: data['location'] != null 
-        ? LocationModel.fromMap(data['location'] as Map<String, dynamic>)
-        : null,
-      hostIdentityVerified: data['hostIdentityVerified'] ?? false,
+      location: data['location'] != null
+          ? LocationModel.fromMap(data['location'] as Map<String, dynamic>)
+          : null,
     );
   }
 }

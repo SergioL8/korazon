@@ -137,7 +137,7 @@ class _HostRequiredDetailsState extends State<HostRequiredDetails> {
         'email': widget.email.trim(),
         'name': orgNameController.text.trim(),
         'isHost': true,
-        'hostIdentityVerified': false,
+        'isVerifiedHost': false,
         'location': _selectedLocation!.toMap(),
         'profilePicPath': refPath,
       });
