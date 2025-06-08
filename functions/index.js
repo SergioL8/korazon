@@ -113,12 +113,13 @@ exports.VerificationEmail = onCall(async (req) => {
     sgMail.setApiKey(sendGridKey);
 
     // ✅ Extract data from request
-    const { recipientEmail, code, isEmailVerification } = req.data;
+if (!req.data || !req.data.recipientEmail || !req.data.code) {
+  logger.error("❌ Missing required email data.");
+  throw new Error("Missing required email data.");
+}
 
-    if (!recipientEmail || !code) {
-      logger.error("❌ Missing required email data.");
-      throw new Error("Missing required email data.");
-    }
+const { recipientEmail, code, isEmailVerification } = req.data;
+
 
     logger.info(`📩 Processing email request for: ${recipientEmail}`);
 
