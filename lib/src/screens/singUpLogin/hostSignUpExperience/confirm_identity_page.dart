@@ -25,11 +25,11 @@ class _ConfirmIdentityPageState extends State<HostConfirmIdentityPage> {
   bool _isLoading = false;
 
   // Dispose controllers
-  @override
-  void dispose() {
-    _pinController.dispose();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   _pinController.dispose();
+  //   super.dispose();
+  // }
 
   /// This function generates a random alphanumeric code of a given length.
   String _generateRandomCode(int length) {

@@ -37,14 +37,14 @@ class _HostRequiredDetailsState extends State<HostRequiredDetails> {
   void _onAddressSelected(LocationModel location) {
     setState(() {
       _selectedLocation = location; // update the selected location
-      if (addressError) {
-        // this variable is used to show an error in the address box. So we update it to false here if it was true and if the address is verified now
-        if (_selectedLocation!.verifiedAddress == true) {
-          addressError = false;
-        }
+      if (_selectedLocation!.verifiedAddress == true) {
+        addressError = false;
+      } else{
+        addressError = true; // if the address is not verified, we set the error to true
       }
     });
   }
+
 
   // function that creates the host account
   void signUpHost() async {
@@ -58,7 +58,6 @@ class _HostRequiredDetailsState extends State<HostRequiredDetails> {
       // update all these which were not updated in a previous version
       _signingUpLoading = true;
       nameError = false;
-      addressError = false;
     });
 
     try {
@@ -76,6 +75,11 @@ class _HostRequiredDetailsState extends State<HostRequiredDetails> {
         });
         showErrorMessage(context,
             content: 'Please enter your organization\'s name');
+        return;
+      }
+
+      if (addressError) {
+        showErrorMessage(context, content: 'Please select a valid address');
         return;
       }
 

@@ -156,12 +156,12 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     }
   }
 
-  @override
-  void dispose() {
-    //_timer.cancel();
-    _pinController.dispose();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   //_timer.cancel();
+  //   _pinController.dispose();
+  //   super.dispose();
+  // }
 
   void navigateToLandingPage() {
     Navigator.of(context)
