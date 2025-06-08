@@ -20,7 +20,6 @@ enum ErrorAction {
   logout,
   verify,
 }
-
 // This enum is used to determine the parent page of the Email verification page,
 // I thought it made sense to create a new enum instead of using the parentPage enum
 // Because it is 3 specific pages
@@ -44,6 +43,11 @@ enum ParentPage {
   signup,
   createHostAcc,
   hostConfirmIdentityPage,
+}
+
+enum DateTimeUse {
+  event,
+  ticket,
 }
 
 // for picking up image from galleryc

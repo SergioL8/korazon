@@ -161,7 +161,7 @@ class _SelectAddressBoxState extends State<SelectAddressBox> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),
           side: BorderSide(
-            color: widget.error ? Colors.red : Colors.white,
+            color: widget.error ? Colors.red : const Color.fromRGBO(255, 255, 255, 1),
             width: widget.error ? 2
             : isAddressFocused ? 2 : 1,
           ),

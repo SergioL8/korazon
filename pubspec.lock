@@ -365,7 +365,15 @@ packages:
       sha256: f948e346c12f8d5480d2825e03de228d0eb8c3a737e4cdaa122267b89c022b5e
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.28"
+    version: "2.0.26"
+  flutter_spinkit:
+    dependency: "direct main"
+    description:
+      name: flutter_spinkit
+      sha256: d2696eed13732831414595b98863260e33e8882fc069ee80ec35d4ac9ddb0472
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.2.1"
   flutter_svg:
     dependency: "direct main"
     description:
@@ -765,6 +773,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.4"
+  timelines_plus:
+    dependency: "direct main"
+    description:
+      name: timelines_plus
+      sha256: be31f493402dc24df7fe410dc5f82a605807bb4ca13183de6d4362886449b593
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.6"
   transparent_image:
     dependency: "direct main"
     description:
@@ -926,5 +942,5 @@ packages:
     source: hosted
     version: "6.5.0"
 sdks:
-  dart: ">=3.7.0 <4.0.0"
-  flutter: ">=3.29.0"
+  dart: ">=3.7.0-0 <4.0.0"
+  flutter: ">=3.24.0"
