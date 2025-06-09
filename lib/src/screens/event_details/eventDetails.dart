@@ -116,6 +116,8 @@ class _EventDetailsState extends State<EventDetails> {
     }
   }
 
+
+
   @override
   void dispose() {
     _subscription?.cancel(); // Cancel the subscription when the widget is disposed
@@ -327,7 +329,7 @@ class _EventDetailsState extends State<EventDetails> {
                                   height: (MediaQuery.of(context).size.width - 32) * (2/3)
                                 ),
                               ),
-                              SizedBox(height: 12),
+                              SizedBox(height: 24),
 
                               // ================ Attending users ================
                               Text(
@@ -336,6 +338,12 @@ class _EventDetailsState extends State<EventDetails> {
                               ),
                               GuestList(guestList: _currentEvent.attendees ?? []),
 
+
+                              // ================= Report button =================
+
+
+                              // ================ Padding =================
+                              SizedBox(height: 24),
                             ],
                           ),
                         ),

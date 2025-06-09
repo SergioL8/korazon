@@ -161,9 +161,13 @@ Future<Uint8List?> getImage(imagePath) async {
     // get the file reference
     Reference fileRef = storageRef.child(imagePath);
 
-    Uint8List? imageData = await fileRef.getData();
-
-    return imageData;
+    try {
+      Uint8List? imageData = await fileRef.getData();
+      return imageData;
+    } on FirebaseException catch (e) {
+      print('Error loading image at $imagePath: $e');
+      return null;
+    }
   }
 }
 

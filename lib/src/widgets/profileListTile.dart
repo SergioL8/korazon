@@ -37,37 +37,40 @@ class _UserListTileState extends State<UserListTile> {
     });
   }
 
+  @override
+  void initState() {
+    super.initState();
+    loadProfilePic(widget.profilePicPath); // Load the profile picture when the widget is initialized
+  }
+
 
   @override
   Widget build(BuildContext context) {
 
     String fullName = '${widget.first_name} ${widget.last_name}';
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: ListTile(
-        leading: CircleAvatar(
-          radius: 24,
-          backgroundImage: _profilePicData != null 
-          ? MemoryImage(_profilePicData!)
-          : AssetImage('assets/images/no_profile_picture.webp'),
-          // Optionally show initials or an icon if `photoPath` is null
-        ),
-        title: Text(
-          fullName,
-          style: whiteBody.copyWith(
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-          )
-        ),
-        subtitle: Text(
-          '@${widget.username}',
-          style: whiteBody,
-        ),
-        onTap: () {
-          // Go to the user's profile page
-        }, 
+    return ListTile(
+      leading: CircleAvatar(
+        radius: 24,
+        backgroundImage: _profilePicData != null 
+        ? MemoryImage(_profilePicData!)
+        : AssetImage('assets/images/no_profile_picture.webp'),
+        // Optionally show initials or an icon if `photoPath` is null
       ),
+      title: Text(
+        fullName,
+        style: whiteBody.copyWith(
+          fontSize: 16,
+          fontWeight: FontWeight.w700,
+        )
+      ),
+      subtitle: Text(
+        '@${widget.username}',
+        style: whiteBody,
+      ),
+      onTap: () {
+        // Go to the user's profile page
+      }, 
     );
   }
 }
