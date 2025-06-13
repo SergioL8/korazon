@@ -87,6 +87,7 @@ flutter:
     - assets/images/addImagePlaceHolder.jpeg
     - assets/images/no_profile_picture_place_holder.png
     - assets/images/add_image_mountains_placeholder.png
+    - assets/images/korazon_logo.png
 
     # icons
     - assets/icons/ticket-empty.png
