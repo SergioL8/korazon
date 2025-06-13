@@ -172,8 +172,8 @@ class _EventDetailsState extends State<EventDetails> {
 
           Positioned(
             bottom: 0,
-            left: 0,
-            right: 0, 
+            left:   0,
+            right:  0, 
             child: Container(
               height: 150,
               color: backgroundColorBM,
@@ -199,7 +199,7 @@ class _EventDetailsState extends State<EventDetails> {
                       icon: Icon(
                         Icons.arrow_back_ios_new_rounded,
                         color: Colors.white,
-                        size: 35,
+                        size:   35,
                         weight: 60,
                       ),
                     ),

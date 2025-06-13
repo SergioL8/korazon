@@ -8,7 +8,7 @@ import 'package:korazon/src/widgets/loading_place_holders.dart';
 
 class GuestList extends StatefulWidget {
 
-  GuestList({super.key, required this.guestList});
+  const GuestList({super.key, required this.guestList});
 
   final List<String> guestList;
 
