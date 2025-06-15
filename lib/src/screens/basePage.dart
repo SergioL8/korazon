@@ -30,7 +30,7 @@ class BasePage extends StatefulWidget {
 }
 
 class _BasePage extends State<BasePage> {
-  int selectedPageIndex = 2;
+  int selectedPageIndex = 0;
   String? _uid;
   bool? isHost;
 
