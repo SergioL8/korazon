@@ -4,6 +4,7 @@ import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/widgets/colorfulSpinner.dart';
 import 'package:korazon/src/widgets/eventCard.dart';
 import 'package:korazon/src/utilities/utils.dart';
+import 'package:korazon/src/widgets/filterChip.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -13,6 +14,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  String selectedFilter =
+      'Upcoming'; // variable to set the selected filter for the events
   bool _isLoading =
       false; // variable to set execution of retrieving data (to avoid multiple requests and set the loading)
   bool _moreEventsleft =
@@ -94,7 +97,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: backgroundColorBM,
@@ -104,32 +106,74 @@ class _HomePageState extends State<HomePage> {
             SliverAppBar(
               snap: true,
               floating: true,
-              // or pinned: true if desired
-              backgroundColor: appBarColor,
+              backgroundColor: backgroundColorBM,
               automaticallyImplyLeading: false,
-              title: Row(
-                children: [
-                  const Icon(
-                    Icons.account_balance, // Greek temple-like icon
-                    size: 40,
-                    color: secondaryColor,
-                  ),
-                  SizedBox(width: 8.0), // spacing between the icon and the text
-                  const Text(
-                    'Korazon',
-                    style: TextStyle(
-                      color: secondaryColor,
-                      fontWeight: primaryFontWeight,
-                      fontSize: 32.0,
-                    ),
-                  ),
-                ],
-              ),
               bottom: PreferredSize(
-                preferredSize: const Size.fromHeight(2.0),
-                child: Container(
-                  color: dividerColor,
-                  height: barThickness,
+                preferredSize: const Size.fromHeight(100), // adjust if needed
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                      16, 0, 16, 12), // padding to match original style
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Search Bar
+                      Container(
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: tertiaryColor,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: Row(
+                          children: const [
+                            Icon(Icons.search, color: Colors.grey),
+                            SizedBox(width: 8),
+                            Text(
+                              'Search',
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+
+                      // Filter Chips
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            FilterChipLabel(
+                              label: 'Upcoming',
+                              selected: selectedFilter == 'Upcoming',
+                              onTap: () =>
+                                  setState(() => selectedFilter = 'Upcoming'),
+                            ),
+                            FilterChipLabel(
+                              label: 'This Week',
+                              selected: selectedFilter == 'This Week',
+                              onTap: () =>
+                                  setState(() => selectedFilter = 'This Week'),
+                            ),
+                            FilterChipLabel(
+                              label: 'Tonight',
+                              selected: selectedFilter == 'Tonight',
+                              onTap: () =>
+                                  setState(() => selectedFilter = 'Tonight'),
+                            ),
+                            FilterChipLabel(
+                              label: 'Free',
+                              selected: selectedFilter == 'Free',
+                              onTap: () =>
+                                  setState(() => selectedFilter = 'Free'),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
