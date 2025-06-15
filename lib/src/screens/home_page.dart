@@ -51,47 +51,38 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _retrieveData() async {
-    if (_isLoading) {
-      return;
-    } // if already loading, return (avoid multiple requests at the same time)
+    if (_isLoading) return;
 
     setState(() {
       _isLoading = true;
-    }); // update state for the loading spinner
+    });
 
-    Query query = FirebaseFirestore.instance
-        .collection('events')
-        .limit(sizeOfData); // create query
+    Query query = FirebaseFirestore.instance.collection('events');
 
-    if (_lastDocument != null) {
-      query = FirebaseFirestore.instance
-          .collection('events')
-          .startAfterDocument(_lastDocument!)
-          .limit(sizeOfData); // create query
+    // Apply filter for 'Upcoming'
+    if (selectedFilter == 'Upcoming') {
+      query = query.where('startDateTime', isGreaterThan: Timestamp.now());
     }
 
-    QuerySnapshot querySnapshot = await query.get(); // execute query
-    if (querySnapshot.docs.isNotEmpty) {
-      // if documents have been returned
-      setState(() {
-        _documents.addAll(querySnapshot
-            .docs); // add the documents to the total list of documents
-        _lastDocument = _documents.last; // update the last document retrieved
+    query = query.orderBy('startDateTime').limit(sizeOfData);
 
-        // if fewer documents have been returned than the number of documents requested, there are no more documents to retrieve
-        if (querySnapshot.docs.length < sizeOfData) {
-          // this is what will stop the next query from being executed
-          _moreEventsleft = false;
-        } else {
-          _moreEventsleft = true;
-        }
-        _isLoading = false; // stop the loading spinner
+    if (_lastDocument != null) {
+      query = query.startAfterDocument(_lastDocument!);
+    }
+
+    QuerySnapshot querySnapshot = await query.get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      setState(() {
+        _documents.addAll(querySnapshot.docs);
+        _lastDocument = _documents.last;
+        _moreEventsleft = querySnapshot.docs.length >= sizeOfData;
+        _isLoading = false;
       });
     } else {
-      // if no documents have been returned then there are no more documents to retrieve
       setState(() {
         _moreEventsleft = false;
-        _isLoading = false; // update state
+        _isLoading = false;
       });
     }
   }
@@ -148,8 +139,15 @@ class _HomePageState extends State<HomePage> {
                             FilterChipLabel(
                               label: 'Upcoming',
                               selected: selectedFilter == 'Upcoming',
-                              onTap: () =>
-                                  setState(() => selectedFilter = 'Upcoming'),
+                              onTap: () {
+                                setState(() {
+                                  selectedFilter = 'Upcoming';
+                                  _documents.clear();
+                                  _lastDocument = null;
+                                  _moreEventsleft = true;
+                                });
+                                _retrieveData(); // Fetch filtered data
+                              },
                             ),
                             FilterChipLabel(
                               label: 'This Week',
