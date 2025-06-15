@@ -21,6 +21,20 @@ class EventCard extends StatefulWidget {
 class _EventCardState extends State<EventCard> {
   @override
   Widget build(BuildContext context) {
+    EventModel? event = EventModel.fromDocumentSnapshot(widget.document);
+
+    if (event == null) {
+      return SizedBox();
+    }
+
+    final Timestamp dateTimeStamp = event.startDateTime;
+    DateTime dateTime = dateTimeStamp.toDate();
+
+    String formattedDate =
+        DateFormat('MMMM d, yyyy').format(dateTime); // e.g., "January 15, 2025"
+    String formattedTime =
+        DateFormat('h:mm a').format(dateTime); // e.g., "10:00 PM"
+
     return Stack(
       alignment: Alignment.topCenter,
       children: [
