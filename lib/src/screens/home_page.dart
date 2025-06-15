@@ -13,12 +13,17 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  bool _isLoading = false; // variable to set execution of retrieving data (to avoid multiple requests and set the loading)
-  bool _moreEventsleft = true; // variable needed to check if there are more events to retrieve
-  DocumentSnapshot? _lastDocument; // variable needed to start the next query from the last document of the preivous query
+  bool _isLoading =
+      false; // variable to set execution of retrieving data (to avoid multiple requests and set the loading)
+  bool _moreEventsleft =
+      true; // variable needed to check if there are more events to retrieve
+  DocumentSnapshot?
+      _lastDocument; // variable needed to start the next query from the last document of the preivous query
   List<DocumentSnapshot> _documents = []; // sotres all documents retrieved
-  final sizeOfData = 5; // variable that sets teh number of documents to retrieve per query
-  final ScrollController _scrollController = ScrollController(); // controller to handle the scroll
+  final sizeOfData =
+      5; // variable that sets teh number of documents to retrieve per query
+  final ScrollController _scrollController =
+      ScrollController(); // controller to handle the scroll
 
   @override
   void initState() {
@@ -43,7 +48,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _retrieveData() async {
-    if (_isLoading) { return; } // if already loading, return (avoid multiple requests at the same time)
+    if (_isLoading) {
+      return;
+    } // if already loading, return (avoid multiple requests at the same time)
 
     setState(() {
       _isLoading = true;
@@ -52,7 +59,7 @@ class _HomePageState extends State<HomePage> {
     Query query = FirebaseFirestore.instance
         .collection('events')
         .limit(sizeOfData); // create query
-        
+
     if (_lastDocument != null) {
       query = FirebaseFirestore.instance
           .collection('events')
@@ -90,65 +97,67 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: tertiaryColor,
+      backgroundColor: backgroundColorBM,
       body: CustomScrollView(
-        // Builds the sliver(s) for the outer scrollable
-        slivers: [
-          SliverAppBar(
-            snap: true,
-            floating: true,
-            // or pinned: true if desired
-            backgroundColor: appBarColor,
-            automaticallyImplyLeading: false,
-            title: Row(
-              children: [
-                const Icon(
-                  Icons.account_balance, // Greek temple-like icon
-                  size: 40,
-                  color: secondaryColor,
+          // Builds the sliver(s) for the outer scrollable
+          slivers: [
+            SliverAppBar(
+              snap: true,
+              floating: true,
+              // or pinned: true if desired
+              backgroundColor: appBarColor,
+              automaticallyImplyLeading: false,
+              title: Row(
+                children: [
+                  const Icon(
+                    Icons.account_balance, // Greek temple-like icon
+                    size: 40,
+                    color: secondaryColor,
+                  ),
+                  SizedBox(width: 8.0), // spacing between the icon and the text
+                  const Text(
+                    'Korazon',
+                    style: TextStyle(
+                      color: secondaryColor,
+                      fontWeight: primaryFontWeight,
+                      fontSize: 32.0,
+                    ),
+                  ),
+                ],
+              ),
+              bottom: PreferredSize(
+                preferredSize: const Size.fromHeight(2.0),
+                child: Container(
+                  color: dividerColor,
+                  height: barThickness,
                 ),
-                SizedBox(width: 8.0), // spacing between the icon and the text
-                const Text('Korazon',
-                style: TextStyle(
-                  color: secondaryColor,
-                  fontWeight: primaryFontWeight,
-                  fontSize: 32.0,
-                ),
-                ),
-              ],
-            ),
-            bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(2.0),
-              child: Container(
-                color: dividerColor,
-                height: barThickness,
               ),
             ),
-          ),
 
-          //SliverToBoxAdapter(child: SizedBox(height: 20),),
+            //SliverToBoxAdapter(child: SizedBox(height: 20),),
 
-          // I added the padding to the postcard so that it is consistent across the app 
+            // I added the padding to the postcard so that it is consistent across the app
 
-          SliverToBoxAdapter(
-            child: _documents.isEmpty && !_isLoading
-            ? const Center(child: Text('No events :('))
-            : ListView.builder(
-                physics: const NeverScrollableScrollPhysics(), // Remove custom scrollController here
-                shrinkWrap: true,
-                itemCount: _documents.length +
-                    (_moreEventsleft ? 1 : 0),
-                itemBuilder: (context, index) {
-                  if (_moreEventsleft && index == _documents.length) {
-                    return const Center(child: ColorfulSpinner());
-                  }
-                  return EventCard(document: _documents[index], parentPage: ParentPage.homePage,);
-                },
-              ),
-          ),
-        ]
-      ),
+            SliverToBoxAdapter(
+              child: _documents.isEmpty && !_isLoading
+                  ? const Center(child: Text('No events :('))
+                  : ListView.builder(
+                      physics:
+                          const NeverScrollableScrollPhysics(), // Remove custom scrollController here
+                      shrinkWrap: true,
+                      itemCount: _documents.length + (_moreEventsleft ? 1 : 0),
+                      itemBuilder: (context, index) {
+                        if (_moreEventsleft && index == _documents.length) {
+                          return const Center(child: ColorfulSpinner());
+                        }
+                        return EventCard(
+                          document: _documents[index],
+                          parentPage: ParentPage.homePage,
+                        );
+                      },
+                    ),
+            ),
+          ]),
     );
   }
 }
-
