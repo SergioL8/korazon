@@ -6,9 +6,10 @@ import 'package:korazon/src/utilities/models/userModel.dart';
 import 'package:korazon/src/utilities/models/eventModel.dart';
 import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
-import 'package:korazon/src/widgets/colorfulSpinner.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:korazon/src/widgets/eventCard.dart';
 import 'package:korazon/src/widgets/qrcodeImage.dart';
+import 'dart:typed_data';
 
 
 class YourEvents extends StatefulWidget {
@@ -24,6 +25,7 @@ class _YourEventsState extends State<YourEvents> {
   List<DocumentSnapshot> events = []; // List to store event details as DocumentSnapshots
   UserModel? usermodel;
   String? qrCodeBase64;
+  Uint8List? profilePic;
   bool _qrCodeLoading = true;
   bool _isLoading = true;
   
@@ -61,6 +63,8 @@ class _YourEventsState extends State<YourEvents> {
         return;
       }
 
+      
+
       setState(() {
         setState(() { // the qrCode widgets needs the user info, so once we have the info we can se the loading state to false
           _qrCodeLoading = false;
@@ -68,6 +72,8 @@ class _YourEventsState extends State<YourEvents> {
         eventUids = usermodel!.tickets;
         qrCodeBase64 = usermodel!.qrCode;
       });
+
+      profilePic = await getImage(usermodel!.profilePicPath);
 
       // Fetch event details for each event UID
       // This goes to the list of all events to find if they match any of the ones in your tickets list.
@@ -89,7 +95,6 @@ class _YourEventsState extends State<YourEvents> {
       } 
     } catch (e) {
       showErrorMessage(context, content: e.toString());
-      
     }
     setState(() {
         _isLoading = false;
@@ -111,7 +116,7 @@ class _YourEventsState extends State<YourEvents> {
   @override
   Widget build(context) {
     return Scaffold(
-      // backgroundColor: Colors.white,
+      backgroundColor: backgroundColorBM,
       appBar: AppBar(
         title: Text(
           'Your Events',
@@ -130,20 +135,40 @@ class _YourEventsState extends State<YourEvents> {
         ),
       ),
       body: ListView.builder(
-        itemCount: events.length + 1,
+        itemCount: events.length + 2,
         itemBuilder: (context, index) {
           if (index == 0){
             if (_qrCodeLoading) {
-              return ColorfulSpinner();
+              return SpinKitThreeBounce(color: Colors.white, size: 30);
             } else {
-              return QrCodeImage(user: usermodel!, onQrCodeUpdated: _updateQrCodeInParent,);
+              return QrCodeImage(user: usermodel!, profilePic: profilePic, onQrCodeUpdated: _updateQrCodeInParent,);
+            }
+          } else if (index == 1) {
+            if (events.isEmpty) {
+              return Text(
+                " No incoming events! \n "
+                " Find events in the homepage!",
+                style: whiteSubtitle.copyWith(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                ),
+                textAlign: TextAlign.center,
+              );
+            } else{
+              return Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: Text(
+                  "Your Incoming Events",
+                  style: whiteSubtitle,
+                ),
+              );
             }
           } else { 
             if (_isLoading) {
-              return ColorfulSpinner();
+              return SpinKitThreeBounce(color: Colors.white, size: 30);
             } else {
-              final eventIndex = index -1;
-            return EventCard(document: events[eventIndex], parentPage: ParentPage.yourEvents,);
+              final eventIndex = index - 2;
+              return EventCard(document: events[eventIndex], parentPage: ParentPage.yourEvents,);
             }
           }
         },

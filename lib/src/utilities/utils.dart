@@ -1,6 +1,6 @@
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/services.dart' show rootBundle;
+// import 'package:flutter/services.dart' show rootBundle;
 import 'package:image_picker/image_picker.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:flutter/material.dart';
@@ -171,17 +171,17 @@ Future<String?> createQRCode(String uid) async {
   final timestamp = DateTime.now().millisecondsSinceEpoch.toString();
   final qrData = '$uid,$timestamp';
 
-  final data = await rootBundle.load('assets/images/korazon_logo.png');
-  final bytes = data.buffer.asUint8List();
+  // final data = await rootBundle.load('assets/images/korazon_logo.png');
+  // final bytes = data.buffer.asUint8List();
 
   // 2) Decode to a codec
-  final codec = await ui.instantiateImageCodec(bytes);
+  // final codec = await ui.instantiateImageCodec(bytes);
 
   // 3) Grab the first frame (for static images there’s only one)
-  final frame = await codec.getNextFrame();
+  // final frame = await codec.getNextFrame();
 
   // 4) Return the decoded ui.Image
-  final image = frame.image;
+  // final image = frame.image;
 
 
   final qrValidationResult = QrValidator.validate(
@@ -201,7 +201,7 @@ Future<String?> createQRCode(String uid) async {
   // Create a QrPainter to render the QR code as an image
   final painter = QrPainter.withQr(
     eyeStyle: QrEyeStyle(
-      eyeShape: QrEyeShape.circle, // You can change this to QrEyeShape.circle for rounded eyes
+      eyeShape: QrEyeShape.square, // You can change this to QrEyeShape.circle for rounded eyes
       color: Colors.black, // Color of the eyes
     ),
     dataModuleStyle: QrDataModuleStyle(
@@ -210,10 +210,12 @@ Future<String?> createQRCode(String uid) async {
     ),
     qr: qrCode,
     gapless: false, // no gaps between squares of the qrcode
-    embeddedImage: image, // embed the korazon logo in the middle of the qr code
-    embeddedImageStyle: QrEmbeddedImageStyle(
-      size: const Size(100, 100), // Size of the embedded image
-    ),
+    // embeddedImage: image, // embed the korazon logo in the middle of the qr code
+    // embeddedImageStyle: QrEmbeddedImageStyle(
+    //   size: const Size(100, 100), // Size of the embedded image
+    // ),
+
+
   );
 
   // Convert the QR code to image data
