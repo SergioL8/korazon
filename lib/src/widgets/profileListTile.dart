@@ -1,7 +1,8 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/utilities/utils.dart';
+import 'package:korazon/src/utilities/design_variables.dart';
+import 'package:korazon/src/screens/userscreens/user_profile.dart';
 
 class UserListTile extends StatefulWidget {
   const UserListTile({
@@ -9,13 +10,15 @@ class UserListTile extends StatefulWidget {
     required this.first_name,
     required this.last_name,
     required this.username,
-    required this.profilePicPath
+    required this.profilePicPath,
+    required this.userID,
   });
 
   final String first_name;
   final String last_name;
   final String username;
   final String profilePicPath; 
+  final String? userID; 
 
   @override
   State<UserListTile> createState() => _UserListTileState();
@@ -69,7 +72,11 @@ class _UserListTileState extends State<UserListTile> {
         style: whiteBody,
       ),
       onTap: () {
-        // Go to the user's profile page
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) {
+            return UserProfile(userID: widget.userID,);
+          }),
+        );
       }, 
     );
   }

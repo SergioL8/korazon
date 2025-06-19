@@ -336,7 +336,7 @@ class _EventDetailsState extends State<EventDetails> {
                                 'Guest List',
                                 style: whiteSubtitle
                               ),
-                              GuestList(guestList: _currentEvent.attendees ?? []),
+                              GuestList(guestList: _currentEvent.attendees ?? [], endDateTime: _currentEvent.endDateTime),
 
 
                               // ================= Report button =================

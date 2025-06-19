@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:korazon/src/widgets/profileListTile.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/utilities/models/userModel.dart';
@@ -8,9 +9,10 @@ import 'package:korazon/src/widgets/loading_place_holders.dart';
 
 class GuestList extends StatefulWidget {
 
-  const GuestList({super.key, required this.guestList});
+  const GuestList({super.key, required this.guestList, required this.endDateTime});
 
   final List<String> guestList;
+  final Timestamp? endDateTime;
 
   @override
   State<GuestList> createState() => _GuestListState();
@@ -61,6 +63,16 @@ class _GuestListState extends State<GuestList> {
   Widget build(context) {
 
     // ============ Blocked until end of event =============
+    if (widget.endDateTime != null && widget.endDateTime!.toDate().isBefore(DateTime.now())) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: Image.asset(
+          'assets/images/attendees_blocked_placeholder.png',
+          width: MediaQuery.of(context).size.width - 32,
+          fit: BoxFit.cover,
+        ),
+      );
+    }
 
     
     // ============= Hidden list =============
@@ -77,23 +89,12 @@ class _GuestListState extends State<GuestList> {
             _isLoading = false;
           });
         },
-        child: Container(
-          width: MediaQuery.of(context).size.width - 32,
-          height: 500,
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: Colors.white,
-              width: 1
-            ),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Center(
-            child: Text(
-              'Tap to see the guest list. \n'
-              '(Temporary Placeholder)',
-              style: whiteSubtitle,
-              textAlign: TextAlign.center,
-            ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: Image.asset(
+            'assets/images/attendees_hidden_placeholder.png',
+            width: MediaQuery.of(context).size.width - 32,
+            fit: BoxFit.cover,
           ),
         ),
       );
@@ -103,8 +104,7 @@ class _GuestListState extends State<GuestList> {
     if (widget.guestList.isEmpty) {
       return Center(
         child: Text(
-          'No registered guests found. \n'
-          '(Temporary Placeholder)',
+          'No registered guests found',
           style: whiteBody,
           textAlign: TextAlign.center,
         ),
@@ -151,6 +151,7 @@ class _GuestListState extends State<GuestList> {
             last_name: attendee.lastName,
             username: attendee.username,
             profilePicPath: attendee.profilePicPath,
+            userID: attendee.userID,
           );
         },
         separatorBuilder: (context, index) => const Divider(
