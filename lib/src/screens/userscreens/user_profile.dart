@@ -5,10 +5,10 @@ import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/utilities/models/userModel.dart';
 import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
-import 'package:korazon/src/widgets/profileEventCard.dart';
+// import 'package:korazon/src/widgets/profileEventCard.dart';
 import 'package:korazon/src/widgets/loading_place_holders.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:timelines_plus/timelines_plus.dart';
+// import 'package:timelines_plus/timelines_plus.dart';
 import 'package:korazon/src/screens/userscreens/user_settings.dart';
 
 class UserProfile extends StatefulWidget {
@@ -119,7 +119,7 @@ class _UserProfileState extends State<UserProfile> {
       _loadingImages = false;
     });
 
-    _getUserEvents(userModel.tickets);
+    _getUserEvents(userModel.tickets.map((ticket) => ticket.eventID).toList());
     setState(() {
       _loadingEvents = false;
     });

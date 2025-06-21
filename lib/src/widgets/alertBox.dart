@@ -5,22 +5,21 @@ import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/utilities/utils.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-void showErrorMessage(
+Future<void> showErrorMessage(
   BuildContext context, {
   String title = 'Something went wrong...',
   String content = '',
-  errorAction = ErrorAction.none,
-}) {
-  showDialog(
+  ErrorAction errorAction = ErrorAction.none,
+  
+}) async {
+  final dialogFuture = showDialog<void>(
     context: context,
     builder: (BuildContext context) => AlertDialog(
       backgroundColor: Colors.white,
       title: Row(
         children: [
           Icon(Icons.heart_broken, color: korazonColor),
-          const SizedBox(
-            width: 8,
-          ),
+          const SizedBox(width: 8),
           Expanded(
             child: Text(
               title,
@@ -34,7 +33,7 @@ void showErrorMessage(
           ),
         ],
       ),
-      content: content == ''
+      content: content.isEmpty
           ? null
           : Text(
               content,
@@ -48,35 +47,33 @@ void showErrorMessage(
         ElevatedButton(
           style: ButtonStyle(
             backgroundColor: WidgetStatePropertyAll<Color>(korazonColor),
-            shape:
-                WidgetStatePropertyAll<OutlinedBorder>(RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            )),
+            shape: WidgetStatePropertyAll<OutlinedBorder>(
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
           ),
           onPressed: errorAction == ErrorAction.logout
               ? () async {
                   await FirebaseAuth.instance.signOut();
-                  // if (!mounted) return;
                   Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(
-                      builder: (context) => const LandingPage(),
-                    ),
+                    MaterialPageRoute(builder: (_) => const LandingPage()),
                   );
                 }
               : errorAction == ErrorAction.verify
                   ? () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => const HostConfirmIdentityPage(),
+                          builder: (_) => const HostConfirmIdentityPage(),
                         ),
                       );
                     }
-                  : () {
-                      Navigator.of(context).pop();
-                    },
+                  : () => Navigator.of(context).pop(),
           child: Text(
-            errorAction == ErrorAction.logout ? 'Log Out' : 'Close',
-            style: TextStyle(
+            errorAction == ErrorAction.logout
+                ? 'Log Out'
+                : errorAction == ErrorAction.cont
+                    ? 'Continue'
+                    : 'Close',
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 17,
               fontWeight: FontWeight.w800,
@@ -86,4 +83,8 @@ void showErrorMessage(
       ],
     ),
   );
+
+  if (errorAction == ErrorAction.cont) {
+    await dialogFuture; // Pause until “Continue” (or dialog dismiss)
+  }
 }

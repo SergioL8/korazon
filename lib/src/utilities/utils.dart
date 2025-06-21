@@ -19,6 +19,7 @@ enum ErrorAction {
   none,
   logout,
   verify,
+  cont,
 }
 // This enum is used to determine the parent page of the Email verification page,
 // I thought it made sense to create a new enum instead of using the parentPage enum
@@ -152,6 +153,7 @@ Future<Uint8List> compressImage(Uint8List image, int quality) async {
 /// Output: the image as a Uint8List
 Future<Uint8List?> getImage(imagePath) async {
   if (imagePath == '') {
+    print('Image path empty');
     return null;
   } else {
     // get the storage reference
@@ -160,9 +162,13 @@ Future<Uint8List?> getImage(imagePath) async {
     // get the file reference
     Reference fileRef = storageRef.child(imagePath);
 
-    Uint8List? imageData = await fileRef.getData();
-
-    return imageData;
+    try {
+      Uint8List? imageData = await fileRef.getData();
+      return imageData;
+    } on FirebaseException catch (e) {
+      print('Error loading image at $imagePath: $e');
+      return null;
+    }
   }
 }
 
