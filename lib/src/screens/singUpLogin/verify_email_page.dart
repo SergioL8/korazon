@@ -41,10 +41,11 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   void initState() {
     super.initState();
 
-    // Only send the verification email once in initState in case it is triggered multiple times
-    // Schedule sending the email to happen after the widget is fully built once
-    Future.microtask(() {
-      sendVerificationEmail();
+    // Wait until the first frame is rendered
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        sendVerificationEmail();
+      }
     });
   }
 
@@ -58,7 +59,13 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   /// Every time this function is called a new 6 digit verification code is generated and sent.
   /// Only the last code is valid, the previous ones are invalidated.
   Future<void> sendVerificationEmail() async {
-    _loading = true;
+    if (!mounted || _loading) return; // This is to prevent double-taps
+
+    // defer the rebuild one frame so the Ink ripple has finished
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) setState(() => _loading = true);
+    });
+
     debugPrint("📧 Sending verification email to ${widget.userEmail}");
 
     // Generate a random 6-digit code
@@ -72,23 +79,35 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
 
       final result = await callable.call({
         "recipientEmail": widget.userEmail,
-        "verificationCode": _generatedCode,
+        "code": _generatedCode,
+        "isEmailVerification": true,
       });
 
       if (result.data['success'] == true) {
-        showConfirmationMessage(
-          context,
-          message: 'We have sent you a verification email with your code',
-        );
+        if (mounted) {
+          showConfirmationMessage(
+            context,
+            message: 'We have sent you a verification email with your code',
+          );
+        }
       }
     } catch (error) {
-      showErrorMessage(context, title: 'An error occurred');
+      if (mounted) {
+        showErrorMessage(context, title: 'An error occurred');
+      }
       debugPrint("❌ Error calling Firebase Function: $error");
+    } finally {}
+    if (mounted) {
+      setState(() {
+        _loading = false;
+      });
     }
-    _loading = false;
   }
 
   Future<void> verifyAndRouteUser() async {
+    setState(() {
+      _loading = true;
+    });
     final user = FirebaseAuth.instance.currentUser;
     final idToken = await user?.getIdToken();
 
@@ -107,39 +126,42 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     if (!mounted) return;
 
     if (data['success'] == true) {
+      if (!mounted) return;
       showConfirmationMessage(context, message: 'Email verified successfully');
+
+      // Optional: stop loading BEFORE navigating
+      setState(() => _loading = false);
 
       switch (widget.nextPage) {
         case EmailVerificationNextPage.basePage:
-          Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => const BasePage()));
-          break;
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => const BasePage()),
+            (Route<dynamic> route) => false,
+          );
+          return;
 
         case EmailVerificationNextPage.hostConfirmIdentityPage:
           Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => const HostConfirmIdentityPage()));
-          break;
+          return;
 
         case EmailVerificationNextPage.finishUserSetup:
           Navigator.of(context).push(
               MaterialPageRoute(builder: (context) => const FinishUserSetup()));
-          break;
+          return;
       }
-
-      // 🔄 Reload silently (not blocking UX)
-      FirebaseAuth.instance.currentUser?.reload();
     } else {
       showErrorMessage(context, title: 'An error occurred');
       debugPrint("❌ Error verifying email: ${data['error']}");
     }
   }
 
-  @override
-  void dispose() {
-    //_timer.cancel();
-    _pinController.dispose();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   //_timer.cancel();
+  //   _pinController.dispose();
+  //   super.dispose();
+  // }
 
   void navigateToLandingPage() {
     Navigator.of(context)
@@ -224,6 +246,16 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                   onTap: () {
                     final enteredCode = _pinController.text.trim();
 
+                    if (enteredCode.length != 6) {
+                      showErrorMessage(
+                        context,
+                        title: 'Incomplete Code',
+                        content:
+                            'Please enter the 6-character verification code.',
+                      );
+                      return;
+                    }
+
                     if (_isCodeExpired()) {
                       showErrorMessage(context,
                           title: 'Code expired. Please request a new one.');
@@ -250,16 +282,21 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                 Padding(
                   padding: const EdgeInsets.only(left: 16, right: 16),
                   child: GestureDetector(
-                      child: Text(
-                        'Resend verification email',
-                        style: whiteBody.copyWith(
-                          decoration: TextDecoration.underline,
-                          decorationColor: Colors.white, // Underline color
-                          decorationThickness: 1, // Thickness of the underline
-                        ),
+                    child: Text(
+                      'Resend verification email',
+                      style: whiteBody.copyWith(
+                        decoration: TextDecoration.underline,
+                        decorationColor: Colors.white, // Underline color
+                        decorationThickness: 1, // Thickness of the underline
                       ),
-                      // Code has to match and not be expired currently 5 minutes for expiration
-                      onTap: () => sendVerificationEmail()),
+                    ),
+                    // Code has to match and not be expired currently 5 minutes for expiration
+                    onTap: () {
+                      if (_loading) return; // ignore taps while working
+                      _pinController.clear();
+                      sendVerificationEmail();
+                    },
+                  ),
                 ),
                 SizedBox(height: 6),
                 // Spacer(),

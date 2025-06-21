@@ -45,14 +45,17 @@ exports.ResetPasswordEmail = onCall(async (req) => {
       logger.info(`👤 User found: ${displayName}`);
     } catch (authError) {
       logger.warn(`⚠️ User not found in Firebase Auth: ${authError.message}`);
-      // Continue execution even if user is not found
-    }
+      return {
+        success: false,
+        message: "❌ User not found",
+        userNotFound: true, 
+      };    }
 
     // Step 2: Generate a Firebase reset password link
     let resetPasswordLink;
     try {
       resetPasswordLink = await admin.auth().generatePasswordResetLink(recipientEmail);
-      logger.info("🔗 Password reset link generated successfully: ${resetLinkError.message} ");
+      logger.info("🔗 Password reset link generated successfully");
     } catch (resetLinkError) {
       logger.error(
           `❌ Failed to generate password reset link: ${resetLinkError.message}`,
@@ -87,6 +90,7 @@ exports.ResetPasswordEmail = onCall(async (req) => {
       return {
         success: true,
         message: "✅ Email sent successfully!",
+        userNotFound: false,
       };
     } catch (sendGridError) {
       logger.error("❌ Failed to send email:", sendGridError.message);
@@ -100,33 +104,33 @@ exports.ResetPasswordEmail = onCall(async (req) => {
     return {
       success: false,
       error: `❌ Error: ${error.message}`,
+      userNotFound: false, // or null, if you want to signal "not relevant"
     };
   }
 });
 
 exports.VerificationEmail = onCall(async (req) => {
   try {
-    // Retrieve API key from environment variables
+    // ✅ Load SendGrid API Key
     const sendGridKey = process.env.SENDGRID_API_KEY;
     if (!sendGridKey || !sendGridKey.startsWith("SG.")) {
       logger.error("❌ No valid SendGrid API key found.");
       throw new Error("No valid SendGrid API key found.");
     }
-
     sgMail.setApiKey(sendGridKey);
 
-    // Extract recipient email from request data
-    const { recipientEmail, verificationCode } = req.data;
+    // ✅ Extract data from request
+if (!req.data || !req.data.recipientEmail || !req.data.code) {
+  logger.error("❌ Missing required email data.");
+  throw new Error("Missing required email data.");
+}
 
+const { recipientEmail, code, isEmailVerification } = req.data;
 
-    if (!recipientEmail) {
-      logger.error("❌ Missing required email data.");
-      throw new Error("Missing required email data.");
-    }
 
     logger.info(`📩 Processing email request for: ${recipientEmail}`);
 
-    // Step 1: Retrieve user's display name
+    // ✅ Try to get user's display name
     let displayName = recipientEmail;
     try {
       const userRecord = await admin.auth().getUserByEmail(recipientEmail);
@@ -134,63 +138,65 @@ exports.VerificationEmail = onCall(async (req) => {
       logger.info(`👤 User found: ${displayName}`);
     } catch (authError) {
       logger.warn(`⚠️ User not found in Firebase Auth: ${authError.message}`);
-      // Continue execution even if user is not found
+      // Not critical — continue
     }
 
-    // Step 2: Generate a Firebase email verification link
-    //let verifyEmailLink;
-    const actionCodeSettings = {
-      url: `https://korazonapp.com/verify?email=${encodeURIComponent(recipientEmail)}`,
-      handleCodeInApp: true,
-      // You can optionally add platform-specific settings:
-      // iOS: { bundleId: 'com.yourapp.ios' },
-      // android: { packageName: 'com.yourapp.android',
-      // installApp: true, minimumVersion: '12' },
-      // dynamicLinkDomain: 'yourcustom.page.link',
-    };
-
-    try {
-      verifyEmailLink = await admin
-          .auth()
-          .generateEmailVerificationLink(recipientEmail, actionCodeSettings);
-      logger.info("🔗 Email verification link generated successfully.");
-    } catch (resetLinkError) {
-      logger.error(
-          `❌ ERROR WITH VERIFICATION LINK: ${resetLinkError.message}`,
-      );
-      throw new Error("Failed to generate email verification link.");
-    }
-
-    // Step 3: Prepare and send email via SendGrid
-    const msg = {
-      to: recipientEmail,
-      from: "korazon@korazonapp.com",
-      name: "Korazon",
-      templateId: sendGridVerifyEmailTemplateId,
-      subject: "Verify Your Email - Korazon", // Dynamic subject
-      dynamic_template_data: {
-        subject: "Verify Your Email - Korazon",
-        headerText: "Verify Your Email",
-        body1: `We've received a request to verify your email. Your code is: ${verificationCode}`,
-        body2: "Your Korazon account is almost ready.",
-        //buttonText: "Verify Email",
-      }
-    };
-
-    try {
-      await sgMail.send(msg);
-      logger.info("✅ Verification email sent successfully!");
-      return {
-        success: true,
-        message: "✅ Verification Email sent successfully!",
+    // ✅ Generate verification link if this is an email verification email
+    let verifyEmailLink = null;
+    if (isEmailVerification) {
+      const actionCodeSettings = {
+        url: `https://korazonapp.com/verify?email=${encodeURIComponent(recipientEmail)}`,
+        handleCodeInApp: true,
       };
-    } catch (sendGridError) {
-      logger.error("❌ Failed to send email:", sendGridError.message);
-      if (sendGridError.response) {
-        logger.error("SendGrid Response Error:", sendGridError.response.body);
+      try {
+        verifyEmailLink = await admin.auth().generateEmailVerificationLink(recipientEmail, actionCodeSettings);
+        logger.info("🔗 Email verification link generated successfully.");
+      } catch (resetLinkError) {
+        logger.error(`❌ ERROR WITH VERIFICATION LINK: ${resetLinkError.message}`);
+        throw new Error("Failed to generate email verification link.");
       }
-      throw new Error("Failed to send email.");
     }
+
+    // ✅ Prepare email
+    let msg;
+    if (isEmailVerification) {
+      msg = {
+        to: recipientEmail,
+        from: "korazon@korazonapp.com",
+        name: "Korazon",
+        templateId: sendGridVerifyEmailTemplateId,
+        subject: "Verify Your Email - Korazon",
+        dynamic_template_data: {
+          subject: "Verify Your Email - Korazon",
+          body1: "We’ve received a request to verify your email. Your code is:",
+          code: code,
+          body2: "Your Korazon account is almost ready. Use the code above to complete setup.",
+        },
+      };
+    } else {
+      msg = {
+        to: "korazon.dev@gmail.com",
+        from: "korazon@korazonapp.com",
+        name: "Korazon",
+        templateId: sendGridVerifyEmailTemplateId,
+        subject: "New Frat Code - Korazon",
+        dynamic_template_data: {
+          subject: "Here is the New Frat Verification Code - Korazon",
+          body1: "Use this code to verify the next frat",
+          code: code,
+          body2: "",
+        },
+      };
+    }
+
+    // ✅ Send the email
+    await sgMail.send(msg);
+    logger.info("✅ Verification email sent successfully!");
+    return {
+      success: true,
+      message: "✅ Verification Email sent successfully!",
+    };
+
   } catch (error) {
     logger.error(`🔥 Fatal error in function: ${error.message}`);
     return {
@@ -199,6 +205,7 @@ exports.VerificationEmail = onCall(async (req) => {
     };
   }
 });
+
 
 exports.verifyUserEmailManuallyHttp = functions.https.onRequest(async (req, res) => {
   const authHeader = req.headers.authorization;

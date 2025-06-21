@@ -43,59 +43,61 @@ class _HostRequiredDetailsState extends State<HostRequiredDetails> {
   void _onAddressSelected(LocationModel location) {
     setState(() {
       _selectedLocation = location; // update the selected location
-      // if (addressError) {
-        // this variable is used to show an error in the address box. So we update it to false here if it was true and if the address is verified now
-        if (_selectedLocation!.verifiedAddress == true) {
-          addressError = false;
-        } else {
-          addressError = true; // if the address is not verified, we set the error to true
-        }
-      // }
+      if (_selectedLocation!.verifiedAddress == true) {
+        addressError = false;
+      } else{
+        addressError = true; // if the address is not verified, we set the error to true
+      }
     });
   }
+
 
   // function that creates the host account
   void signUpHost() async {
     String? refPath;
 
-    if (_signingUpLoading)
+    if (_signingUpLoading) {
       return; // break the function if the user is already signing up
-
-    _signingUpLoading = true; // set the loading variable to true
-
-    if (_imageController == null) {
-      // if no image has been seleced, show an error message
-      _signingUpLoading = false;
-      showErrorMessage(context, content: 'Please add a profile picture');
-      return;
     }
 
-    if (orgNameController.text.isEmpty) {
-      // if no organization name has been entered, show an error message
-      setState(() {
-        nameError =
-            true; // variable used to set the color of the text field to red
-      });
-      _signingUpLoading = false;
-      showErrorMessage(context,
-          content: 'Please enter your organization\'s name');
-      return;
-    }
-
-    if (_selectedLocation == null) {
-      // if no address has been selected, show an error message
-      setState(() {
-        addressError = true;
-      });
-      _signingUpLoading = false;
-      showErrorMessage(context, content: 'Please select an address');
-      return;
-    }
-
-    setState(
-        () {}); // this will update the loading spinner as _signingUpLoading has been set to true above
+    setState(() {
+      // update all these which were not updated in a previous version
+      _signingUpLoading = true;
+      nameError = false;
+    });
 
     try {
+      if (_imageController == null) {
+        // if no image has been seleced, show an error message
+        showErrorMessage(context, content: 'Please add a profile picture');
+        return;
+      }
+
+      if (orgNameController.text.isEmpty) {
+        // if no organization name has been entered, show an error message
+        setState(() {
+          nameError =
+              true; // variable used to set the color of the text field to red
+        });
+        showErrorMessage(context,
+            content: 'Please enter your organization\'s name');
+        return;
+      }
+
+      if (addressError) {
+        showErrorMessage(context, content: 'Please select a valid address');
+        return;
+      }
+
+      if (_selectedLocation == null) {
+        // if no address has been selected, show an error message
+        setState(() {
+          addressError = true;
+        });
+        showErrorMessage(context, content: 'Please select an address');
+        return;
+      }
+
       // create the accoutn with auth
       UserCredential credentials = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(
@@ -105,9 +107,6 @@ class _HostRequiredDetailsState extends State<HostRequiredDetails> {
       if (credentials.user == null) {
         showErrorMessage(context,
             content: 'Error creating user. Please try again later');
-        setState(() {
-          _signingUpLoading = false;
-        });
         return;
       }
 
@@ -132,9 +131,9 @@ class _HostRequiredDetailsState extends State<HostRequiredDetails> {
         showErrorMessage(context,
             content:
                 'There was an error uploading the image. Please try again');
-        setState(() {
-          _signingUpLoading = false;
-        });
+        // setState(() {
+        //   _signingUpLoading = false;
+        // });
         return;
       } else {
         refPath = fileRef.fullPath;
@@ -148,7 +147,7 @@ class _HostRequiredDetailsState extends State<HostRequiredDetails> {
         'email': widget.email.trim(),
         'name': orgNameController.text.trim(),
         'isHost': true,
-        'hostIdentityVerified': false,
+        'isVerifiedHost': false,
         'location': _selectedLocation!.toMap(),
         'profilePicPath': refPath,
       });

@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-
 class LocationModel {
   LocationModel({
     required this.description,
@@ -22,7 +21,7 @@ class LocationModel {
   final String? city;
   final String? state;
   final String? country;
-  final String? postalCode;  
+  final String? postalCode;
 
   Map<String, dynamic> toMap() {
     return {
@@ -53,38 +52,7 @@ class LocationModel {
   }
 }
 
-
-class UserTicketsModel {
-  UserTicketsModel({
-    required this.eventId,
-    required this.ticketId,
-    required this.purchasedAt,
-  });
-
-  final String eventId;
-  final String ticketId;
-  final Timestamp purchasedAt;
-
-  Map<String, dynamic> toMap() {
-    return {
-      'eventId': eventId,
-      'ticketId': ticketId,
-      'purchasedAt': purchasedAt,
-    };
-  }
-
-  factory UserTicketsModel.fromMap(Map<String, dynamic> map) {
-    return UserTicketsModel(
-      eventId: map['eventId'] ?? '',
-      ticketId: map['ticketId'] ?? '',
-      purchasedAt: map['purchasedAt'] as Timestamp,
-    );
-  }
-}
-
-
 class UserModel {
-
   UserModel({
     required this.userID,
     required this.username,
@@ -135,7 +103,6 @@ class UserModel {
 
 
   static UserModel? fromDocumentSnapshot(DocumentSnapshot doc) {
-
     final data = doc.data() as Map<String, dynamic>?;
 
     if (data == null || data.isEmpty) {

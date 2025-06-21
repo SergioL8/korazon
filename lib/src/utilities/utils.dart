@@ -43,6 +43,7 @@ enum ParentPage {
   login,
   signup,
   createHostAcc,
+  hostConfirmIdentityPage,
 }
 
 enum DateTimeUse {

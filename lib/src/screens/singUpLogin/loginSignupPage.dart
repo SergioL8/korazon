@@ -103,8 +103,9 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
       await checkEmailVerified();
 
       if (_emailVerified) {
-        Navigator.of(context).pushReplacement(
+        Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const BasePage()),
+          (Route<dynamic> route) => false,
         );
       } else {
         Navigator.of(context).push(
@@ -283,15 +284,20 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                                   focusNode: _emailFocusNode,
                                   cursorColor: Colors.white,
                                   validator: (value) {
-                                    // if (widget.parentPage == ParentPage.signup) {
-                                    //   if (value == null || !RegExp(r'^[^\s@]+@colorado\.edu$').hasMatch(value)) {
-                                    //     return 'Please enter a valid @colorado.edu email address';
-                                    //   }
-                                    // } else {
-                                    //   if (value == null || !RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$').hasMatch(value)) {
-                                    //     return 'Please enter a valid email address';
-                                    //   }
-                                    // }
+                                    if (widget.parentPage ==
+                                        ParentPage.signup) {
+                                      if (value == null ||
+                                          !RegExp(r'^[^\s@]+@colorado\.edu$')
+                                              .hasMatch(value)) {
+                                        return 'Please enter a valid @colorado.edu email address';
+                                      }
+                                    } else {
+                                      if (value == null ||
+                                          !RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$')
+                                              .hasMatch(value)) {
+                                        return 'Please enter a valid email address';
+                                      }
+                                    }
                                     return null;
                                   },
                                   onChanged: (_) =>
@@ -356,6 +362,8 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                                   focusNode: _passwordFocusNode,
                                   cursorColor: Colors.white,
                                   obscureText: obscureText,
+
+                                  // We only care about spaces if they are in the middle of the password not at the end
                                   validator: (val) {
                                     if (val != null && val.contains(' ')) {
                                       return 'Password cannot contain spaces.';
@@ -365,6 +373,7 @@ class _LoginSignupPageState extends State<LoginSignupPage> {
                                     }
                                     return null;
                                   },
+
                                   onChanged: (_) =>
                                       _passwordFormKey.currentState!.validate(),
                                   style: whiteBody,

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:korazon/src/screens/singUpLogin/landing_page.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
 import 'package:korazon/src/widgets/confirmationMessage.dart';
@@ -20,8 +19,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
   bool _loading = false;
 
   void navigateToLandingPage() {
-    Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const LandingPage()));
+    Navigator.of(context).pop();
   }
 
   Future<void> sendResetPasswordEmail({
@@ -49,7 +47,14 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
         Future.microtask(() {
           if (!mounted) return;
 
-          if (result.data['success'] == true) {
+          // If the user is not found we want to let the user know
+          if (result.data['userNotFound'] == true) {
+            showErrorMessage(
+              context,
+              title: 'No account found with that email address.',
+            );
+            debugPrint("⚠️ User not found: $recipientEmail");
+          } else if (result.data['success'] == true) {
             showConfirmationMessage(context,
                 message: 'We have sent you a verification email');
             debugPrint("✅ Email sent successfully to $recipientEmail!");
@@ -61,9 +66,10 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
       } catch (error) {
         //showErrorMessage(context, title: 'An error occurred');
         debugPrint("❌ Error calling Firebase Function: $error");
+      } finally {
+        setState(() => _loading = false);
       }
     }
-    _loading = false;
   }
 
   @override

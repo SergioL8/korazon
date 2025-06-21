@@ -1,0 +1,2 @@
+C:/Users/mcast/Documents/programming/flutter_projects/korazon/android/app/.cxx/RelWithDebInfo/6q1t2145/x86/CMakeFiles/edit_cache.dir
+C:/Users/mcast/Documents/programming/flutter_projects/korazon/android/app/.cxx/RelWithDebInfo/6q1t2145/x86/CMakeFiles/rebuild_cache.dir

@@ -24,7 +24,6 @@ class _ColorfulSpinnerState extends State<ColorfulSpinner>
 
   @override
   void initState() {
-    
     super.initState();
     _controller = AnimationController(
       vsync: this,
@@ -82,7 +81,7 @@ class SpinnerPainter extends CustomPainter {
       ..strokeWidth = strokeWidth
       ..shader = SweepGradient(
         colors: [
-          Colors.black, // Tail (start of arc)
+          backgroundColorBM, // Tail (start of arc)
           korazonColor, // Transition color
           Color.fromARGB(255, 103, 132, 224), // Head (end of arc)
           Colors.transparent, // Invisible tail for smooth fade-out

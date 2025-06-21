@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+// When creating a new code in firebase, the only two required fields are:
+// 'code' and 'used=false', otherwise it will not work
 class IdentityCodeModel {
   IdentityCodeModel({
     required this.documentID,
@@ -7,8 +9,8 @@ class IdentityCodeModel {
     required this.used,
     required this.dateUsed,
     required this.fratUID,
-    // I will not be requiring fratName and email becuase we will never 
-    // show this information to the user and it requires downloading 
+    // I will not be requiring fratName and email becuase we will never
+    // show this information to the user and it requires downloading
     // current user document to update the code.
 
     // required this.fratName,

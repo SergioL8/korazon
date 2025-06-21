@@ -1,3 +1,6 @@
+import 'dart:math';
+
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:korazon/src/screens/basePage.dart';
@@ -7,8 +10,6 @@ import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
 import 'package:korazon/src/widgets/customPinInput.dart';
 import 'package:korazon/src/widgets/gradient_border_button.dart';
-import 'package:pin_code_fields/pin_code_fields.dart';
-import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -22,19 +23,25 @@ class HostConfirmIdentityPage extends StatefulWidget {
 class _ConfirmIdentityPageState extends State<HostConfirmIdentityPage> {
   final TextEditingController _pinController = TextEditingController();
   bool _isLoading = false;
-  bool _error = false;
 
   // Dispose controllers
-  @override
-  void dispose() {
-    _pinController.dispose();
-    super.dispose();
+  // @override
+  // void dispose() {
+  //   _pinController.dispose();
+  //   super.dispose();
+  // }
+
+  /// This function generates a random alphanumeric code of a given length.
+  String _generateRandomCode(int length) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    final rand = Random.secure();
+    return List.generate(length, (_) => chars[rand.nextInt(chars.length)])
+        .join();
   }
 
-  // this function checks if the code is valid,
-  // updates the user's document to mark the account as verified
-  // and updates the code document to store who and when the code was used
-
+  /// This function checks if the code is valid,
+  /// updates the user's document to mark the account as verified
+  /// and updates the code document to store who and when the code was used
   void checkCode(String code) async {
     setState(() => _isLoading = true);
 
@@ -48,7 +55,7 @@ class _ConfirmIdentityPageState extends State<HostConfirmIdentityPage> {
 
       // 2) Check if no documents were found
       if (codeQuery.docs.isEmpty) {
-        showErrorMessage(context, content: 'Invalid code');
+        showErrorMessage(context, content: 'Invalid code, contact support');
         return;
       }
 
@@ -62,6 +69,11 @@ class _ConfirmIdentityPageState extends State<HostConfirmIdentityPage> {
       // If model creation failed, notify user
       if (codeModel == null) {
         showErrorMessage(context, content: 'Invalid code, contact support');
+        return;
+      }
+
+      if (codeModel.used) {
+        showErrorMessage(context, content: 'Invalid code, already used');
         return;
       }
 
@@ -94,12 +106,34 @@ class _ConfirmIdentityPageState extends State<HostConfirmIdentityPage> {
         'isVerifiedHost': true,
       });
 
-      // TODO: Create and store a new random code for verification,
-      //       and email Korazon.dev with the new code.
+      // 8.1) Generate a new 6-character alphanumeric code
+      final newCode = _generateRandomCode(6);
 
-      // 8) Let's get out of this godamm page
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const BasePage()),
+      // 8.2) Create the new code document in Firestore
+      await FirebaseFirestore.instance.collection('codes').add({
+        'code': newCode,
+        'used': false,
+        // 'dateUsed': DateTime.now(),
+        // 'fratUID': currentUser,
+      });
+
+      // 9) Send the new code to the user via email
+      final HttpsCallable callable =
+          FirebaseFunctions.instance.httpsCallable('VerificationEmail');
+
+      await callable.call({
+        "recipientEmail": 'korazon.dev@gmail.com',
+        "code": newCode,
+        "isEmailVerification": false,
+      });
+
+      // 10) Let's get out of this godamm page
+      Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
+        MaterialPageRoute(
+            builder: (context) => const BasePage(
+                  parentPage: ParentPage.hostConfirmIdentityPage,
+                )),
+        (Route<dynamic> route) => false,
       );
     } on FirebaseException catch (firebaseError) {
       debugPrint('Firebase error: ${firebaseError.message}');
@@ -156,48 +190,22 @@ class _ConfirmIdentityPageState extends State<HostConfirmIdentityPage> {
                         textAlign: TextAlign.center,
                       ),
                       SizedBox(height: screenHeight * 0.05),
-                      CustomPinInput(controller: _pinController),
-                      PinCodeTextField(
-                        // pin code field imported from pin_code_fields package
-                        appContext: context,
-                        length: 6, // length of the pin code
+                      CustomPinInput(
                         controller: _pinController,
-                        keyboardType: TextInputType.text,
-                        animationType: AnimationType
-                            .fade, // animation of numbers when they are entered
-                        textStyle: whiteBody,
-                        textCapitalization: TextCapitalization
-                            .characters, // set the keyboard to uppercase
-                        enableActiveFill: true, // enable fill in the boxes
-                        inputFormatters: [
-                          // force the input to be uppercase when entered
-                          TextInputFormatter.withFunction((oldValue, newValue) {
-                            return newValue.copyWith(
-                                text: newValue.text.toUpperCase());
-                          }),
-                        ],
-                        pinTheme: PinTheme(
-                          // theme of the individual boxes
-                          shape: PinCodeFieldShape.box,
-                          borderRadius: BorderRadius.circular(
-                              10), // make the boxes rounded
-                          borderWidth: 0, // no border
-                          inactiveFillColor: Colors.white.withOpacity(0.15),
-                          activeFillColor: Colors.white.withOpacity(0.15),
-                          selectedFillColor: Colors.white.withOpacity(0.15),
-                          activeColor: _error ? Colors.red : Colors.transparent,
-                          inactiveColor:
-                              _error ? Colors.red : Colors.transparent,
-                          selectedColor:
-                              _error ? Colors.red : Colors.transparent,
-                        ),
+                        useNumericKeyboard: false,
                       ),
-                      //! Needs change
                       Spacer(),
                       GestureDetector(
-                        onTap: () => Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(
-                                builder: (context) => const BasePage())),
+                        //? This deletes the entire stack
+                        onTap: () => Navigator.of(context, rootNavigator: true)
+                            .pushAndRemoveUntil(
+                          MaterialPageRoute(
+                              builder: (context) => const BasePage(
+                                    parentPage:
+                                        ParentPage.hostConfirmIdentityPage,
+                                  )),
+                          (Route<dynamic> route) => false,
+                        ),
                         child: Text(
                           'Skip identity verification',
                           style: whiteBody.copyWith(
@@ -223,9 +231,23 @@ class _ConfirmIdentityPageState extends State<HostConfirmIdentityPage> {
 
                       GradientBorderButton(
                           loading: _isLoading,
-                          onTap: () => checkCode(_pinController.text),
-                          text:
-                              'Verify Code'), // Use () => to pass the function reference
+                          onTap: () {
+                            // We are going to check for full code completion to avoid unnecessary firebase queries
+                            final enteredCode = _pinController.text.trim();
+
+                            if (enteredCode.length != 6) {
+                              showErrorMessage(
+                                context,
+                                title: 'Incomplete Code',
+                                content:
+                                    'Please enter the 6-character verification code.',
+                              );
+                              return;
+                            }
+
+                            checkCode(enteredCode);
+                          },
+                          text: 'Verify Code'),
                       SizedBox(
                         height: screenHeight * 0.1,
                       ),
