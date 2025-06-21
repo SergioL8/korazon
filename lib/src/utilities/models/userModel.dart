@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:korazon/src/utilities/models/eventModel.dart';
 
 class LocationModel {
   LocationModel({
@@ -90,7 +91,7 @@ class UserModel {
   final String academicYear;
   final String bio;
   final String qrCode;
-  final List<UserTicketsModel> tickets;
+  final List<TicketModel> tickets;
   final List<String> createdEvents;
   final String profilePicPath;
   final List<String> followers;
@@ -123,7 +124,7 @@ class UserModel {
       bio: data['bio'] ?? '',
       qrCode: data['qrCode'] ?? '',
       tickets: (data['tickets'] as List<dynamic>?)
-        ?.map((e) => UserTicketsModel.fromMap(e as Map<String, dynamic>))
+        ?.map((e) => TicketModel.fromMap(e as Map<String, dynamic>))
         .toList() ?? [],
       createdEvents: List<String>.from(data['createdEvents'] ?? []),
       profilePicPath: data['profilePicPath'] ?? '',

@@ -4,6 +4,7 @@ import 'package:korazon/src/utilities/models/userModel.dart';
 class TicketModel {
   TicketModel({
     required this.ticketID,
+    required this.eventID,
     required this.ticketName,
     required this.ticketPrice,
     this.ticketDescription,
@@ -16,6 +17,7 @@ class TicketModel {
   });
 
   final String ticketID;
+  final String eventID;
   final String ticketName;
   final double ticketPrice;
   final String? ticketDescription;
@@ -29,6 +31,7 @@ class TicketModel {
   Map<String, dynamic> toMap() {
     return {
       'documentID': ticketID,
+      'eventID': eventID,
       'ticketName': ticketName,
       'ticketPrice': ticketPrice,
       'ticketDescription': ticketDescription,
@@ -44,6 +47,7 @@ class TicketModel {
   factory TicketModel.fromMap(Map<String, dynamic> map) {
     return TicketModel(
       ticketID: map['documentID'],
+      eventID: map['eventID'],
       ticketName: map['ticketName'] ?? 'No Ticket Name',
       ticketPrice: (map['ticketPrice'] is num) ? (map['ticketPrice'] as num).toDouble() : 0.0,
       ticketDescription: map['ticketDescription'] ?? '',

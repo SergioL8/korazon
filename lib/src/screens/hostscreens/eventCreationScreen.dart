@@ -31,6 +31,9 @@ class EventCreationScreenState extends State<EventCreationScreen> {
   // get the uid of the host creating the event
   final uid = FirebaseAuth.instance.currentUser?.uid;
 
+  late List<TicketModel> tickets;
+  late DocumentReference eventRef;
+
   // Variable declaration
   UserModel? user;
   Timestamp? _startDateTimeController;
@@ -44,13 +47,7 @@ class EventCreationScreenState extends State<EventCreationScreen> {
   bool addressError = false;
   bool plus21 = false;
   LocationModel? _selectedLocation;
-  List<TicketModel> tickets = [
-    TicketModel(
-      ticketID: 'firstTicket',
-      ticketName: 'General Admission',
-      ticketPrice: 0.00,
-    )
-  ]; // this will be used to store the tickets created by the user
+  
 
   bool _isLoading = false; // this variable will be used to show a loading spinner when the user clicks the submit button
   Uint8List? _photofile; // this variable will be used to store the image file that the user uploads
@@ -155,6 +152,7 @@ class EventCreationScreenState extends State<EventCreationScreen> {
 
     if (uid == null) {
       showErrorMessage(context, content: 'There was an error loading your user, please logout and login again', errorAction: ErrorAction.logout);
+      setState(() => _isLoading = false);
       return;
     }
 
@@ -199,8 +197,7 @@ class EventCreationScreenState extends State<EventCreationScreen> {
     }
 
     try {
-      // save the event to firebase firestore
-      DocumentReference docRef = await FirebaseFirestore.instance.collection('events').add({
+      await eventRef.set({
         'title': _titleController.text,
         'photoPath': fileRef.fullPath,
         'description': _descriptionController.text,
@@ -220,7 +217,7 @@ class EventCreationScreenState extends State<EventCreationScreen> {
 
       // add the created event to the host list of events
       await FirebaseFirestore.instance.collection('users').doc(uid).update({
-        'createdEvents': FieldValue.arrayUnion([docRef.id])
+        'createdEvents': FieldValue.arrayUnion([eventRef.id])
       });
 
 
@@ -228,14 +225,18 @@ class EventCreationScreenState extends State<EventCreationScreen> {
       _titleController.clear();
       _descriptionController.clear();
       _photofile = null; // Clear the image file
+
+      
       
       setState(() {
         _startDateTimeController = null;
         _endDateTimeController = null;
         _selectedLocation = null;
+        eventRef = FirebaseFirestore.instance.collection('events').doc(); // generate a fresh ref for the *next* event
         tickets = [
           TicketModel(
             ticketID: 'firstTicket',
+            eventID: eventRef.id,
             ticketName: 'General Admission',
             ticketPrice: 0.00,          
           )
@@ -272,7 +273,7 @@ class EventCreationScreenState extends State<EventCreationScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
       ),
-      builder: (_) => TicketCreationScreen(ticket: ticket,),
+      builder: (_) => TicketCreationScreen(ticket: ticket, eventID: eventRef.id,),
     );
 
     if (newTicket != null) {
@@ -299,6 +300,17 @@ class EventCreationScreenState extends State<EventCreationScreen> {
   @override
   void initState() {
     super.initState();
+    eventRef = FirebaseFirestore.instance.collection('events').doc();
+    tickets = [
+      TicketModel(
+        ticketID: 'firstTicket',
+        eventID: eventRef.id,
+        ticketName: 'General Admission',
+        ticketPrice: 0.00,
+      )
+    ]; // this will be used to store the tickets created by the user
+
+
     eventTitleFocousNode.addListener(() {
       setState(() {
         isEventTitleFocused = eventTitleFocousNode.hasFocus;

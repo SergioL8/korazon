@@ -65,10 +65,9 @@ class _YourEventsState extends State<YourEvents> {
         setState(() { // the qrCode widgets needs the user info, so once we have the info we can se the loading state to false
           _qrCodeLoading = false;
         });
-        eventUids = usermodel!.tickets.map((ticket) => ticket.eventId).toList();
+        eventUids = usermodel!.tickets.map((ticket) => ticket.eventID).toList();
         qrCodeBase64 = usermodel!.qrCode;
       });
-
       // Fetch event details for each event UID
       // This goes to the list of all events to find if they match any of the ones in your tickets list.
       for (String uid in eventUids) {
