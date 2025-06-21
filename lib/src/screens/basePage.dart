@@ -30,7 +30,7 @@ class BasePage extends StatefulWidget {
 }
 
 class _BasePage extends State<BasePage> {
-  int selectedPageIndex = 2;
+  int selectedPageIndex = 0;
   String? _uid;
   bool? isHost;
 
@@ -75,7 +75,7 @@ class _BasePage extends State<BasePage> {
     // and if they are not verified, and if the page they just came from is not the host confirm identity page
 
     if (user.isHost &&
-        !user.isVerifiedHost &&
+        !user.hostIdentityVerified! &&
         ParentPage.hostConfirmIdentityPage != widget.parentPage) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
@@ -146,8 +146,8 @@ class _BasePage extends State<BasePage> {
 
     final hostNavItems = [
       BottomNavigationBarItem(
-        icon: Icon(Icons.home_outlined),
-        activeIcon: Icon(Icons.home),
+        icon: Icon(Icons.home_outlined, color: Colors.white,),
+        activeIcon: Icon(Icons.home, color: Colors.white),
         label: 'Home',
       ),
       BottomNavigationBarItem(
@@ -212,10 +212,10 @@ class _BasePage extends State<BasePage> {
             iconSize: 32.0, // 32.0
             showSelectedLabels: false,
             showUnselectedLabels: false,
-            selectedItemColor: secondaryColor,
-            unselectedItemColor: secondaryColor,
+            selectedItemColor: Colors.white,
+            unselectedItemColor: Colors.white,
             elevation: navBarElevation,
-            backgroundColor: tertiaryColor,
+            backgroundColor: backgroundColorBM,
             onTap: (selectedPageIndex) {
               _selectedPage(selectedPageIndex);
             },

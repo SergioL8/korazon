@@ -538,12 +538,12 @@ class _ExpandableTicketState extends State<ExpandableTicket> {
                               showErrorMessage(context, content: 'Unexpected error. Please try again', errorAction: ErrorAction.none);
                               return;
                             } 
-                            // finally {
-                            //   if (!_paymentSuccessful) {
-                            //     try { _removeHolds(eventReference, uid); } // Remove the user from pending holds
-                            //     catch (_) {} // Silently fail since it will be handled by the webhook
-                            //   }
-                            // }
+                            finally {
+                              if (!_paymentSuccessful) {
+                                try { _removeHolds(eventReference, uid); } // Remove the user from pending holds
+                                catch (_) {} // Silently fail since it will be handled by the webhook
+                              }
+                            }
                           },
                           child: Shimmer.fromColors(
                             baseColor: Colors.white,

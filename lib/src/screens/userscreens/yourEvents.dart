@@ -69,7 +69,7 @@ class _YourEventsState extends State<YourEvents> {
         setState(() { // the qrCode widgets needs the user info, so once we have the info we can se the loading state to false
           _qrCodeLoading = false;
         });
-        eventUids = usermodel!.tickets.map((ticket) => ticket.eventID).toList();
+        eventUids = usermodel!.tickets.map((ticket) => ticket['eventID'] as String).toList();
         qrCodeBase64 = usermodel!.qrCode;
       });
 
@@ -116,23 +116,6 @@ class _YourEventsState extends State<YourEvents> {
   Widget build(context) {
     return Scaffold(
       backgroundColor: backgroundColorBM,
-      appBar: AppBar(
-        title: Text(
-          'Your Events',
-          style: TextStyle(
-                  color: secondaryColor,
-                  fontWeight: primaryFontWeight,
-                  fontSize: 32.0,
-          ),
-        ),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(2.0),
-          child: Container(
-            color: dividerColor,
-            height: barThickness,
-          ),
-        ),
-      ),
       body: ListView.builder(
         itemCount: events.length + 2,
         itemBuilder: (context, index) {

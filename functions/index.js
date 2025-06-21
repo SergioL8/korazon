@@ -249,6 +249,7 @@ exports.createTicketPaymentIntent = functions.https.onRequest( {secrets: [stripe
   const stripe = require("stripe")(stripeSecretKey.value());
 
   try {
+    console.log('Request body:', req.body);
     const {
       amount, // Total amount (user pays)
       korazonCut, // Korazon's cut

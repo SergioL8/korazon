@@ -165,7 +165,7 @@ class EventCreationScreenState extends State<EventCreationScreen> {
       setState(() { _isLoading = false; });
       return;
     }
-    if (user!.isVerifiedHost == false) {
+    if (user!.hostIdentityVerified == false) {
       showErrorMessage(context, content: 'Only verified users can post events', errorAction: ErrorAction.verify);
       setState(() { _isLoading = false; });
       return;

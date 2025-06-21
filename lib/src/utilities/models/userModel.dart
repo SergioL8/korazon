@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:korazon/src/utilities/models/eventModel.dart';
+// import 'package:korazon/src/utilities/models/eventModel.dart';
 
 class LocationModel {
   LocationModel({
@@ -59,7 +59,6 @@ class UserModel {
     required this.username,
     required this.email,
     required this.isHost,
-    required this.isVerifiedHost, // we have two of these???
     required this.name,
     required this.lastName,
     required this.gender,
@@ -83,7 +82,6 @@ class UserModel {
   final String email;
   final String username;
   final bool isHost;
-  final bool isVerifiedHost;
   final String name;
   final String lastName;
   final String gender;
@@ -91,7 +89,7 @@ class UserModel {
   final String academicYear;
   final String bio;
   final String qrCode;
-  final List<TicketModel> tickets;
+  final List<Map<String, dynamic>> tickets;
   final List<String> createdEvents;
   final String profilePicPath;
   final List<String> followers;
@@ -115,7 +113,6 @@ class UserModel {
       email: data['email'] ?? '',
       username: data['username'] ?? 'No username',
       isHost: data['isHost'] ?? false,
-      isVerifiedHost: data['isVerifiedHost'] ?? false,
       name: data['name'] ?? 'No name',
       lastName: data['lastName'] ?? 'No last name',
       gender: data['gender'] ?? 'Unknown',
@@ -124,7 +121,12 @@ class UserModel {
       bio: data['bio'] ?? '',
       qrCode: data['qrCode'] ?? '',
       tickets: (data['tickets'] as List<dynamic>?)
-        ?.map((e) => TicketModel.fromMap(e as Map<String, dynamic>))
+        ?.map((e) => Map<String, dynamic>.from(e as Map<String, dynamic>))
+        .map((m) => {
+          'eventID': m['eventID'] ?? '',
+          'purchasedAt': m['purchasedAt'] ?? '',
+          'ticketID': m['ticketID'] ?? '',
+        })
         .toList() ?? [],
       createdEvents: List<String>.from(data['createdEvents'] ?? []),
       profilePicPath: data['profilePicPath'] ?? '',

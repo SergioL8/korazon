@@ -63,7 +63,7 @@ class _GuestListState extends State<GuestList> {
   Widget build(context) {
 
     // ============ Blocked until end of event =============
-    if (widget.endDateTime != null && widget.endDateTime!.toDate().isBefore(DateTime.now())) {
+    if (widget.endDateTime != null && DateTime.now().isBefore(widget.endDateTime!.toDate())) {
       return ClipRRect(
         borderRadius: BorderRadius.circular(24),
         child: Image.asset(
