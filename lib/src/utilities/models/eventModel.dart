@@ -47,7 +47,7 @@ class TicketModel {
   factory TicketModel.fromMap(Map<String, dynamic> map) {
     return TicketModel(
       ticketID: map['documentID'],
-      eventID: map['eventID'],
+      eventID: map['eventID'] ?? '',
       ticketName: map['ticketName'] ?? 'No Ticket Name',
       ticketPrice: (map['ticketPrice'] is num) ? (map['ticketPrice'] as num).toDouble() : 0.0,
       ticketDescription: map['ticketDescription'] ?? '',
