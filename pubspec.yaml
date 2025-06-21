@@ -96,6 +96,7 @@ flutter:
     - assets/images/add_image_mountains_placeholder.png
     - assets/images/attendees_blocked_placeholder.png
     - assets/images/attendees_hidden_placeholder.png
+    - assets/images/korazon_logo.png
 
     # icons
     - assets/icons/ticket-empty.png
