@@ -119,7 +119,7 @@ class _UserProfileState extends State<UserProfile> {
       _loadingImages = false;
     });
 
-    _getUserEvents(userModel.tickets);
+    _getUserEvents(userModel.tickets.map((ticket) => ticket.eventID).toList());
     setState(() {
       _loadingEvents = false;
     });

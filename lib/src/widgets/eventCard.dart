@@ -2,7 +2,7 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:korazon/src/screens/eventDetails.dart';
+import 'package:korazon/src/screens/event_details/eventDetails.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/utilities/utils.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -43,12 +43,12 @@ class _EventCardState extends State<EventCard> {
         return InkWell(
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => EventDetails(
-                event: event,
-                imageData: snapshot.data,
-                formattedDate: formattedDate,
-                formattedTime: formattedTime,
-              ),
+              builder: (context) {
+                return EventDetails(
+                  event: event,
+                  imageData: snapshot.data,
+                );
+              } 
             ),
           ),
 
@@ -120,9 +120,7 @@ class _EventCardState extends State<EventCard> {
                             ),
                             child: CircleAvatar(
                               backgroundColor: korazonColor,
-                              backgroundImage: event.profilePicPath != ''
-                                  ? NetworkImage(event.profilePicPath)
-                                  : AssetImage(
+                              backgroundImage: AssetImage(
                                       'assets/images/no_profile_picture.webp',
                                     ) as ImageProvider,
                               radius: 20, // Adjust to fit inside the container

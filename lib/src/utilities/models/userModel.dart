@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:korazon/src/utilities/models/eventModel.dart';
 
 class LocationModel {
   LocationModel({
@@ -58,7 +59,7 @@ class UserModel {
     required this.username,
     required this.email,
     required this.isHost,
-    required this.isVerifiedHost,
+    required this.isVerifiedHost, // we have two of these???
     required this.name,
     required this.lastName,
     required this.gender,
@@ -74,6 +75,8 @@ class UserModel {
     required this.instaAcc,
     required this.snapAcc,
     required this.location,
+    required this.hostIdentityVerified, // we have two of these???
+    required this.stripeConnectedCustomerId,
   });
 
   final String userID;
@@ -88,7 +91,7 @@ class UserModel {
   final String academicYear;
   final String bio;
   final String qrCode;
-  final List<String> tickets;
+  final List<TicketModel> tickets;
   final List<String> createdEvents;
   final String profilePicPath;
   final List<String> followers;
@@ -96,6 +99,9 @@ class UserModel {
   final String instaAcc;
   final String snapAcc;
   final LocationModel? location;
+  final bool? hostIdentityVerified;
+  final String? stripeConnectedCustomerId;
+
 
   static UserModel? fromDocumentSnapshot(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>?;
@@ -117,16 +123,20 @@ class UserModel {
       academicYear: data['academicYear'] ?? 'No academic year',
       bio: data['bio'] ?? '',
       qrCode: data['qrCode'] ?? '',
-      tickets: List<String>.from(data['tickets'] ?? []),
+      tickets: (data['tickets'] as List<dynamic>?)
+        ?.map((e) => TicketModel.fromMap(e as Map<String, dynamic>))
+        .toList() ?? [],
       createdEvents: List<String>.from(data['createdEvents'] ?? []),
       profilePicPath: data['profilePicPath'] ?? '',
       followers: List<String>.from(data['followers'] ?? []),
       profilePicturesPath: List<String>.from(data['profilePicturesPath'] ?? []),
       instaAcc: data['instaAcc'] ?? '',
       snapAcc: data['snapAcc'] ?? '',
-      location: data['location'] != null
-          ? LocationModel.fromMap(data['location'] as Map<String, dynamic>)
-          : null,
+      location: data['location'] != null 
+        ? LocationModel.fromMap(data['location'] as Map<String, dynamic>)
+        : null,
+      hostIdentityVerified: data['hostIdentityVerified'] ?? false,
+      stripeConnectedCustomerId: data['stripeConnectedCustomerId'],
     );
   }
 }

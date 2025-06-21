@@ -1,8 +1,7 @@
 import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:korazon/src/screens/eventDetails.dart';
+import 'package:korazon/src/screens/event_details/eventDetails.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/utilities/utils.dart';
 import 'package:transparent_image/transparent_image.dart';
@@ -29,18 +28,6 @@ class _ProfileEventCardState extends State<ProfileEventCard> {
       return SizedBox();
     }
 
-    final String dateTimeStr = event.startDateTime.toString(); // e.g., "2025-01-15 22:00"
-
-    String formattedDate = 'No Date'; // e.g., "January 15, 2025"
-    String formattedTime = 'No time'; // e.g., "10:00 PM"
-
-    if (dateTimeStr != '') {
-      DateTime eventDateTime = DateTime.parse(dateTimeStr);
-
-      // Format the date and time separately
-      formattedDate = DateFormat('MMMM d, yyyy').format(eventDateTime); // e.g., "January 15, 2025"
-      formattedTime = DateFormat('h:mm a').format(eventDateTime); // e.g., "10:00 PM"
-    }
 
     return FutureBuilder<Uint8List?>(
       future: getImage(event.photoPath),
@@ -51,8 +38,6 @@ class _ProfileEventCardState extends State<ProfileEventCard> {
               builder: (context) => EventDetails(
                 event: event,
                 imageData: snapshot.data,
-                formattedDate: formattedDate,
-                formattedTime: formattedTime,
               ),
             ),
           ),
@@ -125,8 +110,8 @@ class _ProfileEventCardState extends State<ProfileEventCard> {
                             ),
                             child: CircleAvatar(
                               backgroundColor: korazonColor,
-                              backgroundImage: event.profilePicPath != ''
-                                  ? NetworkImage(event.profilePicPath)
+                              backgroundImage: event.hostProfilePicPath != ''
+                                  ? NetworkImage(event.hostProfilePicPath)
                                   : AssetImage(
                                       'assets/images/no_profile_picture.webp',
                                     ) as ImageProvider,
