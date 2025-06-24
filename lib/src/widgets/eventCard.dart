@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:korazon/src/screens/eventDetails.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/utilities/utils.dart';
+import 'package:korazon/src/widgets/loading_place_holders.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:korazon/src/utilities/models/eventModel.dart';
 
@@ -192,14 +193,18 @@ class _EventCardState extends State<EventCard> {
                                 },
                               );
                             },
-                            child: FadeInImage(
-                              placeholder: MemoryImage(kTransparentImage),
-                              image: snapshot.data != null
-                                  ? MemoryImage(snapshot.data!)
-                                  : const AssetImage('assets/images/pary.jpg')
-                                      as ImageProvider,
-                              fit: BoxFit.cover,
-                            ),
+                            child: snapshot.connectionState ==
+                                    ConnectionState.waiting
+                                ? LoadingImagePlaceHolder()
+                                : FadeInImage(
+                                    placeholder: MemoryImage(kTransparentImage),
+                                    image: snapshot.data != null
+                                        ? MemoryImage(snapshot.data!)
+                                        : const AssetImage(
+                                                'assets/images/pary.jpg')
+                                            as ImageProvider,
+                                    fit: BoxFit.cover,
+                                  ),
                           ),
                         ),
                       ),
