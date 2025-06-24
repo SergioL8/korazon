@@ -53,21 +53,48 @@ class _HomePageState extends State<HomePage> {
   Future<void> _retrieveData() async {
     if (_isLoading) return;
 
-    setState(() {
-      _isLoading = true;
-    });
+    setState(() => _isLoading = true);
 
     Query query = FirebaseFirestore.instance.collection('events');
 
-    // Apply filter for 'Upcoming'
+    // Apply filters
+    // Apply the upcoming filter
+
+    //? Events show up to 4 hours after the start time
     if (selectedFilter == 'Upcoming') {
-      query = query.where('startDateTime', isGreaterThan: Timestamp.now());
+      final fourHoursAgo = DateTime.now().subtract(const Duration(hours: 4));
+      query = query.where('startDateTime',
+          isGreaterThan: Timestamp.fromDate(fourHoursAgo));
+    }
+
+    //Events that are happening in the next 24 hours
+    // I think this makes more sense than events up to 6 am of the next day
+    if (selectedFilter == 'Tonight') {
+      final now = DateTime.now();
+      final next24h = now.add(const Duration(hours: 24));
+
+      query = query
+          .where('startDateTime',
+              isGreaterThanOrEqualTo: Timestamp.fromDate(now))
+          .where('startDateTime', isLessThan: Timestamp.fromDate(next24h));
+    }
+
+    //Events that are happening in the next 7 days
+    if (selectedFilter == 'This Week') {
+      final now = DateTime.now();
+      final next7Days = now.add(const Duration(days: 7));
+
+      query = query
+          .where('startDateTime',
+              isGreaterThanOrEqualTo: Timestamp.fromDate(now))
+          .where('startDateTime', isLessThan: Timestamp.fromDate(next7Days));
     }
 
     query = query.orderBy('startDateTime').limit(sizeOfData);
 
     if (_lastDocument != null) {
-      query = query.startAfterDocument(_lastDocument!);
+      final lastTime = _lastDocument!.get('startDateTime');
+      query = query.startAfter([lastTime]);
     }
 
     QuerySnapshot querySnapshot = await query.get();
@@ -75,7 +102,7 @@ class _HomePageState extends State<HomePage> {
     if (querySnapshot.docs.isNotEmpty) {
       setState(() {
         _documents.addAll(querySnapshot.docs);
-        _lastDocument = _documents.last;
+        _lastDocument = querySnapshot.docs.last;
         _moreEventsleft = querySnapshot.docs.length >= sizeOfData;
         _isLoading = false;
       });
@@ -152,21 +179,35 @@ class _HomePageState extends State<HomePage> {
                             FilterChipLabel(
                               label: 'This Week',
                               selected: selectedFilter == 'This Week',
-                              onTap: () =>
-                                  setState(() => selectedFilter = 'This Week'),
+                              onTap: () {
+                                setState(() {
+                                  selectedFilter = 'This Week';
+                                  _documents.clear();
+                                  _lastDocument = null;
+                                  _moreEventsleft = true;
+                                });
+                                _retrieveData(); // Fetch filtered data
+                              },
                             ),
                             FilterChipLabel(
                               label: 'Tonight',
                               selected: selectedFilter == 'Tonight',
-                              onTap: () =>
-                                  setState(() => selectedFilter = 'Tonight'),
+                              onTap: () {
+                                setState(() {
+                                  selectedFilter = 'Tonight';
+                                  _documents.clear();
+                                  _lastDocument = null;
+                                  _moreEventsleft = true;
+                                });
+                                _retrieveData();
+                              },
                             ),
-                            FilterChipLabel(
-                              label: 'Free',
-                              selected: selectedFilter == 'Free',
-                              onTap: () =>
-                                  setState(() => selectedFilter = 'Free'),
-                            ),
+                            // FilterChipLabel(
+                            //   label: 'Free',
+                            //   selected: selectedFilter == 'Free',
+                            //   onTap: () =>
+                            //       setState(() => selectedFilter = 'Free'),
+                            // ),
                           ],
                         ),
                       ),
@@ -181,23 +222,38 @@ class _HomePageState extends State<HomePage> {
             // I added the padding to the postcard so that it is consistent across the app
 
             SliverToBoxAdapter(
-              child: _documents.isEmpty && !_isLoading
-                  ? const Center(child: Text('No events :('))
-                  : ListView.builder(
-                      physics:
-                          const NeverScrollableScrollPhysics(), // Remove custom scrollController here
-                      shrinkWrap: true,
-                      itemCount: _documents.length + (_moreEventsleft ? 1 : 0),
-                      itemBuilder: (context, index) {
-                        if (_moreEventsleft && index == _documents.length) {
-                          return const Center(child: ColorfulSpinner());
-                        }
-                        return EventCard(
-                          document: _documents[index],
-                          parentPage: ParentPage.homePage,
-                        );
-                      },
-                    ),
+              child: _isLoading && _documents.isEmpty
+                  ? const Center(child: ColorfulSpinner())
+                  : _documents.isEmpty
+                      ? Padding(
+                          padding: const EdgeInsets.only(top: 64.0),
+                          child: Center(
+                            child: Text(
+                              'No events available at the moment.',
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        )
+                      : ListView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount:
+                              _documents.length + (_moreEventsleft ? 1 : 0),
+                          itemBuilder: (context, index) {
+                            if (_moreEventsleft && index == _documents.length) {
+                              return const Center(child: ColorfulSpinner());
+                            }
+                            return EventCard(
+                              document: _documents[index],
+                              parentPage: ParentPage.homePage,
+                            );
+                          },
+                        ),
             ),
           ]),
     );
