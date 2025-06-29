@@ -10,26 +10,43 @@ import 'dart:convert';
 
 
 
-class QrCodeImage extends StatefulWidget {
-  QrCodeImage({super.key, required this.user, required this.profilePic, required this.onQrCodeUpdated});
+class QrCodeCard extends StatefulWidget {
+  QrCodeCard({super.key, required this.user, required this.profilePic, required this.onQrCodeUpdated});
 
   final UserModel user;
   final ValueChanged<String> onQrCodeUpdated;
   final Uint8List? profilePic;
 
   @override
-  State<QrCodeImage> createState() => _QrCodeImageState();
+  State<QrCodeCard> createState() => _QrCodeCardState();
 }
 
-class _QrCodeImageState extends State<QrCodeImage> {
+class _QrCodeCardState extends State<QrCodeCard> with SingleTickerProviderStateMixin {
 
   bool _qrCodeLoading = false;
   late String qrCodeBase64;
+
+  late final AnimationController _animationController;
+  late final Animation<double> _animation;
 
   @override
   void initState() {
     super.initState();
     qrCodeBase64 = widget.user.qrCode;
+
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
+    _animation = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
 
@@ -38,15 +55,15 @@ class _QrCodeImageState extends State<QrCodeImage> {
 @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 20),
-      height: 660,
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+      height: MediaQuery.of(context).size.height * 0.75,
       child: Stack(
         children: [
           Positioned(
-            top: 50,
+            top: 45,
             left: 0,
             right: 0,
-            height: 500,
+            height: MediaQuery.of(context).size.height * 0.75 - 90,
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15),
@@ -58,7 +75,7 @@ class _QrCodeImageState extends State<QrCodeImage> {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               CircleAvatar(
-                radius: 50,
+                radius: 45,
                 backgroundImage: widget.profilePic != null
                     ? MemoryImage(widget.profilePic!)
                     : const AssetImage('assets/images/no_profile_picture_place_holder.png') as ImageProvider,
@@ -74,16 +91,18 @@ class _QrCodeImageState extends State<QrCodeImage> {
               ),
               const SizedBox(height: 10,),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 50),
+                padding: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width * 0.07),
                 child: Image.memory(
                   // width: MediaQuery.of(context).size.width * 0.70,
                   base64Decode(qrCodeBase64.split(',')[1]),
                   fit: BoxFit.contain,
                 ),
               ),
-              const SizedBox(height: 10,),
+              const Spacer(),
               IconButton(
                 onPressed: () async {
+                  _animationController.forward(from: 0);
+
                   if (_qrCodeLoading == true) { return; } // avoid multiple classs
 
                   _qrCodeLoading = true;
@@ -109,11 +128,14 @@ class _QrCodeImageState extends State<QrCodeImage> {
                   _qrCodeLoading = false;
 
                 },
-                icon: FaIcon(
-                  FontAwesomeIcons.rotate,
-                  size: 35,
-                  color: Colors.black,
-                )
+                icon: RotationTransition(
+                  turns: _animation,
+                  child: FaIcon(
+                    FontAwesomeIcons.rotate,
+                    size: 35,
+                    color: Colors.black,
+                  ),
+                ),
               ),
               Text(
                 'Regenerate QR code',
@@ -122,7 +144,8 @@ class _QrCodeImageState extends State<QrCodeImage> {
                   fontWeight: FontWeight.w700,
                   color: Colors.black
                 ),
-              )
+              ),
+              const SizedBox(height: 14,),
             ],
           ),
         ]
