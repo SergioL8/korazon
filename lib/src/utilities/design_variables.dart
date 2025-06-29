@@ -60,6 +60,26 @@ const linearGradient = LinearGradient(
   ],
 );
 
+// const linearGradientOff = LinearGradient(
+//   begin: Alignment.bottomLeft,
+//   end: Alignment.topRight,
+//   colors: [
+//     Color(0xFF99007A), // darkened magenta
+//     Color(0xFF7A1111), // darkened red
+//   ],
+// );
+
+const linearGradientOff = LinearGradient(
+  begin: Alignment.bottomLeft,
+  end: Alignment.topRight,
+  colors: [
+    // 255,0,204  →  77,0,61  (≈ #4D003D)
+    Color(0xFF4D003D),  // very dark magenta
+    // 203,29,29  →  61,9,9   (≈ #3D0909)
+    Color(0xFF3D0909),  // very dark red
+  ],
+);
+
 // Text Styles:
 var whiteSubtitle = GoogleFonts.josefinSans(
     fontSize: 23, fontWeight: FontWeight.w600, color: Colors.white);

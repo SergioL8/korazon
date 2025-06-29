@@ -209,6 +209,7 @@ class _BasePage extends State<BasePage> {
           ),
           // height: 70, // I had to comment this because there was an overflow in the iphone 16 pro
           child: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
             iconSize: 32.0, // 32.0
             showSelectedLabels: false,
             showUnselectedLabels: false,

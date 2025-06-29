@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
 import 'package:korazon/src/utilities/models/userModel.dart';
 
@@ -23,7 +24,7 @@ void _allowGuestIn(BuildContext context, String userID, String eventID) async {
 
 class AllowGuestIn extends StatelessWidget {
   const AllowGuestIn({super.key, required this.userData, required this.eventID});
-  final UserModel userData;
+  final UserModel? userData;
   final String eventID;
 
   
@@ -31,31 +32,39 @@ class AllowGuestIn extends StatelessWidget {
   @override
   Widget build(context) {
 
-    final String userID = userData.userID; // get the user ID from the user data
+    final String? userID = userData?.userID; // get the user ID from the user data
 
     return InkWell(
-      onTap:() {
-        _allowGuestIn(context, userID, eventID); // allow the guest in
-        Navigator.of(context).pop(); // close the modal bottom sheet to go the scanner screen
+      onTap: () {
+        if (userID != null) {
+          // _allowGuestIn(context, userID, eventID); // allow the guest in
+        } else {
+          showErrorMessage(context, content: 'User ID is not available.');
+        }
       },
-      child: Container(
-        width: 100,
-        height: 100,
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
+      child: Card(
+        color: const Color.fromARGB(255, 217, 255, 215),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: const BorderSide(
+            color: Color.fromARGB(255, 40, 142, 35),
+            width: 1,
+          ),
         ),
-        child: Center(
-          child: Text(
-            'Allow in',
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Color.fromARGB(255, 23, 177, 30),
+        child: SizedBox(
+          height: 50,
+          child: Center(
+            child: Text(
+              'Accept',
+              style: whiteBody.copyWith(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: const Color.fromARGB(255, 40, 142, 35),
+              )
             ),
           ),
         ),
-      )
+      ),
     );
   }
 }
