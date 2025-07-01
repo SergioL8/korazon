@@ -96,6 +96,7 @@ class UserModel {
     required this.hostIdentityVerified, // we have two of these???
     required this.stripeConnectedCustomerId,
     required this.blackList,
+    required this.eventsAttended,
   });
 
   final String userID;
@@ -120,6 +121,7 @@ class UserModel {
   final bool? hostIdentityVerified;
   final String? stripeConnectedCustomerId;
   final List<BlackListModel>? blackList;
+  final List<String>? eventsAttended;
 
 
   static UserModel? fromDocumentSnapshot(DocumentSnapshot doc) {
@@ -169,6 +171,7 @@ class UserModel {
           blackListDate: e['blackListDate'],
         ))
         .toList() ?? [],
+      eventsAttended: List<String>.from(data['eventsAttended'] ?? []),
     );
   }
 }
