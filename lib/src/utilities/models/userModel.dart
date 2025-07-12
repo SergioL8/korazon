@@ -53,6 +53,25 @@ class LocationModel {
   }
 }
 
+
+class BlackListModel {
+  BlackListModel({
+    required this.blackListID,
+    required this.fratUserID,
+    required this.fratUserName,
+    required this.blackListReason,
+    required this.blackListDate,
+  });
+
+  final String blackListID;
+  final String fratUserID;
+  final String fratUserName;
+  final String blackListReason;
+  final Timestamp blackListDate;
+}
+
+
+
 class UserModel {
   UserModel({
     required this.userID,
@@ -76,6 +95,8 @@ class UserModel {
     required this.location,
     required this.hostIdentityVerified, // we have two of these???
     required this.stripeConnectedCustomerId,
+    required this.blackList,
+    required this.eventsAttended,
   });
 
   final String userID;
@@ -99,6 +120,8 @@ class UserModel {
   final LocationModel? location;
   final bool? hostIdentityVerified;
   final String? stripeConnectedCustomerId;
+  final List<BlackListModel>? blackList;
+  final List<String>? eventsAttended;
 
 
   static UserModel? fromDocumentSnapshot(DocumentSnapshot doc) {
@@ -125,7 +148,7 @@ class UserModel {
         .map((m) => {
           'eventID': m['eventID'] ?? '',
           'purchasedAt': m['purchasedAt'] ?? '',
-          'ticketID': m['ticketID'] ?? '',
+          'ticketID': m['ticketId'] ?? '',
         })
         .toList() ?? [],
       createdEvents: List<String>.from(data['createdEvents'] ?? []),
@@ -139,6 +162,16 @@ class UserModel {
         : null,
       hostIdentityVerified: data['hostIdentityVerified'] ?? false,
       stripeConnectedCustomerId: data['stripeConnectedCustomerId'],
+      blackList: (data['blackList'] as List<dynamic>?)
+        ?.map((e) => BlackListModel(
+          blackListID: e['blackListID'],
+          fratUserID: e['fratUserID'],
+          fratUserName: e['fratUserName'] ?? 'Unknown',
+          blackListReason: e['blackListReason'],
+          blackListDate: e['blackListDate'],
+        ))
+        .toList() ?? [],
+      eventsAttended: List<String>.from(data['eventsAttended'] ?? []),
     );
   }
 }

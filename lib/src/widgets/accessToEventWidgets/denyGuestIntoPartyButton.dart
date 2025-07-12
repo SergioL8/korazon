@@ -8,28 +8,34 @@ class DenyGuestIn extends StatelessWidget {
 
   @override
   Widget build(context) {
-    return InkWell( // make the button clickable
-      onTap:() {
-        Navigator.of(context).pop(); // just pop the modal bottom sheet and return to the scanner screen
+    return InkWell(
+      onTap: () {
+        Navigator.of(context).pop();
       },
-      child: Container( 
-        width: 100,
-        height: 100,
-        decoration: BoxDecoration(
-          color: Color.fromARGB(255, 255, 255, 255),
-          borderRadius: BorderRadius.circular(10),
+      child: Card(
+        color: const Color.fromARGB(255, 255, 215, 215,),
+        // margin: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: const BorderSide(
+            color: Color.fromARGB(255, 202, 45, 45),
+            width: 1,
+          ),
         ),
-        child: Center(
-          child: Text(
-            'Deny in',
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: denyRed,
+        child: SizedBox(
+          height: 50,
+          child: Center(
+            child: Text(
+              'Deny',
+              style: whiteBody.copyWith(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: const Color.fromARGB(255, 202, 45, 45),
+              )
             ),
           ),
         ),
-      )
+      ),
     );
   }
 }
