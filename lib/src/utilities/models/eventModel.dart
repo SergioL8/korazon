@@ -91,6 +91,10 @@ class EventModel {
     required this.tickets,
     required this.eventTicketHolders,
     required this.attendees,
+
+    // Analytics data
+    required this.totalWomenAttendees,
+    required this.totalMaleAttendees,
   });
 
   final String documentID;
@@ -108,6 +112,8 @@ class EventModel {
   final String? stripeConnectedCustomerId;
   final List<String>? eventTicketHolders;
   final List<String>? attendees;
+  final int totalWomenAttendees;
+  final int totalMaleAttendees;
 
 
   static EventModel? fromDocumentSnapshot(DocumentSnapshot doc) {
@@ -136,6 +142,8 @@ class EventModel {
       stripeConnectedCustomerId: data['stripeConnectedCustomerId'],
       eventTicketHolders: (data['eventTicketHolders'] as List<dynamic>?)?.map((holder) => holder as String).toList() ?? [],
       attendees: (data['attendees'] as List<dynamic>?)?.map((holder) => holder as String).toList() ?? [],
+      totalWomenAttendees: data['totalWomenAttendees'] ?? 0,
+      totalMaleAttendees: data['totalMaleAttendees'] ?? 0,
     );
   }
 }
