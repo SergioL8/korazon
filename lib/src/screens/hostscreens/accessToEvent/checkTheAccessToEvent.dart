@@ -43,10 +43,16 @@ class _CheckForAccessToEventState extends State<CheckForAccessToEvent> {
     }
 
     // get the list of events that the user is attending 
-    final List<String> eventsAttending = guestUser!.tickets;
+    // final List<String> eventsAttending = guestUser!.tickets[];
 
-    // check if the event ID is in the list of events the user is attending and return the result
-    return eventsAttending.contains(widget.eventID);
+    // // check if the event ID is in the list of events the user is attending and return the result
+    // return eventsAttending.contains(widget.eventID);
+
+    final isAttending = guestUser!.tickets.any(
+      (ticket) => ticket['eventID'] == widget.eventID,
+    );
+
+    return isAttending;
   }
 
 

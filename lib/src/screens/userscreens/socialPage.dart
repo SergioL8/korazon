@@ -128,7 +128,7 @@ class _SocialPageState extends State<SocialPage> {
 
       // Load tickets array
       setState(() {
-        eventUids = user.tickets;
+        eventUids = user.tickets.map<String>((ticket) => ticket['eventID'] as String).toList();
       });
 
       // Start from index = 2 because the first two are your default socialList entries

@@ -7,6 +7,7 @@ import 'src/screens/singUpLogin/signedin_logic.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/services.dart';
 
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 

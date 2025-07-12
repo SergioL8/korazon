@@ -88,7 +88,7 @@ class UserModel {
   final String academicYear;
   final String bio;
   final String qrCode;
-  final List<String> tickets;
+  final List<Map<String, dynamic>> tickets;
   final List<String> createdEvents;
   final String profilePicPath;
   final List<String> followers;
@@ -117,7 +117,7 @@ class UserModel {
       academicYear: data['academicYear'] ?? 'No academic year',
       bio: data['bio'] ?? '',
       qrCode: data['qrCode'] ?? '',
-      tickets: List<String>.from(data['tickets'] ?? []),
+      tickets: List<Map<String, dynamic>>.from(data['tickets'] ?? <Map<String, dynamic>>[]),
       createdEvents: List<String>.from(data['createdEvents'] ?? []),
       profilePicPath: data['profilePicPath'] ?? '',
       followers: List<String>.from(data['followers'] ?? []),
