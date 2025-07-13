@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:korazon/src/utilities/utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:korazon/src/screens/eventDetails.dart';
+import 'package:korazon/src/screens/event_details/eventDetails.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
 import 'package:korazon/src/utilities/models/eventModel.dart';
 import 'package:korazon/src/widgets/loading_place_holders.dart';
@@ -35,11 +35,9 @@ class _EventCardState extends State<EventCard> {
         DateFormat('MMM d, HH:mm').format(dateTime).toUpperCase();
 // Example: "FEB 14, 20:00"
 
-//! Formatted date and time are not used is just for it to compile with EventDetails
-    String formattedDate =
-        DateFormat('MMMM d, yyyy').format(dateTime); // e.g., "January 15, 2025"
-    String formattedTime =
-        DateFormat('h:mm a').format(dateTime); // e.g., "10:00 PM"
+    //! Formatted date and time are not used is just for it to compile with EventDetails
+    // String formattedDate = DateFormat('MMMM d, yyyy').format(dateTime); // e.g., "January 15, 2025"
+    // String formattedTime = DateFormat('h:mm a').format(dateTime); // e.g., "10:00 PM"
 
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
@@ -64,8 +62,6 @@ class _EventCardState extends State<EventCard> {
                 builder: (context) => EventDetails(
                   event: event,
                   imageData: snapshot.data,
-                  formattedDate: formattedDate,
-                  formattedTime: formattedTime,
                 ),
               ),
             ),
@@ -103,8 +99,8 @@ class _EventCardState extends State<EventCard> {
                               ),
                               child: CircleAvatar(
                                 backgroundColor: korazonColor,
-                                backgroundImage: event.profilePicPath.isNotEmpty
-                                    ? NetworkImage(event.profilePicPath)
+                                backgroundImage: event.hostProfilePicPath.isNotEmpty
+                                    ? NetworkImage(event.hostProfilePicPath)
                                     : const AssetImage(
                                             'assets/images/no_profile_picture.webp')
                                         as ImageProvider,

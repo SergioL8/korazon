@@ -12,9 +12,10 @@ import 'package:uuid/uuid.dart';
 
 
 class TicketCreationScreen extends StatefulWidget {
-  const TicketCreationScreen({super.key, this.ticket});
+  const TicketCreationScreen({super.key, this.ticket, required this.eventID});
 
   final TicketModel? ticket;
+  final String eventID;
 
   @override
   State<TicketCreationScreen> createState() => _TicketCreationScreenState();
@@ -102,6 +103,7 @@ class _TicketCreationScreenState extends State<TicketCreationScreen> {
 
     var ticket = TicketModel(
       ticketID: uuid,
+      eventID: widget.eventID, // if the ticket is being edited, use the existing event ID
       ticketName: _ticketNameController.text,
       ticketPrice: double.parse(_ticketPriceController.text),
       ticketDescription: _ticketDescriptionController.text.isNotEmpty ? _ticketDescriptionController.text : null,

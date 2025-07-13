@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:korazon/src/utilities/models/eventModel.dart';
 
 class LocationModel {
   LocationModel({
@@ -52,13 +53,31 @@ class LocationModel {
   }
 }
 
+
+class BlackListModel {
+  BlackListModel({
+    required this.blackListID,
+    required this.fratUserID,
+    required this.fratUserName,
+    required this.blackListReason,
+    required this.blackListDate,
+  });
+
+  final String blackListID;
+  final String fratUserID;
+  final String fratUserName;
+  final String blackListReason;
+  final Timestamp blackListDate;
+}
+
+
+
 class UserModel {
   UserModel({
     required this.userID,
     required this.username,
     required this.email,
     required this.isHost,
-    required this.isVerifiedHost,
     required this.name,
     required this.lastName,
     required this.gender,
@@ -74,13 +93,16 @@ class UserModel {
     required this.instaAcc,
     required this.snapAcc,
     required this.location,
+    required this.hostIdentityVerified, // we have two of these???
+    required this.stripeConnectedCustomerId,
+    required this.blackList,
+    required this.eventsAttended,
   });
 
   final String userID;
   final String email;
   final String username;
   final bool isHost;
-  final bool isVerifiedHost;
   final String name;
   final String lastName;
   final String gender;
@@ -96,6 +118,11 @@ class UserModel {
   final String instaAcc;
   final String snapAcc;
   final LocationModel? location;
+  final bool? hostIdentityVerified;
+  final String? stripeConnectedCustomerId;
+  final List<BlackListModel>? blackList;
+  final List<String>? eventsAttended;
+
 
   static UserModel? fromDocumentSnapshot(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>?;
@@ -109,7 +136,6 @@ class UserModel {
       email: data['email'] ?? '',
       username: data['username'] ?? 'No username',
       isHost: data['isHost'] ?? false,
-      isVerifiedHost: data['isVerifiedHost'] ?? false,
       name: data['name'] ?? 'No name',
       lastName: data['lastName'] ?? 'No last name',
       gender: data['gender'] ?? 'Unknown',
@@ -117,16 +143,35 @@ class UserModel {
       academicYear: data['academicYear'] ?? 'No academic year',
       bio: data['bio'] ?? '',
       qrCode: data['qrCode'] ?? '',
-      tickets: List<Map<String, dynamic>>.from(data['tickets'] ?? <Map<String, dynamic>>[]),
+      tickets: (data['tickets'] as List<dynamic>?)
+        ?.map((e) => Map<String, dynamic>.from(e as Map<String, dynamic>))
+        .map((m) => {
+          'eventID': m['eventID'] ?? '',
+          'purchasedAt': m['purchasedAt'] ?? '',
+          'ticketID': m['ticketId'] ?? '',
+        })
+        .toList() ?? [],
       createdEvents: List<String>.from(data['createdEvents'] ?? []),
       profilePicPath: data['profilePicPath'] ?? '',
       followers: List<String>.from(data['followers'] ?? []),
       profilePicturesPath: List<String>.from(data['profilePicturesPath'] ?? []),
       instaAcc: data['instaAcc'] ?? '',
       snapAcc: data['snapAcc'] ?? '',
-      location: data['location'] != null
-          ? LocationModel.fromMap(data['location'] as Map<String, dynamic>)
-          : null,
+      location: data['location'] != null 
+        ? LocationModel.fromMap(data['location'] as Map<String, dynamic>)
+        : null,
+      hostIdentityVerified: data['hostIdentityVerified'] ?? false,
+      stripeConnectedCustomerId: data['stripeConnectedCustomerId'],
+      blackList: (data['blackList'] as List<dynamic>?)
+        ?.map((e) => BlackListModel(
+          blackListID: e['blackListID'],
+          fratUserID: e['fratUserID'],
+          fratUserName: e['fratUserName'] ?? 'Unknown',
+          blackListReason: e['blackListReason'],
+          blackListDate: e['blackListDate'],
+        ))
+        .toList() ?? [],
+      eventsAttended: List<String>.from(data['eventsAttended'] ?? []),
     );
   }
 }

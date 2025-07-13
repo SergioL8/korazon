@@ -7,6 +7,7 @@ import 'package:korazon/src/widgets/selectEventCard.dart';
 import 'package:flutter/material.dart';
 import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/utilities/models/userModel.dart';
+import 'package:korazon/src/screens/hostscreens/accessToEvent/scanner.dart';
 
 
 
@@ -31,7 +32,9 @@ class _SelectEventForActionState extends State<SelectEventForAction> {
 
   List<String> listOfCreatedEvents = []; // list of the events that the host has created
   bool _isLoading = false; // boolean to check if the events created by the user are still loading
-
+  String? selectedEventID; // variable to store the event ID selected by the user
+  String? selectedEventTitle;
+  DateTime? selectedEventDateAndTime;
 
 
 
@@ -70,6 +73,14 @@ class _SelectEventForActionState extends State<SelectEventForAction> {
   }
 
 
+  void onSelectedEvent(String? eventID, String? eventTitle, DateTime? eventDateAndTime) {
+    setState(() {
+      selectedEventID = eventID; // set the selected event ID
+      selectedEventTitle = eventTitle; // set the selected event title
+      selectedEventDateAndTime = eventDateAndTime; // set the selected event date and
+    });
+  }
+
 
 
   // initialize the list of events created by the user
@@ -86,17 +97,14 @@ class _SelectEventForActionState extends State<SelectEventForAction> {
   @override 
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: tertiaryColor,
+      backgroundColor: backgroundColorBM,
       appBar: AppBar(
-            backgroundColor: appBarColor,
+            backgroundColor: backgroundColorBM,
             automaticallyImplyLeading: false,
-            title: Text(widget.action == HostAction.scan? 'Scan Events' : 'Analytics',
-            style: TextStyle(
-                  color: secondaryColor,
-                  fontWeight: primaryFontWeight,
-                  fontSize: 32.0,
-                ),
-            ), // set the app bar title based on the action
+            title: Text(widget.action == HostAction.scan? 'Select an event to start scannig' : 'Analytics',
+            style: whiteSubtitle,
+            ),
+            centerTitle: false,
             bottom: PreferredSize(
               preferredSize: const Size.fromHeight(2.0),
               child: Container(
@@ -108,14 +116,61 @@ class _SelectEventForActionState extends State<SelectEventForAction> {
       body: _isLoading // dynamically set the loading indicator or show the list of events
         ? const Center(child: ColorfulSpinner()) 
         : listOfCreatedEvents.isEmpty  // check if the user has created any events
-            ? Text("You don't have any events created") 
-            : ListView.builder(
-              itemCount: listOfCreatedEvents.length,
-              itemBuilder: (context, index) {
-                return SelectEventCard(eventID: listOfCreatedEvents[index], action: widget.action); // display the list of events
-              },
+            ? Text(
+              "You don't have any upcoming events!",
+              style: whiteBody,
+            ) 
+            : Stack(
+              children: [
+                ListView.builder(
+                  itemCount: listOfCreatedEvents.length,
+                  itemBuilder: (context, index) {
+                    return SelectEventCard(eventID: listOfCreatedEvents[index], action: widget.action, onSelectedEvent: onSelectedEvent, selectedEventID: selectedEventID,); // display the list of events
+                  },
+                ),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: selectedEventID == null ? linearGradientOff : linearGradient,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: ElevatedButton(
+                        onPressed: () { 
+                          if (selectedEventID == null) {
+                            return;
+                          } else {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(builder: (context) { return ScannerScreen(eventID: selectedEventID!, eventTitle: selectedEventTitle, eventDateAndTime: selectedEventDateAndTime,); },) // navigate to the scanner screen
+                            );
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          backgroundColor: Colors.transparent,
+                          elevation: 0,
+                          minimumSize: const Size(double.infinity, 56),
+                          splashFactory: selectedEventID == null ? NoSplash.splashFactory : null,
+                          overlayColor: selectedEventID == null ? Colors.transparent: null,
+                          shadowColor: selectedEventID == null ? Colors.transparent: null,
+                          surfaceTintColor: selectedEventID == null ? Colors.transparent: null,
+                        ),
+                        child: Text(
+                          'Start Scanning',
+                          style: whiteSubtitle.copyWith(
+                            color: selectedEventID == null
+                              ? Colors.grey[700]
+                              : Colors.white,
+                          ),
+                        ),
+                      ),
+                    )
+                  ),
+                )
+              ]
             )
     );
   }
-
 }

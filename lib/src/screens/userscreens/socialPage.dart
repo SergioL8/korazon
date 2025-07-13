@@ -10,7 +10,7 @@ import 'package:korazon/src/utilities/models/userModel.dart';
 import 'package:korazon/src/utilities/utils.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
 import 'package:korazon/src/widgets/colorfulSpinner.dart';
-import 'package:korazon/src/widgets/profileListTile.dart';
+// import 'package:korazon/src/widgets/profileListTile.dart';
 
 class SocialPage extends StatefulWidget {
   const SocialPage({super.key});
@@ -127,9 +127,9 @@ class _SocialPageState extends State<SocialPage> {
       }
 
       // Load tickets array
-      setState(() {
-        eventUids = user.tickets.map<String>((ticket) => ticket['eventID'] as String).toList();
-      });
+      // setState(() {
+      //   eventUids = user.tickets;
+      // });
 
       // Start from index = 2 because the first two are your default socialList entries
       int currentIndex = 1;
@@ -166,7 +166,6 @@ class _SocialPageState extends State<SocialPage> {
                 'index': currentIndex,
                 'photoPath': tempEvent.photoPath,
                 'title': tempEvent.title,
-                'peopleYouMayKnow': tempEvent.ticketsSold,
               });
             });
             currentIndex++;
@@ -304,17 +303,22 @@ class _SocialPageState extends State<SocialPage> {
                               return const Center(
                                   child: Text('No users found.'));
                             } else {
-                              final userDocs = snapshot.data!;
-                              return ListView.builder(
-                                itemCount: userDocs.length,
-                                itemBuilder: (context, index) {
-                                  final userDoc = userDocs[index];
-                                  return UserListTile(
-                                    doc: userDoc,
-                                    onTap: () {},
-                                  );
-                                },
+                              // final userDocs = snapshot.data!;
+                              return Text(
+                                'User tile has been modified. '
+                                'Please check the code for the new implementation.'
+                                'This text is being printed in line 310 of soialPage.dart'
                               );
+                              // return ListView.builder(
+                              //   itemCount: userDocs.length,
+                              //   itemBuilder: (context, index) {
+                              //     final userDoc = userDocs[index];
+                              //     return UserListTile(
+                              //       doc: userDoc,
+                              //       onTap: () {},
+                              //     );
+                              //   },
+                              // );
                             }
                           },
                         ),
