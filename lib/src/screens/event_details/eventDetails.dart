@@ -5,6 +5,7 @@ import 'package:blur/blur.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:korazon/src/utilities/utils.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -43,6 +44,7 @@ class _EventDetailsState extends State<EventDetails> {
   StreamSubscription<DocumentSnapshot>? _subscription;
   final GlobalKey _imageKey = GlobalKey();
   double _actualImageHeight = 0.0;
+  final currentUserId = FirebaseAuth.instance.currentUser?.uid;
 
   @override
   void initState() {
@@ -337,9 +339,39 @@ class _EventDetailsState extends State<EventDetails> {
                                 style: whiteSubtitle
                               ),
                               GuestList(guestList: _currentEvent.attendees ?? [], endDateTime: _currentEvent.endDateTime),
+                              SizedBox(height: 24),
+
+
+                              // ================= Private Analytics =================
+                              if (_currentEvent.hostId == currentUserId)
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Private Analytics',
+                                      style: whiteSubtitle
+                                    ),
+                                    Text(
+                                      // Guard against division by zero:
+                                      "Ratio (men:women) = 1:${_currentEvent.totalWomenAttendees > 0 ? (_currentEvent.totalMaleAttendees / _currentEvent.totalWomenAttendees).toStringAsFixed(2) : '0'}",
+                                      style: whiteBody,
+                                    ),
+                                    Text(
+                                      'Ticket Holders List',
+                                      style: whiteBody.copyWith(
+                                        fontSize: 18
+                                      )
+                                    ),
+                                    GuestList(guestList: _currentEvent.eventTicketHolders ?? [], endDateTime: Timestamp.fromDate(DateTime.now().subtract(const Duration(minutes: 5)),)),
+                                  ],
+                                ),
+                                
+
 
 
                               // ================= Report button =================
+
 
 
                               // ================ Padding =================

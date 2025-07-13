@@ -104,7 +104,7 @@ class _GuestListState extends State<GuestList> {
     if (widget.guestList.isEmpty) {
       return Center(
         child: Text(
-          'No registered guests found',
+          'No registered attendees found',
           style: whiteBody,
           textAlign: TextAlign.center,
         ),
