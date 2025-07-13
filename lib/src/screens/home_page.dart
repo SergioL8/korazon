@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:korazon/src/utilities/design_variables.dart';
-import 'package:korazon/src/widgets/colorfulSpinner.dart';
-import 'package:korazon/src/widgets/eventCard.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:korazon/src/utilities/utils.dart';
+import 'package:korazon/src/widgets/eventCard.dart';
 import 'package:korazon/src/widgets/filterChip.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:korazon/src/widgets/colorfulSpinner.dart';
+import 'package:korazon/src/utilities/design_variables.dart';
+
+
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -14,19 +18,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  String selectedFilter =
-      'Upcoming'; // variable to set the selected filter for the events
-  bool _isLoading =
-      false; // variable to set execution of retrieving data (to avoid multiple requests and set the loading)
-  bool _moreEventsleft =
-      true; // variable needed to check if there are more events to retrieve
-  DocumentSnapshot?
-      _lastDocument; // variable needed to start the next query from the last document of the preivous query
+  String selectedFilter = 'Upcoming'; // variable to set the selected filter for the events
+  bool _isLoading = false; // variable to set execution of retrieving data (to avoid multiple requests and set the loading)
+  bool _moreEventsleft = true; // variable needed to check if there are more events to retrieve
+  DocumentSnapshot? _lastDocument; // variable needed to start the next query from the last document of the preivous query
   List<DocumentSnapshot> _documents = []; // sotres all documents retrieved
-  final sizeOfData =
-      5; // variable that sets teh number of documents to retrieve per query
-  final ScrollController _scrollController =
-      ScrollController(); // controller to handle the scroll
+  final sizeOfData = 5; // variable that sets teh number of documents to retrieve per query
+  final ScrollController _scrollController = ScrollController(); // controller to handle the scroll
 
   @override
   void initState() {
@@ -127,36 +125,47 @@ class _HomePageState extends State<HomePage> {
               backgroundColor: backgroundColorBM,
               automaticallyImplyLeading: false,
               bottom: PreferredSize(
-                preferredSize: const Size.fromHeight(100), // adjust if needed
+                preferredSize: Size.fromHeight(50), // adjust if needed
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(
                       16, 0, 16, 12), // padding to match original style
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Search Bar
-                      Container(
-                        height: 44,
-                        decoration: BoxDecoration(
-                          color: tertiaryColor,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        child: Row(
-                          children: const [
-                            Icon(Icons.search, color: Colors.grey),
-                            SizedBox(width: 8),
-                            Text(
-                              'Search',
-                              style: TextStyle(
-                                color: Colors.grey,
-                                fontSize: 16,
-                              ),
-                            ),
-                          ],
+                      // Korazon Logo
+                      ShaderMask(
+                        shaderCallback: (Rect bounds) {
+                          return linearGradient.createShader(bounds);
+                        },
+                        child: Text(
+                          'Korazon',
+                          style: whiteTitle,
                         ),
                       ),
-                      const SizedBox(height: 12),
+
+                      // Search Bar
+                      // Container(
+                      //   height: 44,
+                      //   decoration: BoxDecoration(
+                      //     color: tertiaryColor,
+                      //     borderRadius: BorderRadius.circular(12),
+                      //   ),
+                      //   padding: const EdgeInsets.symmetric(horizontal: 12),
+                      //   child: Row(
+                      //     children: const [
+                      //       Icon(Icons.search, color: Colors.grey),
+                      //       SizedBox(width: 8),
+                      //       Text(
+                      //         'Search',
+                      //         style: TextStyle(
+                      //           color: Colors.grey,
+                      //           fontSize: 16,
+                      //         ),
+                      //       ),
+                      //     ],
+                      //   ),
+                      // ),
+                      // const SizedBox(height: 12),
 
                       // Filter Chips
                       SingleChildScrollView(
@@ -219,11 +228,22 @@ class _HomePageState extends State<HomePage> {
 
             //SliverToBoxAdapter(child: SizedBox(height: 20),),
 
+            CupertinoSliverRefreshControl(
+              onRefresh: () async {
+                setState(() {
+                  _documents.clear();
+                  _lastDocument = null;
+                  _moreEventsleft = true;
+                });
+                await _retrieveData();
+              },
+            ),
+
             // I added the padding to the postcard so that it is consistent across the app
 
             SliverToBoxAdapter(
               child: _isLoading && _documents.isEmpty
-                  ? const Center(child: ColorfulSpinner())
+                  ? const Center(child: SpinKitThreeBounce(color: Colors.white, size: 30),)
                   : _documents.isEmpty
                       ? Padding(
                           padding: const EdgeInsets.only(top: 64.0),
@@ -240,6 +260,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                         )
                       : ListView.builder(
+                          padding: const EdgeInsets.only(top: 24.0),
                           physics: const NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
                           itemCount:

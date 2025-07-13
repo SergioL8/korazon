@@ -1,13 +1,13 @@
 import 'dart:typed_data';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter/material.dart';
+import 'package:korazon/src/utilities/utils.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:korazon/src/screens/eventDetails.dart';
 import 'package:korazon/src/utilities/design_variables.dart';
-import 'package:korazon/src/utilities/utils.dart';
-import 'package:korazon/src/widgets/loading_place_holders.dart';
-import 'package:transparent_image/transparent_image.dart';
 import 'package:korazon/src/utilities/models/eventModel.dart';
+import 'package:korazon/src/widgets/loading_place_holders.dart';
+
 
 class EventCard extends StatefulWidget {
   const EventCard(
@@ -80,7 +80,8 @@ class _EventCardState extends State<EventCard> {
                     height: pinkBoxHeight,
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: korazonColor,
+                      // color: korazonColor,
+                      gradient: linearGradient,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Column(
@@ -122,8 +123,7 @@ class _EventCardState extends State<EventCard> {
                           ],
                         ),
 
-                        const SizedBox(
-                            height: 8), // Space between row and title
+                        const SizedBox(height: 4), // Space between row and title
 
                         // Event title (bottom)
                         Row(
@@ -160,7 +160,7 @@ class _EventCardState extends State<EventCard> {
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.25),
+                            color: Colors.black.withValues(alpha: 0.25),
                             blurRadius: 8,
                             offset: const Offset(0, 4),
                           ),
@@ -193,18 +193,14 @@ class _EventCardState extends State<EventCard> {
                                 },
                               );
                             },
-                            child: snapshot.connectionState ==
-                                    ConnectionState.waiting
-                                ? LoadingImagePlaceHolder()
-                                : FadeInImage(
-                                    placeholder: MemoryImage(kTransparentImage),
-                                    image: snapshot.data != null
-                                        ? MemoryImage(snapshot.data!)
-                                        : const AssetImage(
-                                                'assets/images/pary.jpg')
-                                            as ImageProvider,
-                                    fit: BoxFit.cover,
-                                  ),
+                            child: snapshot.connectionState == ConnectionState.waiting
+                              ? LoadingImagePlaceHolder()
+                              : Image(
+                                  image: snapshot.data != null
+                                      ? MemoryImage(snapshot.data!)
+                                      : const AssetImage('assets/images/pary.jpg') as ImageProvider,
+                                  fit: BoxFit.cover,
+                                ),
                           ),
                         ),
                       ),
