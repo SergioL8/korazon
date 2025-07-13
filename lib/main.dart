@@ -9,6 +9,7 @@ import 'src/screens/singUpLogin/signedin_logic.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 
 
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 

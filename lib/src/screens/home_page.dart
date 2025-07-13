@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:korazon/src/utilities/design_variables.dart';
-import 'package:korazon/src/widgets/colorfulSpinner.dart';
-import 'package:korazon/src/widgets/eventCard.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:korazon/src/utilities/utils.dart';
+import 'package:korazon/src/widgets/eventCard.dart';
+import 'package:korazon/src/widgets/filterChip.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:korazon/src/widgets/colorfulSpinner.dart';
+import 'package:korazon/src/utilities/design_variables.dart';
+
+
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -13,6 +18,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  String selectedFilter = 'Upcoming'; // variable to set the selected filter for the events
   bool _isLoading = false; // variable to set execution of retrieving data (to avoid multiple requests and set the loading)
   bool _moreEventsleft = true; // variable needed to check if there are more events to retrieve
   DocumentSnapshot? _lastDocument; // variable needed to start the next query from the last document of the preivous query
@@ -43,112 +49,234 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _retrieveData() async {
-    if (_isLoading) { return; } // if already loading, return (avoid multiple requests at the same time)
+    if (_isLoading) return;
 
-    setState(() {
-      _isLoading = true;
-    }); // update state for the loading spinner
+    setState(() => _isLoading = true);
 
-    Query query = FirebaseFirestore.instance
-        .collection('events')
-        .limit(sizeOfData); // create query
-        
-    if (_lastDocument != null) {
-      query = FirebaseFirestore.instance
-          .collection('events')
-          .startAfterDocument(_lastDocument!)
-          .limit(sizeOfData); // create query
+    Query query = FirebaseFirestore.instance.collection('events');
+
+    // Apply filters
+    // Apply the upcoming filter
+
+    //? Events show up to 4 hours after the start time
+    if (selectedFilter == 'Upcoming') {
+      final fourHoursAgo = DateTime.now().subtract(const Duration(hours: 4));
+      query = query.where('startDateTime',
+          isGreaterThan: Timestamp.fromDate(fourHoursAgo));
     }
 
-    QuerySnapshot querySnapshot = await query.get(); // execute query
-    if (querySnapshot.docs.isNotEmpty) {
-      // if documents have been returned
-      setState(() {
-        _documents.addAll(querySnapshot
-            .docs); // add the documents to the total list of documents
-        _lastDocument = _documents.last; // update the last document retrieved
+    //Events that are happening in the next 24 hours
+    // I think this makes more sense than events up to 6 am of the next day
+    if (selectedFilter == 'Tonight') {
+      final now = DateTime.now();
+      final next24h = now.add(const Duration(hours: 24));
 
-        // if fewer documents have been returned than the number of documents requested, there are no more documents to retrieve
-        if (querySnapshot.docs.length < sizeOfData) {
-          // this is what will stop the next query from being executed
-          _moreEventsleft = false;
-        } else {
-          _moreEventsleft = true;
-        }
-        _isLoading = false; // stop the loading spinner
+      query = query
+          .where('startDateTime',
+              isGreaterThanOrEqualTo: Timestamp.fromDate(now))
+          .where('startDateTime', isLessThan: Timestamp.fromDate(next24h));
+    }
+
+    //Events that are happening in the next 7 days
+    if (selectedFilter == 'This Week') {
+      final now = DateTime.now();
+      final next7Days = now.add(const Duration(days: 7));
+
+      query = query
+          .where('startDateTime',
+              isGreaterThanOrEqualTo: Timestamp.fromDate(now))
+          .where('startDateTime', isLessThan: Timestamp.fromDate(next7Days));
+    }
+
+    query = query.orderBy('startDateTime').limit(sizeOfData);
+
+    if (_lastDocument != null) {
+      final lastTime = _lastDocument!.get('startDateTime');
+      query = query.startAfter([lastTime]);
+    }
+
+    QuerySnapshot querySnapshot = await query.get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      setState(() {
+        _documents.addAll(querySnapshot.docs);
+        _lastDocument = querySnapshot.docs.last;
+        _moreEventsleft = querySnapshot.docs.length >= sizeOfData;
+        _isLoading = false;
       });
     } else {
-      // if no documents have been returned then there are no more documents to retrieve
       setState(() {
         _moreEventsleft = false;
-        _isLoading = false; // update state
+        _isLoading = false;
       });
     }
   }
 
-  @override
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: tertiaryColor,
+      backgroundColor: backgroundColorBM,
       body: CustomScrollView(
-        // Builds the sliver(s) for the outer scrollable
-        slivers: [
-          SliverAppBar(
-            snap: true,
-            floating: true,
-            // or pinned: true if desired
-            backgroundColor: appBarColor,
-            automaticallyImplyLeading: false,
-            title: Row(
-              children: [
-                const Icon(
-                  Icons.account_balance, // Greek temple-like icon
-                  size: 40,
-                  color: secondaryColor,
+          // Builds the sliver(s) for the outer scrollable
+          slivers: [
+            SliverAppBar(
+              snap: true,
+              floating: true,
+              backgroundColor: backgroundColorBM,
+              automaticallyImplyLeading: false,
+              bottom: PreferredSize(
+                preferredSize: Size.fromHeight(50), // adjust if needed
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                      16, 0, 16, 12), // padding to match original style
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Korazon Logo
+                      ShaderMask(
+                        shaderCallback: (Rect bounds) {
+                          return linearGradient.createShader(bounds);
+                        },
+                        child: Text(
+                          'Korazon',
+                          style: whiteTitle,
+                        ),
+                      ),
+
+                      // Search Bar
+                      // Container(
+                      //   height: 44,
+                      //   decoration: BoxDecoration(
+                      //     color: tertiaryColor,
+                      //     borderRadius: BorderRadius.circular(12),
+                      //   ),
+                      //   padding: const EdgeInsets.symmetric(horizontal: 12),
+                      //   child: Row(
+                      //     children: const [
+                      //       Icon(Icons.search, color: Colors.grey),
+                      //       SizedBox(width: 8),
+                      //       Text(
+                      //         'Search',
+                      //         style: TextStyle(
+                      //           color: Colors.grey,
+                      //           fontSize: 16,
+                      //         ),
+                      //       ),
+                      //     ],
+                      //   ),
+                      // ),
+                      // const SizedBox(height: 12),
+
+                      // Filter Chips
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            FilterChipLabel(
+                              label: 'Upcoming',
+                              selected: selectedFilter == 'Upcoming',
+                              onTap: () {
+                                setState(() {
+                                  selectedFilter = 'Upcoming';
+                                  _documents.clear();
+                                  _lastDocument = null;
+                                  _moreEventsleft = true;
+                                });
+                                _retrieveData(); // Fetch filtered data
+                              },
+                            ),
+                            FilterChipLabel(
+                              label: 'This Week',
+                              selected: selectedFilter == 'This Week',
+                              onTap: () {
+                                setState(() {
+                                  selectedFilter = 'This Week';
+                                  _documents.clear();
+                                  _lastDocument = null;
+                                  _moreEventsleft = true;
+                                });
+                                _retrieveData(); // Fetch filtered data
+                              },
+                            ),
+                            FilterChipLabel(
+                              label: 'Tonight',
+                              selected: selectedFilter == 'Tonight',
+                              onTap: () {
+                                setState(() {
+                                  selectedFilter = 'Tonight';
+                                  _documents.clear();
+                                  _lastDocument = null;
+                                  _moreEventsleft = true;
+                                });
+                                _retrieveData();
+                              },
+                            ),
+                            // FilterChipLabel(
+                            //   label: 'Free',
+                            //   selected: selectedFilter == 'Free',
+                            //   onTap: () =>
+                            //       setState(() => selectedFilter = 'Free'),
+                            // ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                SizedBox(width: 8.0), // spacing between the icon and the text
-                const Text('Korazon',
-                style: TextStyle(
-                  color: secondaryColor,
-                  fontWeight: primaryFontWeight,
-                  fontSize: 32.0,
-                ),
-                ),
-              ],
-            ),
-            bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(2.0),
-              child: Container(
-                color: dividerColor,
-                height: barThickness,
               ),
             ),
-          ),
 
-          //SliverToBoxAdapter(child: SizedBox(height: 20),),
+            //SliverToBoxAdapter(child: SizedBox(height: 20),),
 
-          // I added the padding to the postcard so that it is consistent across the app 
+            CupertinoSliverRefreshControl(
+              onRefresh: () async {
+                setState(() {
+                  _documents.clear();
+                  _lastDocument = null;
+                  _moreEventsleft = true;
+                });
+                await _retrieveData();
+              },
+            ),
 
-          SliverToBoxAdapter(
-            child: _documents.isEmpty && !_isLoading
-            ? const Center(child: Text('No events :('))
-            : ListView.builder(
-                physics: const NeverScrollableScrollPhysics(), // Remove custom scrollController here
-                shrinkWrap: true,
-                itemCount: _documents.length +
-                    (_moreEventsleft ? 1 : 0),
-                itemBuilder: (context, index) {
-                  if (_moreEventsleft && index == _documents.length) {
-                    return const Center(child: ColorfulSpinner());
-                  }
-                  return EventCard(document: _documents[index], parentPage: ParentPage.homePage,);
-                },
-              ),
-          ),
-        ]
-      ),
+            // I added the padding to the postcard so that it is consistent across the app
+
+            SliverToBoxAdapter(
+              child: _isLoading && _documents.isEmpty
+                  ? const Center(child: SpinKitThreeBounce(color: Colors.white, size: 30),)
+                  : _documents.isEmpty
+                      ? Padding(
+                          padding: const EdgeInsets.only(top: 64.0),
+                          child: Center(
+                            child: Text(
+                              'No events available at the moment.',
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        )
+                      : ListView.builder(
+                          padding: const EdgeInsets.only(top: 24.0),
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          itemCount:
+                              _documents.length + (_moreEventsleft ? 1 : 0),
+                          itemBuilder: (context, index) {
+                            if (_moreEventsleft && index == _documents.length) {
+                              return const Center(child: ColorfulSpinner());
+                            }
+                            return EventCard(
+                              document: _documents[index],
+                              parentPage: ParentPage.homePage,
+                            );
+                          },
+                        ),
+            ),
+          ]),
     );
   }
 }
-
