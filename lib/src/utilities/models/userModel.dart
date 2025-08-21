@@ -61,6 +61,7 @@ class BlackListModel {
     required this.fratUserName,
     required this.blackListReason,
     required this.blackListDate,
+    required this.profilePicPath
   });
 
   final String blackListID;
@@ -68,6 +69,7 @@ class BlackListModel {
   final String fratUserName;
   final String blackListReason;
   final Timestamp blackListDate;
+  final String profilePicPath;
 }
 
 
@@ -169,6 +171,7 @@ class UserModel {
           fratUserName: e['fratUserName'] ?? 'Unknown',
           blackListReason: e['blackListReason'],
           blackListDate: e['blackListDate'],
+          profilePicPath: e['profilePicPath'],
         ))
         .toList() ?? [],
       eventsAttended: List<String>.from(data['eventsAttended'] ?? []),

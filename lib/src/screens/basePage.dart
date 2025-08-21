@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:korazon/src/screens/blacklist/blacklist_page.dart';
 import 'package:korazon/src/screens/home_page.dart';
 import 'package:korazon/src/screens/hostscreens/hostProfile.dart';
 import 'package:korazon/src/screens/singUpLogin/hostSignUpExperience/confirm_identity_page.dart';
@@ -14,6 +15,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:korazon/src/widgets/alertBox.dart';
 import 'package:korazon/src/utilities/models/userModel.dart';
 import 'package:korazon/src/widgets/colorfulSpinner.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class BasePage extends StatefulWidget {
   final ParentPage? parentPage;
@@ -133,7 +135,8 @@ class _BasePage extends State<BasePage> {
         });
       } else if (selectedPageIndex == 3) {
         setState(() {
-          activePage = const SelectEventForAction(action: HostAction.analytics);
+          // activePage = const SelectEventForAction(action: HostAction.analytics);
+          activePage = const BlacklistPage();
         });
       } else if (selectedPageIndex == 4) {
         setState(() {
@@ -160,10 +163,15 @@ class _BasePage extends State<BasePage> {
         activeIcon: Icon(Icons.add_circle),
         label: 'Create',
       ),
+      // BottomNavigationBarItem(
+      //   icon: Icon(Icons.analytics_outlined),
+      //   activeIcon: Icon(Icons.analytics),
+      //   label: 'Analytics',
+      // ),
       BottomNavigationBarItem(
-        icon: Icon(Icons.analytics_outlined),
-        activeIcon: Icon(Icons.analytics),
-        label: 'Analytics',
+        icon: Icon(Icons.person_off_outlined),
+        activeIcon: Icon(Icons.person_off),
+        label: 'Blacklist',
       ),
       BottomNavigationBarItem(
         icon: Icon(Icons.person_outline),

@@ -85,7 +85,7 @@ var whiteSubtitle = GoogleFonts.josefinSans(
     fontSize: 23, fontWeight: FontWeight.w600, color: Colors.white);
 
 var whiteBody = GoogleFonts.josefinSans(
-    fontSize: 16, fontWeight: FontWeight.w500, color: Colors.white);
+    fontSize: 14, fontWeight: FontWeight.w500, color: Colors.white);
 
 var whiteTitle = GoogleFonts.josefinSans(
     fontSize: 34, fontWeight: FontWeight.w800, color: Colors.white);
