@@ -229,6 +229,7 @@ class _HomePageState extends State<HomePage> {
             //SliverToBoxAdapter(child: SizedBox(height: 20),),
 
             CupertinoSliverRefreshControl(
+              refreshTriggerPullDistance: 150,
               onRefresh: () async {
                 setState(() {
                   _documents.clear();
@@ -260,7 +261,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                         )
                       : ListView.builder(
-                          padding: const EdgeInsets.only(top: 24.0),
+                          padding: const EdgeInsets.only(top: 40.0),
                           physics: const NeverScrollableScrollPhysics(),
                           shrinkWrap: true,
                           itemCount:
